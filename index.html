@@ -92,6 +92,8 @@ Sistema — Escritório de Advocacia
 
 </body><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
 <script>
 
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
@@ -126,51 +128,6 @@ const { data } = await supabase
 let html = ""
 
 data.forEach(predio => {
-html += "<p>"+predio.nome+"</p>"
-})
-
-document.getElementById("listaPredios").innerHTML = html
-
-}
-
-listarPredios()
-
-</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-<script>
-
-const supabaseUrl = https://foegiwrgbkkhsqzpgcou.supabase.co
-const supabaseKey = sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z
-
-const supabase = supabase.createClient(supabaseUrl, supabaseKey)
-
-async function salvarPredio(){
-
-const nome = document.getElementById("nomePredio").value
-const endereco = document.getElementById("enderecoPredio").value
-
-const { data, error } = await supabase
-.from("predios")
-.insert([{ nome: nome, endereco: endereco }])
-
-if(error){
-alert("Erro ao salvar prédio")
-}else{
-alert("Prédio cadastrado")
-listarPredios()
-}
-
-}
-
-async function listarPredios(){
-
-const { data } = await supabase
-.from("predios")
-.select("*")
-
-let html = ""
-
-data.forEach(predio => {
 html += "<p>"+predio.nome+" - "+predio.endereco+"</p>"
 })
 
@@ -181,4 +138,3 @@ document.getElementById("listaPredios").innerHTML = html
 listarPredios()
 
 </script>
-</html>
