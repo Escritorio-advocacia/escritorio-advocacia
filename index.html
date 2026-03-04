@@ -97,7 +97,7 @@ Sistema — Escritório de Advocacia
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
 const supabaseKey = "sb_publishable_CzV3zALwOBIrRwR_6btWbw_ivcBzW5z"
 
-const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
 async function salvarPredio(){
 
