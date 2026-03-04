@@ -87,14 +87,6 @@ Sistema — Escritório de Advocacia
 <h3>Pagamentos</h3>
 <button>Registrar Pagamento</button>
 </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-</body>
-
-<script>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
@@ -109,7 +101,7 @@ async function salvarPredio(){
 const nome = document.getElementById("nomePredio").value
 const endereco = document.getElementById("enderecoPredio").value
 
-const { data, error } = await supabase
+const { error } = await supabase
 .from("predios")
 .insert([{ nome: nome, endereco: endereco }])
 
