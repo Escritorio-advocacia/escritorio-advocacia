@@ -99,8 +99,7 @@ Sistema — Escritório de Advocacia
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+<button id="btnSalvar">Salvar Prédio</button>
 <script>
 
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
@@ -210,6 +209,65 @@ listarPredios()
 
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+
+const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
+const supabaseKey = "sb_publishable_CzV3zALwOBIrRwR_6btWbw_ivcBzW5z"
+
+const supabaseClient = window.supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+)
+
+async function salvarPredio(){
+
+const nome = document.getElementById("nomePredio").value
+const endereco = document.getElementById("enderecoPredio").value
+
+if(!nome || !endereco){
+alert("Preencha os campos")
+return
+}
+
+const { error } = await supabaseClient
+.from("predios")
+.insert([{nome,endereco}])
+
+if(error){
+console.log(error)
+alert("Erro ao salvar")
+return
+}
+
+alert("Prédio cadastrado")
+
+listarPredios()
+
+}
+
+async function listarPredios(){
+
+const { data } = await supabaseClient
+.from("predios")
+.select("*")
+
+let html=""
+
+data.forEach(predio=>{
+html+=`<p>${predio.nome} - ${predio.endereco}</p>`
+})
+
+document.getElementById("listaPredios").innerHTML=html
+
+}
+
+document.getElementById("btnSalvar")
+.addEventListener("click", salvarPredio)
+
+listarPredios()
+
+</script>
 </body>
 </html>
