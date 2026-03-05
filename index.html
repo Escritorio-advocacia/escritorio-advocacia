@@ -288,10 +288,26 @@ select.appendChild(option)
 })
 
 }
+async function listarUnidades(){
 
+const { data } = await supabaseClient
+.from("unidades")
+.select("*")
+
+let html = ""
+
+data.forEach(unidade => {
+
+html += `<p>Unidade ${unidade.numero}</p>`
+
+})
+
+document.getElementById("listaUnidades").innerHTML = html
+
+}
 carregarPredios()
 listarPredios()
-
+listarUnidades()
 
 </script>
 
