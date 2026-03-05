@@ -5,6 +5,7 @@
 <title>Escritório de Advocacia</title>
 
 <style>
+
 body{
 font-family: Arial;
 background:#f4f6f9;
@@ -42,7 +43,14 @@ cursor:pointer;
 button:hover{
 background:#162d6b;
 }
+
+input{
+padding:8px;
+margin-right:10px;
+}
+
 </style>
+
 </head>
 
 <body>
@@ -58,61 +66,87 @@ Sistema — Escritório de Advocacia
 <p>Controle de aluguéis e recebimentos.</p>
 </div>
 
+
 <div class="card">
+
 <h3>Prédios</h3>
-  <input id="nomePredio" placeholder="Nome do prédio">
+
+<input id="nomePredio" placeholder="Nome do prédio">
 <input id="enderecoPredio" placeholder="Endereço">
 
 <button onclick="salvarPredio()">Salvar Prédio</button>
 
 <h4>Lista de prédios</h4>
+
 <div id="listaPredios"></div>
 
-
-
-
 </div>
+
 
 <div class="card">
 <h3>Unidades</h3>
 <button>Cadastrar Unidade</button>
 </div>
 
+
 <div class="card">
 <h3>Inquilinos</h3>
 <button>Cadastrar Inquilino</button>
 </div>
 
+
 <div class="card">
 <h3>Pagamentos</h3>
 <button>Registrar Pagamento</button>
 </div>
+
+
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
 
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
+
 const supabaseKey = "sb_publishable_CzV3zALwOBIrRwR_6btWbw_ivcBzW5z"
 
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+const supabase = window.supabase.createClient(
+supabaseUrl,
+supabaseKey
+)
+
 
 async function salvarPredio(){
 
 const nome = document.getElementById("nomePredio").value
+
 const endereco = document.getElementById("enderecoPredio").value
+
 
 const { error } = await supabase
 .from("predios")
-.insert([{ nome: nome, endereco: endereco }])
+.insert([
+{ nome:nome, endereco:endereco }
+])
+
 
 if(error){
+
 alert("Erro ao salvar")
+
 }else{
+
 alert("Prédio cadastrado")
+
 listarPredios()
+
 }
 
 }
+
+
 
 async function listarPredios(){
 
@@ -120,19 +154,26 @@ const { data } = await supabase
 .from("predios")
 .select("*")
 
+
 let html = ""
 
+
 data.forEach(predio => {
+
 html += "<p>"+predio.nome+" - "+predio.endereco+"</p>"
+
 })
+
 
 document.getElementById("listaPredios").innerHTML = html
 
 }
 
+
 listarPredios()
 
 </script>
+
 
 </body>
 </html>
