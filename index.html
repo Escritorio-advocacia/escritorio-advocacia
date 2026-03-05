@@ -100,13 +100,14 @@ Sistema — Escritório de Advocacia
 
 
 <button id="btnSalvar">Salvar Prédio</button>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
 
 const supabaseKey = "sb_publishable_CzV3zALwOBIrRwR_6btWbw_ivcBzW5z"
 
-const supabase = window.supabase.createClient(
+const supabaseClient = window.supabase.createClient(
 supabaseUrl,
 supabaseKey
 )
@@ -129,8 +130,7 @@ return
 }
 
 
-const { error } = await supabase
-
+const { error } = await supabaseClient
 .from("predios")
 
 .insert([
