@@ -233,8 +233,64 @@ document
 .getElementById("btnSalvar")
 .addEventListener("click", salvarPredio)
 
+async function salvarUnidade(){
 
+const predio_id =
+document.getElementById("predioSelect").value
 
+const numero =
+document.getElementById("numeroUnidade").value
+
+const andar =
+document.getElementById("andarUnidade").value
+
+const { error } = await supabaseClient
+.from("unidades")
+.insert([
+{
+predio_id: predio_id,
+numero: numero,
+andar: andar
+}
+])
+
+if(error){
+
+console.log(error)
+alert("Erro ao salvar unidade")
+
+return
+
+}
+
+alert("Unidade cadastrada")
+
+}
+async function carregarPredios(){
+
+const { data } = await supabaseClient
+.from("predios")
+.select("*")
+
+const select =
+document.getElementById("predioSelect")
+
+select.innerHTML = ""
+
+data.forEach(predio => {
+
+const option = document.createElement("option")
+
+option.value = predio.id
+option.text = predio.nome
+
+select.appendChild(option)
+
+})
+
+}
+
+carregarPredios()
 listarPredios()
 
 
