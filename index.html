@@ -62,7 +62,25 @@ input,select{padding:8px;margin-right:10px;margin-bottom:10px}
 </div>
 
 </div>
+<div class="card">
 
+<h3>Contratos</h3>
+
+<select id="inquilinoSelect"></select>
+
+<select id="unidadeContratoSelect"></select>
+
+<input id="valorContrato" placeholder="Valor aluguel">
+
+<input id="vencimentoContrato" placeholder="Dia vencimento">
+
+<button onclick="salvarContrato()">Criar Contrato</button>
+
+<h4>Lista de contratos</h4>
+
+<div id="listaContratos"></div>
+
+</div>
 <script>
 
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
