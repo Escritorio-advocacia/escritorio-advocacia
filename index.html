@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
 <meta charset="UTF-8">
-<title>Escritório de Advocacia</title>
+<title>Sistema de Aluguel</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -70,6 +71,7 @@ Sistema — Escritório de Advocacia
 <button onclick="salvarPredio()">Salvar Prédio</button>
 
 <h4>Lista de prédios</h4>
+
 <div id="listaPredios"></div>
 
 </div>
@@ -86,6 +88,7 @@ Sistema — Escritório de Advocacia
 <button onclick="salvarUnidade()">Salvar Unidade</button>
 
 <h4>Lista de unidades</h4>
+
 <div id="listaUnidades"></div>
 
 </div>
@@ -99,46 +102,33 @@ Sistema — Escritório de Advocacia
 
 <select id="unidadeSelect"></select>
 
-<input type="number" id="valorAluguel" placeholder="Valor do aluguel">
+<input type="number" id="valorAluguel" placeholder="Valor aluguel">
 
-<input type="number" id="vencimento" placeholder="Dia do vencimento">
+<input type="number" id="vencimento" placeholder="Dia vencimento">
 
 <button onclick="salvarInquilino()">Salvar Inquilino</button>
 
 <h4>Lista de inquilinos</h4>
+
 <div id="listaInquilinos"></div>
 
 </div>
 
 </div>
 
-
 <script>
 
-const supabaseUrl = "SUA_URL_SUPABASE"
-const supabaseKey = "SUA_ANON_KEY"
+const supabaseUrl = "COLE_SUA_URL"
+const supabaseKey =sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z
 
-const supabase = window.supabase.createClient(supabaseUrl,supabaseKey)
+const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
 async function salvarPredio(){
 
 const nome = document.getElementById("nomePredio").value
 const endereco = document.getElementById("enderecoPredio").value
 
-if(!nome || !endereco){
-alert("Preencha os campos")
-return
-}
-
-await supabase.from("predios").insert([
-{
-nome:nome,
-endereco:endereco
-}
-])
-
-document.getElementById("nomePredio").value=""
-document.getElementById("enderecoPredio").value=""
+await client.from("predios").insert([{nome,endereco}])
 
 listarPredios()
 carregarPredios()
@@ -147,15 +137,13 @@ carregarPredios()
 
 async function listarPredios(){
 
-const {data} = await supabase
-.from("predios")
-.select("*")
+const {data} = await client.from("predios").select("*")
 
 let html=""
 
 data.forEach(p=>{
 
-html+=`<p>${p.nome} - ${p.endereco}</p>`
+html += `<p>${p.nome} - ${p.endereco}</p>`
 
 })
 
@@ -165,11 +153,9 @@ document.getElementById("listaPredios").innerHTML=html
 
 async function carregarPredios(){
 
-const {data} = await supabase
-.from("predios")
-.select("*")
+const {data} = await client.from("predios").select("*")
 
-let select=document.getElementById("predioSelect")
+let select = document.getElementById("predioSelect")
 
 select.innerHTML=""
 
@@ -186,14 +172,7 @@ async function salvarUnidade(){
 const predio_id=document.getElementById("predioSelect").value
 const numero=document.getElementById("numeroUnidade").value
 
-await supabase.from("unidades").insert([
-{
-predio_id:predio_id,
-numero:numero
-}
-])
-
-document.getElementById("numeroUnidade").value=""
+await client.from("unidades").insert([{predio_id,numero}])
 
 listarUnidades()
 carregarUnidades()
@@ -202,9 +181,7 @@ carregarUnidades()
 
 async function listarUnidades(){
 
-const {data} = await supabase
-.from("unidades")
-.select("*")
+const {data}=await client.from("unidades").select("*")
 
 let html=""
 
@@ -220,9 +197,7 @@ document.getElementById("listaUnidades").innerHTML=html
 
 async function carregarUnidades(){
 
-const {data} = await supabase
-.from("unidades")
-.select("*")
+const {data}=await client.from("unidades").select("*")
 
 let select=document.getElementById("unidadeSelect")
 
@@ -243,18 +218,14 @@ const unidade_id=document.getElementById("unidadeSelect").value
 const valor=document.getElementById("valorAluguel").value
 const vencimento=document.getElementById("vencimento").value
 
-await supabase.from("inquilinos").insert([
+await client.from("inquilinos").insert([
 {
-nome:nome,
-unidade_id:unidade_id,
+nome,
+unidade_id,
 valor_aluguel:valor,
 dia_vencimento:vencimento
 }
 ])
-
-document.getElementById("nomeInquilino").value=""
-document.getElementById("valorAluguel").value=""
-document.getElementById("vencimento").value=""
 
 listarInquilinos()
 
@@ -262,9 +233,7 @@ listarInquilinos()
 
 async function listarInquilinos(){
 
-const {data} = await supabase
-.from("inquilinos")
-.select("*")
+const {data}=await client.from("inquilinos").select("*")
 
 let html=""
 
