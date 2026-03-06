@@ -163,6 +163,7 @@ const nome = document.getElementById("nomeInquilino").value
 const unidade_id = document.getElementById("unidadeSelect").value
 const valor = document.getElementById("valorAluguel").value
 const dia_vencimento = document.getElementById("vencimento").value
+  
 const { error } = await supabaseClient
 .from("inquilinos")
 .insert([
@@ -180,6 +181,7 @@ return
 }
 
 alert("Inquilino cadastrado")
+
 }
 listarInquilinos()
 
