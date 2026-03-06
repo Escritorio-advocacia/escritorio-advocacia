@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="pt-br">
 <head>
-
 <meta charset="UTF-8">
-
 <title>Escritório de Advocacia</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
@@ -43,19 +42,15 @@ border-radius:6px;
 cursor:pointer;
 }
 
-button:hover{
-background:#162d6b;
-}
-
-input{
+input,select{
 padding:8px;
 margin-right:10px;
+margin-bottom:10px;
 }
 
 </style>
 
 </head>
-
 
 <body>
 
@@ -63,36 +58,21 @@ margin-right:10px;
 Sistema — Escritório de Advocacia
 </header>
 
-
 <div class="container">
-
-
-<div class="card">
-
-<h3>Painel Financeiro</h3>
-
-<p>Controle de aluguéis e recebimentos.</p>
-
-</div>
-
-
 
 <div class="card">
 
 <h3>Prédios</h3>
 
 <input id="nomePredio" placeholder="Nome do prédio">
-
 <input id="enderecoPredio" placeholder="Endereço">
 
-<button id="btnSalvar">Salvar Prédio</button>
+<button onclick="salvarPredio()">Salvar Prédio</button>
 
 <h4>Lista de prédios</h4>
-
 <div id="listaPredios"></div>
 
 </div>
-
 
 
 <div class="card">
@@ -101,259 +81,210 @@ Sistema — Escritório de Advocacia
 
 <select id="predioSelect"></select>
 
-<input
-id="numeroUnidade"
-placeholder="Número da unidade"
-/>
+<input id="numeroUnidade" placeholder="Número da unidade">
 
-<input
-id="andarUnidade"
-placeholder="Andar"
-/>
-
-<button onclick="salvarUnidade()">
-Salvar Unidade
-</button>
+<button onclick="salvarUnidade()">Salvar Unidade</button>
 
 <h4>Lista de unidades</h4>
 <div id="listaUnidades"></div>
-</div>
 
+</div>
 
 
 <div class="card">
 
 <h3>Inquilinos</h3>
 
-<input type="text" id="nomeInquilino" placeholder="Nome do inquilino">
+<input id="nomeInquilino" placeholder="Nome">
 
-<select id="unidadeSelect">
-</select>
+<select id="unidadeSelect"></select>
 
 <input type="number" id="valorAluguel" placeholder="Valor do aluguel">
 
 <input type="number" id="vencimento" placeholder="Dia do vencimento">
 
-<button id="btnSalvarInquilino">Salvar Inquilino</button>
+<button onclick="salvarInquilino()">Salvar Inquilino</button>
 
 <h4>Lista de inquilinos</h4>
 <div id="listaInquilinos"></div>
 
 </div>
 
-
 </div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <script>
 
+const supabaseUrl = "SUA_URL_SUPABASE"
+const supabaseKey = "SUA_ANON_KEY"
 
-const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
-const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
-const supabaseClient = window.supabase.createClient(
-supabaseUrl,
-supabaseKey
-)
-async function salvarInquilino(){
-
-const nome = document.getElementById("nomeInquilino").value
-const unidade_id = document.getElementById("unidadeSelect").value
-const valor = document.getElementById("valorAluguel").value
-const dia_vencimento = document.getElementById("vencimento").value
-  
-const { error } = await supabaseClient
-.from("inquilinos")
-.insert([
-{
-nome: nome,
-unidade_id: unidade_id,
-valor_aluguel: valor,
-dia_vencimento: dia_vencimento
-}
-])
-
-if(error){
-alert("Erro ao salvar inquilino")
-return
-}
-
-alert("Inquilino cadastrado")
-
-}
-listarInquilinos()
-
-}
-
+const supabase = window.supabase.createClient(supabaseUrl,supabaseKey)
 
 async function salvarPredio(){
 
 const nome = document.getElementById("nomePredio").value
-
 const endereco = document.getElementById("enderecoPredio").value
 
-
 if(!nome || !endereco){
-
 alert("Preencha os campos")
-
 return
-
 }
 
-
-const { error } = await supabaseClient
-.from("predios")
-.insert([
+await supabase.from("predios").insert([
 {
-nome: nome,
-endereco: endereco
+nome:nome,
+endereco:endereco
 }
 ])
-
-
-if(error){
-
-console.log(error)
-
-alert("Erro ao salvar")
-
-return
-
-}
-
-
-alert("Prédio cadastrado")
-
 
 document.getElementById("nomePredio").value=""
 document.getElementById("enderecoPredio").value=""
 
-
 listarPredios()
+carregarPredios()
 
 }
-
-
 
 async function listarPredios(){
 
-const { data, error } = await supabaseClient
+const {data} = await supabase
 .from("predios")
 .select("*")
-
-
-if(error){
-
-console.log(error)
-
-return
-
-}
-
 
 let html=""
 
-data.forEach(predio => {
+data.forEach(p=>{
 
-html += `<p>${predio.nome} - ${predio.endereco}</p>`
+html+=`<p>${p.nome} - ${p.endereco}</p>`
 
 })
 
-
-document.getElementById("listaPredios").innerHTML = html
-
-}
-
-
-
-document
-.getElementById("btnSalvar")
-.addEventListener("click", salvarPredio)
-
-async function salvarUnidade(){
-
-const predio_id =
-document.getElementById("predioSelect").value
-
-const numero =
-document.getElementById("numeroUnidade").value
-
-const andar =
-document.getElementById("andarUnidade").value
-
-const { error } = await supabaseClient
-.from("unidades")
-.insert([
-{
-predio_id: predio_id,
-numero: numero
-}
-])
-
-if(error){
-
-console.log(error)
-alert("Erro ao salvar unidade")
-
-return
+document.getElementById("listaPredios").innerHTML=html
 
 }
 
-alert("Unidade cadastrada")
-
-}
 async function carregarPredios(){
 
-const { data } = await supabaseClient
+const {data} = await supabase
 .from("predios")
 .select("*")
 
-const select =
-document.getElementById("predioSelect")
+let select=document.getElementById("predioSelect")
 
-select.innerHTML = ""
+select.innerHTML=""
 
-data.forEach(predio => {
+data.forEach(p=>{
 
-const option = document.createElement("option")
-
-option.value = predio.id
-option.text = predio.nome
-
-select.appendChild(option)
+select.innerHTML+=`<option value="${p.id}">${p.nome}</option>`
 
 })
 
 }
+
+async function salvarUnidade(){
+
+const predio_id=document.getElementById("predioSelect").value
+const numero=document.getElementById("numeroUnidade").value
+
+await supabase.from("unidades").insert([
+{
+predio_id:predio_id,
+numero:numero
+}
+])
+
+document.getElementById("numeroUnidade").value=""
+
+listarUnidades()
+carregarUnidades()
+
+}
+
 async function listarUnidades(){
 
-const { data } = await supabaseClient
+const {data} = await supabase
 .from("unidades")
 .select("*")
 
-let html = ""
+let html=""
 
-data.forEach(unidade => {
+data.forEach(u=>{
 
-html += `<p>Unidade ${unidade.numero}</p>`
+html+=`<p>Unidade ${u.numero}</p>`
 
 })
 
-document.getElementById("listaUnidades").innerHTML = html
+document.getElementById("listaUnidades").innerHTML=html
 
 }
-carregarPredios()
+
+async function carregarUnidades(){
+
+const {data} = await supabase
+.from("unidades")
+.select("*")
+
+let select=document.getElementById("unidadeSelect")
+
+select.innerHTML=""
+
+data.forEach(u=>{
+
+select.innerHTML+=`<option value="${u.id}">${u.numero}</option>`
+
+})
+
+}
+
+async function salvarInquilino(){
+
+const nome=document.getElementById("nomeInquilino").value
+const unidade_id=document.getElementById("unidadeSelect").value
+const valor=document.getElementById("valorAluguel").value
+const vencimento=document.getElementById("vencimento").value
+
+await supabase.from("inquilinos").insert([
+{
+nome:nome,
+unidade_id:unidade_id,
+valor_aluguel:valor,
+dia_vencimento:vencimento
+}
+])
+
+document.getElementById("nomeInquilino").value=""
+document.getElementById("valorAluguel").value=""
+document.getElementById("vencimento").value=""
+
+listarInquilinos()
+
+}
+
+async function listarInquilinos(){
+
+const {data} = await supabase
+.from("inquilinos")
+.select("*")
+
+let html=""
+
+data.forEach(i=>{
+
+html+=`<p>${i.nome}</p>`
+
+})
+
+document.getElementById("listaInquilinos").innerHTML=html
+
+}
+
 listarPredios()
 listarUnidades()
-document
-.getElementById("btnSalvarInquilino")
-.addEventListener("click", salvarInquilino)
+listarInquilinos()
+carregarPredios()
+carregarUnidades()
+
 </script>
 
-
 </body>
-
 </html>
