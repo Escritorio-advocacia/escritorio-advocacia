@@ -162,7 +162,7 @@ async function salvarInquilino(){
 const nome = document.getElementById("nomeInquilino").value
 const unidade_id = document.getElementById("unidadeSelect").value
 const valor = document.getElementById("valorAluguel").value
-<input type="number" id="vencimento" placeholder="Dia do vencimento">
+const dia_vencimento = document.getElementById("vencimento").value
 const { error } = await supabaseClient
 .from("inquilinos")
 .insert([
@@ -180,7 +180,7 @@ return
 }
 
 alert("Inquilino cadastrado")
-
+}
 listarInquilinos()
 
 }
