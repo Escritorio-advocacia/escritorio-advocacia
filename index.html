@@ -125,7 +125,19 @@ Salvar Unidade
 
 <h3>Inquilinos</h3>
 
-<button>Cadastrar Inquilino</button>
+<input type="text" id="nomeInquilino" placeholder="Nome do inquilino">
+
+<select id="unidadeSelect">
+</select>
+
+<input type="number" id="valorAluguel" placeholder="Valor do aluguel">
+
+<input type="date" id="vencimento">
+
+<button id="btnSalvarInquilino">Salvar Inquilino</button>
+
+<h4>Lista de inquilinos</h4>
+<div id="listaInquilinos"></div>
 
 </div>
 
@@ -145,7 +157,34 @@ const supabaseClient = window.supabase.createClient(
 supabaseUrl,
 supabaseKey
 )
+async function salvarInquilino(){
 
+const nome = document.getElementById("nomeInquilino").value
+const unidade_id = document.getElementById("unidadeSelect").value
+const valor = document.getElementById("valorAluguel").value
+const vencimento = document.getElementById("vencimento").value
+
+const { error } = await supabaseClient
+.from("inquilinos")
+.insert([
+{
+nome: nome,
+unidade_id: unidade_id,
+valor_aluguel: valor,
+vencimento: vencimento
+}
+])
+
+if(error){
+alert("Erro ao salvar inquilino")
+return
+}
+
+alert("Inquilino cadastrado")
+
+listarInquilinos()
+
+}
 
 
 async function salvarPredio(){
@@ -308,7 +347,9 @@ document.getElementById("listaUnidades").innerHTML = html
 carregarPredios()
 listarPredios()
 listarUnidades()
-
+document
+.getElementById("btnSalvarInquilino")
+.addEventListener("click", salvarInquilino)
 </script>
 
 
