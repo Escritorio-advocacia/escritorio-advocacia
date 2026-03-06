@@ -224,14 +224,47 @@ html+=`<p>${i.nome} - aluguel ${i.valor_aluguel}</p>`
 document.getElementById("listaInquilinos").innerHTML=html
 
 }
+async function salvarContrato(){
 
+const inquilino_id = document.getElementById("inquilinoSelect").value
+const unidade_id = document.getElementById("unidadeContratoSelect").value
+const valor = document.getElementById("valorContrato").value
+const vencimento = document.getElementById("vencimentoContrato").value
+
+await client.from("contratos").insert([
+{
+inquilino_id,
+unidade_id,
+valor_aluguel:valor,
+dia_vencimento:vencimento
+}
+])
+
+listarContratos()
+
+}
+
+async function listarContratos(){
+
+const {data}=await client.from("contratos").select("*")
+
+let html=""
+
+data.forEach(c=>{
+html+=`<p>Contrato ${c.id} - aluguel ${c.valor_aluguel}</p>`
+})
+
+document.getElementById("listaContratos").innerHTML=html
+
+}
 
 listarPredios()
 listarUnidades()
 listarInquilinos()
 carregarPredios()
 carregarUnidades()
-
+listarContratos()
+  
 </script>
 
 </body>
