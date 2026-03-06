@@ -162,8 +162,7 @@ async function salvarInquilino(){
 const nome = document.getElementById("nomeInquilino").value
 const unidade_id = document.getElementById("unidadeSelect").value
 const valor = document.getElementById("valorAluguel").value
-const vencimento = document.getElementById("vencimento").value
-
+dia_vencimento: dia_vencimento
 const { error } = await supabaseClient
 .from("inquilinos")
 .insert([
@@ -171,7 +170,7 @@ const { error } = await supabaseClient
 nome: nome,
 unidade_id: unidade_id,
 valor_aluguel: valor,
-vencimento: vencimento
+dia_vencimento: dia_vencimento
 }
 ])
 
