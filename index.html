@@ -138,28 +138,27 @@ select.appendChild(option)
 
 async function salvarContrato(){
 
-const inquilino_id = document.getElementById("inquilinoSelect").value
-const unidade_id = document.getElementById("unidadeContratoSelect").value
+const inquilino_id = Number(document.getElementById("inquilinoSelect").value)
+const unidade_id = Number(document.getElementById("unidadeContratoSelect").value)
 
 const valor = Number(document.getElementById("valorContrato").value)
-
 const vencimento = Number(document.getElementById("vencimentoContrato").value)
 
-
-
-await client.from("contratos").insert({
-
-inquilino_id: inquilino_id,
-unidade_id: unidade_id,
+const { error } = await client.from("contratos").insert({
+inquilino_id,
+unidade_id,
 valor_aluguel: valor,
 dia_vencimento: vencimento
-
 })
+
+if(error){
+console.log(error)
+alert("Erro ao salvar contrato")
+}
 
 listarContratos()
 
 }
-
 
 
 async function listarContratos(){
