@@ -241,7 +241,26 @@ dia_vencimento:vencimento
 ])
 
 listarContratos()
+async function carregarInquilinosContrato(){
 
+const {data} = await client.from("inquilinos").select("*")
+
+const select = document.getElementById("inquilinoSelect")
+
+select.innerHTML=""
+
+data.forEach(i => {
+
+const option = document.createElement("option")
+
+option.value = i.id
+option.text = i.nome
+
+select.appendChild(option)
+
+})
+
+}
 }
 async function salvarContrato(){
 
@@ -278,6 +297,7 @@ listarUnidades()
 listarInquilinos()
 carregarPredios()
 carregarUnidades()
+carregarInquilinosContrato()
 listarContratos()
   
 </script>
