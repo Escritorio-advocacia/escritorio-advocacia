@@ -89,158 +89,7 @@ const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 const client = supabase.createClient(supabaseUrl, supabaseKey)
 
 
-async function salvarPredio(){
 
-const nome = document.getElementById("nomePredio").value
-const endereco = document.getElementById("enderecoPredio").value
-
-if(!nome || !endereco){
-alert("Preencha os campos")
-return
-}
-
-await client.from("predios").insert([{nome,endereco}])
-
-document.getElementById("nomePredio").value=""
-document.getElementById("enderecoPredio").value=""
-
-listarPredios()
-carregarPredios()
-
-}
-
-async function listarPredios(){
-
-const {data,error} = await client.from("predios").select("*")
-
-if(error){console.log(error);return}
-
-let html=""
-
-data.forEach(p=>{
-html+=`<p>${p.nome} - ${p.endereco}</p>`
-})
-
-document.getElementById("listaPredios").innerHTML=html
-
-}
-
-async function carregarPredios(){
-
-const {data}=await client.from("predios").select("*")
-
-const select=document.getElementById("predioSelect")
-
-select.innerHTML=""
-
-data.forEach(p=>{
-
-const option=document.createElement("option")
-
-option.value=p.id
-option.text=p.nome
-
-select.appendChild(option)
-
-})
-
-}
-
-
-async function salvarUnidade(){
-
-const predio_id=document.getElementById("predioSelect").value
-const numero=document.getElementById("numeroUnidade").value
-
-await client.from("unidades").insert([{predio_id,numero}])
-
-listarUnidades()
-carregarUnidades()
-
-}
-
-async function listarUnidades(){
-
-const {data}=await client.from("unidades").select("*")
-
-let html=""
-
-data.forEach(u=>{
-html+=`<p>Unidade ${u.numero}</p>`
-})
-
-document.getElementById("listaUnidades").innerHTML=html
-
-}
-
-async function carregarUnidades(){
-
-const {data}=await client.from("unidades").select("*")
-
-const select=document.getElementById("unidadeSelect")
-
-select.innerHTML=""
-
-data.forEach(u=>{
-
-const option=document.createElement("option")
-
-option.value=u.id
-option.text="Unidade "+u.numero
-
-select.appendChild(option)
-
-})
-
-}
-
-
-async function salvarInquilino(){
-
-const nome=document.getElementById("nomeInquilino").value
-const unidade_id=document.getElementById("unidadeSelect").value
-const valor=document.getElementById("valorAluguel").value
-const vencimento=document.getElementById("vencimento").value
-
-await client.from("inquilinos").insert([
-{nome,unidade_id,valor_aluguel:valor,dia_vencimento:vencimento}
-])
-
-listarInquilinos()
-
-}
-
-
-async function listarInquilinos(){
-
-const {data}=await client.from("inquilinos").select("*")
-
-let html=""
-
-data.forEach(i=>{
-html+=`<p>${i.nome} - aluguel ${i.valor_aluguel}</p>`
-})
-
-document.getElementById("listaInquilinos").innerHTML=html
-
-}
-<button onclick="salvarContrato()">Criar Contrato</button>(){
-
-const inquilino_id = document.getElementById("inquilinoSelect").value
-const unidade_id = document.getElementById("unidadeContratoSelect").value
-const valor = document.getElementById("valorContrato").value
-const vencimento = document.getElementById("vencimentoContrato").value
-
-await client.from("contratos").insert([
-{
-inquilino_id,
-unidade_id,
-valor_aluguel:valor,
-dia_vencimento:vencimento
-}
-])
-
-listarContratos()
 async function carregarInquilinosContrato(){
 
 const {data} = await client.from("inquilinos").select("*")
@@ -261,45 +110,87 @@ select.appendChild(option)
 })
 
 }
+
+
+
+async function carregarUnidadesContrato(){
+
+const {data} = await client.from("unidades").select("*")
+
+const select = document.getElementById("unidadeContratoSelect")
+
+select.innerHTML=""
+
+data.forEach(u => {
+
+const option = document.createElement("option")
+
+option.value = u.id
+option.text = "Unidade " + u.numero
+
+select.appendChild(option)
+
+})
+
 }
+
+
+
 async function salvarContrato(){
 
 const inquilino_id = document.getElementById("inquilinoSelect").value
 const unidade_id = document.getElementById("unidadeContratoSelect").value
+
 const valor = Number(document.getElementById("valorContrato").value)
+
 const vencimento = Number(document.getElementById("vencimentoContrato").value)
-await client.from("contratos")
-.insert({
+
+
+
+await client.from("contratos").insert({
+
 inquilino_id: inquilino_id,
 unidade_id: unidade_id,
 valor_aluguel: valor,
 dia_vencimento: vencimento
+
 })
+
 listarContratos()
 
 }
+
+
+
 async function listarContratos(){
 
-const {data}=await client.from("contratos").select("*")
+const {data} = await client.from("contratos").select("*")
 
 let html=""
 
 data.forEach(c=>{
-html+=`<p>Contrato ${c.id} - aluguel ${c.valor_aluguel}</p>`
+
+html += `<p>Contrato ${c.id} - aluguel ${c.valor_aluguel}</p>`
+
 })
 
-document.getElementById("listaContratos").innerHTML=html
+document.getElementById("listaContratos").innerHTML = html
 
 }
+
+
 
 listarPredios()
 listarUnidades()
 listarInquilinos()
+
 carregarPredios()
 carregarUnidades()
+
 carregarInquilinosContrato()
+carregarUnidadesContrato()
+
 listarContratos()
-  
 </script>
 
 </body>
