@@ -315,21 +315,21 @@ document.getElementById("listaContratos").innerHTML = html
 
 
 
-listarPredios()
+window.onload = async () => {
 
-listarUnidades()
+await listarPredios()
+await listarUnidades()
+await listarInquilinos()
 
-listarInquilinos()
+await carregarPredios()
+await carregarUnidades()
 
-carregarPredios()
+await carregarInquilinosContrato()
+await carregarUnidadesContrato()
 
-carregarUnidades()
+await listarContratos()
 
-carregarInquilinosContrato()
-
-carregarUnidadesContrato()
-
-listarContratos()
+}
 
 </script>
 
