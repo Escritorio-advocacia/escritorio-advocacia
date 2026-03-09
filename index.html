@@ -59,6 +59,9 @@
 <button onclick="salvarContrato()">Criar</button>
 
 <div id="listaContratos"></div>
+  <h3>Pagamentos</h3>
+
+<div id="listaPagamentos"></div>
 
 
 <script>
@@ -68,8 +71,42 @@ const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 
 const client = supabase.createClient(supabaseUrl, supabaseKey)
 
+async function listarPagamentos(){
 
+const { data } = await client
+.from("pagamentos")
+.select("*")
+.order("mes")
 
+let html = ""
+
+data.forEach(p => {
+
+html += `
+<p>
+Mês ${p.mes} - R$ ${p.valor} - ${p.status}
+<button onclick="pagar(${p.id})">Pagar</button>
+</p>
+`
+
+})
+
+document.getElementById("listaPagamentos").innerHTML = html
+
+}
+async function pagar(id){
+
+await client
+.from("pagamentos")
+.update({
+status: "pago",
+data_pagamento: new Date()
+})
+.eq("id", id)
+
+listarPagamentos()
+
+}
 async function salvarPredio(){
 
 const nome = document.getElementById("nomePredio").value
@@ -344,7 +381,7 @@ await carregarInquilinosContrato()
 await carregarUnidadesContrato()
 
 await listarContratos()
-
+await listarPagamentos()
 }
 
 </script>
