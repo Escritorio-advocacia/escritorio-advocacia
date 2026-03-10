@@ -462,8 +462,12 @@ pagamentos.forEach(p => {
 if(p.status == "pendente" && p.mes < mesAtual){
 
 const contrato = contratos.find(c => c.id == p.contrato_id)
+
+if(!contrato) return
+
 const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
 
+if(!inquilino) return
 html += `
 <p style="color:red">
 ⚠ ${inquilino.nome}<br>
