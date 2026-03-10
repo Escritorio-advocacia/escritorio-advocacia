@@ -84,9 +84,20 @@ let html = ""
 
 data.forEach(p => {
 
+const hoje = new Date()
+const mesAtual = hoje.getMonth() + 1
+
+let status = p.status
+let cor = "black"
+
+if(p.status == "pendente" && p.mes < mesAtual){
+status = "ATRASADO"
+cor = "red"
+}
+
 html += `
-<p>
-Mês ${p.mes} - R$ ${p.valor} - ${p.status}
+<p style="color:${cor}">
+Mês ${p.mes} - R$ ${p.valor} - ${status}
 <button onclick="pagar(${p.id})">Pagar</button>
 </p>
 `
