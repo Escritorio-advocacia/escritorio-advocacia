@@ -90,6 +90,14 @@ const mesAtual = hoje.getMonth() + 1
 let status = p.status
 let cor = "black"
 
+if(p.status == "pago"){
+cor = "green"
+}
+
+if(p.status == "pendente"){
+cor = "orange"
+}
+
 if(p.status == "pendente" && p.mes < mesAtual){
 status = "ATRASADO"
 cor = "red"
