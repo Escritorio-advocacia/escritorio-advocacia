@@ -438,6 +438,47 @@ await listarContratos()
 await listarPagamentos()
 await carregarDashboard()
 await listarDevedores()
+async function listarDevedores(){
+
+const hoje = new Date()
+const mesAtual = hoje.getMonth() + 1
+
+const { data: pagamentos } = await client
+.from("pagamentos")
+.select("*")
+
+const { data: contratos } = await client
+.from("contratos")
+.select("*")
+
+const { data: inquilinos } = await client
+.from("inquilinos")
+.select("*")
+
+let html = ""
+
+pagamentos.forEach(p => {
+
+if(p.status == "pendente" && p.mes < mesAtual){
+
+const contrato = contratos.find(c => c.id == p.contrato_id)
+const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
+
+html += `
+<p style="color:red">
+⚠ ${inquilino.nome}<br>
+Mês ${p.mes} atrasado<br>
+Dívida: R$ ${p.valor}
+</p>
+`
+
+}
+
+})
+
+document.getElementById("listaDevedores").innerHTML = html
+
+}
 }
 
 </script>
