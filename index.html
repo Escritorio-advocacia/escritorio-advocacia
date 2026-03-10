@@ -11,7 +11,9 @@
 <body>
 
 <h2>Sistema de Aluguel</h2>
-
+  
+<h2>Dashboard</h2>
+<div id="dashboard"></div>
 <h3>Prédios</h3>
 
 <input id="nomePredio">
@@ -366,7 +368,38 @@ document.getElementById("listaContratos").innerHTML = html
 
 }
 
+async function carregarDashboard(){
 
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+let recebido = 0
+let pendente = 0
+
+data.forEach(p => {
+
+if(p.status == "pago"){
+recebido += Number(p.valor)
+}
+
+if(p.status == "pendente"){
+pendente += Number(p.valor)
+}
+
+})
+
+const { count } = await client
+.from("contratos")
+.select("*", { count: "exact", head: true })
+
+document.getElementById("dashboard").innerHTML = `
+<p>💰 Recebido: R$ ${recebido}</p>
+<p>📅 A receber: R$ ${pendente}</p>
+<p>📄 Contratos ativos: ${count}</p>
+`
+
+}
 
 window.onload = async () => {
 
@@ -382,6 +415,7 @@ await carregarUnidadesContrato()
 
 await listarContratos()
 await listarPagamentos()
+await carregarDashboard()
 }
 
 </script>
