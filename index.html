@@ -41,12 +41,13 @@
 
 <select id="unidadeSelect"></select>
 
-<input id="valorAluguel">
+<input id="telefoneInquilino" placeholder="Telefone ou WhatsApp">
 
-<input id="diaVencimento">
+<input id="valorAluguel" placeholder="Valor do aluguel">
+
+<input id="diaVencimento" placeholder="Dia do vencimento">
 
 <button onclick="salvarInquilino()">Salvar</button>
-
 <div id="listaInquilinos"></div>
 
 
@@ -283,7 +284,9 @@ async function salvarInquilino(){
 const nome = document.getElementById("nomeInquilino").value
 
 const unidade_id = document.getElementById("unidadeSelect").value
-
+  
+const telefone = document.getElementById("telefoneInquilino").value
+  
 const valor = document.getElementById("valorAluguel").value
 
 const vencimento = document.getElementById("diaVencimento").value
@@ -291,9 +294,10 @@ const vencimento = document.getElementById("diaVencimento").value
 await client.from("inquilinos").insert({
 
 nome,
+telefone,
 unidade_id,
-valor_aluguel:valor,
-dia_vencimento:vencimento
+valor_aluguel: valor,
+dia_vencimento: vencimento
 
 })
 
