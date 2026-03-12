@@ -77,95 +77,8 @@ const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 
 const client = supabase.createClient(supabaseUrl, supabaseKey)
 
-  async function gerarRecibo(pagamento){
 
-const { data: contrato } = await client
-.from("contratos")
-.select("*")
-.eq("id", pagamento.contrato_id)
-.single()
 
-const { data: inquilino } = await client
-.from("inquilinos")
-.select("*")
-.eq("id", contrato.inquilino_id)
-.single()
-
-const hoje = new Date().toLocaleDateString()
-
-let html = `
-<h3>RECIBO DE ALUGUEL</h3>
-
-<p>Inquilino: ${inquilino.nome}</p>
-<p>Mês: ${pagamento.mes}</p>
-<p>Valor: R$ ${pagamento.valor}</p>
-<p>Data pagamento: ${hoje}</p>
-<p>Status: PAGO</p>
-`
-
-document.getElementById("recibo").innerHTML = html
-
-}
-async function listarPagamentos(){
-
-const { data } = await client
-.from("pagamentos")
-.select("*")
-.order("mes")
-
-let html = ""
-
-data.forEach(p => {
-
-const hoje = new Date()
-const mesAtual = hoje.getMonth() + 1
-
-let status = p.status
-let cor = "black"
-
-if(p.status == "pago"){
-cor = "green"
-}
-
-if(p.status == "pendente"){
-cor = "orange"
-}
-
-if(p.status == "pendente" && p.mes < mesAtual){
-status = "ATRASADO"
-cor = "red"
-}
-
-html += `
-<p style="color:${cor}">
-Mês ${p.mes} - R$ ${p.valor} - ${status}
-<button onclick="pagar(${p.id})">Pagar</button>
-</p>
-`
-
-})
-
-document.getElementById("listaPagamentos").innerHTML = html
-
-}
-async function pagar(id){
-
-const { data: pagamento } = await client
-.from("pagamentos")
-.select("*")
-.eq("id", id)
-.single()
-
-await client
-.from("pagamentos")
-.update({ status: "pago" })
-.eq("id", id)
-
-await listarPagamentos()
-
-gerarRecibo(pagamento)
-
-}
 async function salvarPredio(){
 
 const nome = document.getElementById("nomePredio").value
@@ -186,41 +99,11 @@ let html=""
 
 data.forEach(p=>{
 
-html += `
-<p>
-${i.nome} - ${i.telefone}
-<button onclick="cobrarWhatsapp('${i.telefone}','${i.nome}',${i.valor_aluguel})">
-📲 Cobrar
-</button>
-</p>
-`
+html += `<p>${p.nome}</p>`
 
 })
 
 document.getElementById("listaPredios").innerHTML = html
-
-}
-
-
-
-async function carregarPredios(){
-
-const {data} = await client.from("predios").select("*")
-
-const select = document.getElementById("predioSelect")
-
-select.innerHTML=""
-
-data.forEach(p=>{
-
-const option = document.createElement("option")
-
-option.value = p.id
-option.text = p.nome
-
-select.appendChild(option)
-
-})
 
 }
 
@@ -263,29 +146,6 @@ document.getElementById("listaUnidades").innerHTML = html
 
 
 
-async function carregarUnidades(){
-
-const {data} = await client.from("unidades").select("*")
-
-const select = document.getElementById("unidadeSelect")
-
-select.innerHTML=""
-
-data.forEach(u=>{
-
-const option = document.createElement("option")
-
-option.value = u.id
-option.text = "Unidade " + u.numero
-
-select.appendChild(option)
-
-})
-
-}
-
-
-
 async function salvarInquilino(){
 
 const nome = document.getElementById("nomeInquilino").value
@@ -322,57 +182,18 @@ let html=""
 
 data.forEach(i=>{
 
-html += `<p>${i.nome}</p>`
+html += `
+<p>
+${i.nome} - ${i.telefone}
+<button onclick="cobrarWhatsapp('${i.telefone}','${i.nome}',${i.valor_aluguel})">
+📲 Cobrar
+</button>
+</p>
+`
 
 })
 
 document.getElementById("listaInquilinos").innerHTML = html
-
-}
-
-
-
-async function carregarInquilinosContrato(){
-
-const {data} = await client.from("inquilinos").select("*")
-
-const select = document.getElementById("inquilinoSelect")
-
-select.innerHTML=""
-
-data.forEach(i=>{
-
-const option = document.createElement("option")
-
-option.value = i.id
-option.text = i.nome
-
-select.appendChild(option)
-
-})
-
-}
-
-
-
-async function carregarUnidadesContrato(){
-
-const {data} = await client.from("unidades").select("*")
-
-const select = document.getElementById("unidadeContratoSelect")
-
-select.innerHTML=""
-
-data.forEach(u=>{
-
-const option = document.createElement("option")
-
-option.value = u.id
-option.text = "Unidade " + u.numero
-
-select.appendChild(option)
-
-})
 
 }
 
@@ -386,29 +207,24 @@ const unidade_id = Number(document.getElementById("unidadeContratoSelect").value
 const valor = Number(document.getElementById("valorContrato").value)
 const vencimento = Number(document.getElementById("vencimentoContrato").value)
 
-const { data: contratoCriado, error } = await client
+const { data: contratoCriado } = await client
 .from("contratos")
 .insert({
-inquilino_id: inquilino_id,
-unidade_id: unidade_id,
+inquilino_id,
+unidade_id,
 valor_aluguel: valor,
 dia_vencimento: vencimento
 })
 .select()
 .single()
 
-if(error){
-console.log(error)
-return
-}
-
 for(let mes = 1; mes <= 12; mes++){
 
 await client.from("pagamentos").insert({
 contrato_id: contratoCriado.id,
-mes: mes,
+mes,
 ano: new Date().getFullYear(),
-valor: valor,
+valor,
 status: "pendente"
 })
 
@@ -417,6 +233,7 @@ status: "pendente"
 listarContratos()
 
 }
+
 
 
 async function listarContratos(){
@@ -434,6 +251,66 @@ html += `<p>Contrato ${c.id}</p>`
 document.getElementById("listaContratos").innerHTML = html
 
 }
+
+
+
+async function listarPagamentos(){
+
+const { data } = await client
+.from("pagamentos")
+.select("*")
+.order("mes")
+
+let html = ""
+
+data.forEach(p => {
+
+const hoje = new Date()
+const mesAtual = hoje.getMonth() + 1
+
+let status = p.status
+let cor = "black"
+
+if(p.status == "pago"){
+cor = "green"
+}
+
+if(p.status == "pendente"){
+cor = "orange"
+}
+
+if(p.status == "pendente" && p.mes < mesAtual){
+status = "ATRASADO"
+cor = "red"
+}
+
+html += `
+<p style="color:${cor}">
+Mês ${p.mes} - R$ ${p.valor} - ${status}
+<button onclick="pagar(${p.id})">Pagar</button>
+</p>
+`
+
+})
+
+document.getElementById("listaPagamentos").innerHTML = html
+
+}
+
+
+
+async function pagar(id){
+
+await client
+.from("pagamentos")
+.update({ status: "pago" })
+.eq("id", id)
+
+listarPagamentos()
+
+}
+
+
 
 async function carregarDashboard(){
 
@@ -468,39 +345,16 @@ document.getElementById("dashboard").innerHTML = `
 
 }
 
-window.onload = async () => {
 
-await listarPredios()
-await listarUnidades()
-await listarInquilinos()
-
-await carregarPredios()
-await carregarUnidades()
-
-await carregarInquilinosContrato()
-await carregarUnidadesContrato()
-
-await listarContratos()
-await listarPagamentos()
-await carregarDashboard()
-await listarDevedores()
 
 async function listarDevedores(){
 
 const hoje = new Date()
 const mesAtual = hoje.getMonth() + 1
 
-const { data: pagamentos } = await client
-.from("pagamentos")
-.select("*")
-
-const { data: contratos } = await client
-.from("contratos")
-.select("*")
-
-const { data: inquilinos } = await client
-.from("inquilinos")
-.select("*")
+const { data: pagamentos } = await client.from("pagamentos").select("*")
+const { data: contratos } = await client.from("contratos").select("*")
+const { data: inquilinos } = await client.from("inquilinos").select("*")
 
 let html = ""
 
@@ -515,6 +369,7 @@ if(!contrato) return
 const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
 
 if(!inquilino) return
+
 html += `
 <p style="color:red">
 ⚠ ${inquilino.nome}<br>
@@ -529,8 +384,9 @@ Dívida: R$ ${p.valor}
 
 document.getElementById("listaDevedores").innerHTML = html
 
-
 }
+
+
 
 function cobrarWhatsapp(telefone,nome,valor){
 
@@ -547,7 +403,23 @@ const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`
 window.open(url,"_blank")
 
 }
+
+
+
+window.onload = async () => {
+
+await listarPredios()
+await listarUnidades()
+await listarInquilinos()
+
+await listarContratos()
+await listarPagamentos()
+
+await carregarDashboard()
+await listarDevedores()
+
 }
+
 </script>
 
 </body>
