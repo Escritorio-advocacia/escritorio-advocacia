@@ -186,7 +186,14 @@ let html=""
 
 data.forEach(p=>{
 
-html += `<p>${p.nome}</p>`
+html += `
+<p>
+${i.nome} - ${i.telefone}
+<button onclick="cobrarWhatsapp('${i.telefone}','${i.nome}',${i.valor_aluguel})">
+📲 Cobrar
+</button>
+</p>
+`
 
 })
 
@@ -429,6 +436,24 @@ document.getElementById("listaContratos").innerHTML = html
 }
 
 async function carregarDashboard(){
+
+function cobrarWhatsapp(telefone,nome,valor){
+
+const mensagem = `Olá ${nome}.
+
+Seu aluguel está em aberto.
+
+Valor: R$${valor}
+
+Favor realizar o pagamento. Obrigado.`
+
+const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`
+
+window.open(url,"_blank")
+
+}
+
+}
 
 const { data } = await client
 .from("pagamentos")
