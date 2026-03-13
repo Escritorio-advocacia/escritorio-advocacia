@@ -36,6 +36,9 @@ color:red;
 
 
 <h3>Unidades</h3>
+  
+<h3>Mapa de Ocupação</h3>
+<div id="mapaOcupacao"></div>
 
 <select id="predioSelect"></select>
 
@@ -557,6 +560,37 @@ backgroundColor: ['green','orange']
 })
 
 }
+async function mapaOcupacao(){
+
+const { data: unidades } = await client
+.from("unidades")
+.select("*")
+
+const { data: contratos } = await client
+.from("contratos")
+.select("*")
+
+let html = ""
+
+unidades.forEach(u => {
+
+const contrato = contratos.find(c => c.unidade_id == u.id)
+
+if(contrato){
+
+html += `<p style="color:green">🟢 Unidade ${u.numero} - Ocupada</p>`
+
+}else{
+
+html += `<p style="color:red">🔴 Unidade ${u.numero} - Vazia</p>`
+
+}
+
+})
+
+document.getElementById("mapaOcupacao").innerHTML = html
+
+}
 
 window.onload = async () => {
 
@@ -572,6 +606,7 @@ await listarDevedores()
   
 await alertaInadimplentes()
 await graficoFinanceiro()
+await mapaOcupacao()
 
 }
 
