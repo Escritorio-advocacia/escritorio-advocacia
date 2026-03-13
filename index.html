@@ -18,6 +18,8 @@
   
 <h3>Gráfico Financeiro</h3>
 <canvas id="graficoFinanceiro"></canvas>
+<h3>Recebimentos por mês</h3>
+<canvas id="graficoMensal"></canvas>
 <h3>📅 Vencimentos de Hoje</h3>
 <div id="vencimentosHoje"></div>
 <canvas id="graficoFinanceiro" width="400" height="200"></canvas>
@@ -778,6 +780,44 @@ Mês ${p.mes} - R$ ${p.valor} - ${status}
 document.getElementById("historicoPagamentos").innerHTML = html
 
 }
+  async function graficoMensal(){
+
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+let meses = []
+let valores = []
+
+for(let i=1;i<=12;i++){
+
+const totalMes = data
+.filter(p => p.mes == i && p.status == "pago")
+.reduce((sum,p)=> sum + Number(p.valor),0)
+
+meses.push("Mês " + i)
+valores.push(totalMes)
+
+}
+
+const ctx = document.getElementById("graficoMensal")
+
+new Chart(ctx, {
+
+type: "bar",
+
+data: {
+labels: meses,
+
+datasets: [{
+label: "Recebimentos",
+data: valores
+}]
+}
+
+})
+
+}
 window.onload = async () => {
 
 await listarPredios()
@@ -794,6 +834,7 @@ await alertaInadimplentes()
 await graficoFinanceiro()
 await mapaOcupacao()
 await vencimentosHoje()
+await graficoMensal()
 
 }
 
