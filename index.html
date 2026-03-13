@@ -5,6 +5,7 @@
 <title>Sistema de Aluguel</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -14,7 +15,8 @@
   
 <h2>Dashboard</h2>
 <div id="dashboard"></div>
-  <div id="alertaInadimplentes" style="
+<canvas id="graficoFinanceiro" width="400" height="200"></canvas>
+<div id="alertaInadimplentes" style="
 background:#ffe5e5;
 padding:10px;
 margin:10px 0;
@@ -517,6 +519,44 @@ document.getElementById("alertaInadimplentes").innerHTML = `
 `
 
 }
+async function graficoFinanceiro(){
+
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+let pago = 0
+let pendente = 0
+
+data.forEach(p => {
+
+if(p.status == "pago"){
+pago += Number(p.valor)
+}
+
+if(p.status == "pendente"){
+pendente += Number(p.valor)
+}
+
+})
+
+const ctx = document.getElementById("graficoFinanceiro")
+
+new Chart(ctx, {
+
+type: 'doughnut',
+
+data: {
+labels: ['Recebido', 'Pendente'],
+datasets: [{
+data: [pago, pendente],
+backgroundColor: ['green','orange']
+}]
+}
+
+})
+
+}
 
 window.onload = async () => {
 
@@ -531,6 +571,8 @@ await carregarDashboard()
 await listarDevedores()
   
 await alertaInadimplentes()
+await graficoFinanceiro()
+
 }
 
 </script>
