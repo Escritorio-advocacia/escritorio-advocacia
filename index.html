@@ -489,6 +489,35 @@ window.open(url)
 })
 
 }
+ async function alertaInadimplentes(){
+
+const hoje = new Date()
+const mesAtual = hoje.getMonth() + 1
+
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+let atrasados = 0
+let total = 0
+
+data.forEach(p => {
+
+if(p.status == "pendente" && p.mes < mesAtual){
+
+atrasados++
+total += Number(p.valor)
+
+}
+
+})
+
+document.getElementById("alertaInadimplentes").innerHTML = `
+⚠ ${atrasados} pagamentos atrasados | Total em aberto: R$ ${total}
+`
+
+}
+
 window.onload = async () => {
 
 await listarPredios()
