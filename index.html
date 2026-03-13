@@ -50,6 +50,8 @@ color:red;
 
 
 <h3>Inquilinos</h3>
+  
+<input id="buscaInquilino" placeholder="Buscar inquilino" onkeyup="buscarInquilino()">
 
 <input id="nomeInquilino" placeholder="Nome do inquilino">
 
@@ -63,7 +65,9 @@ color:red;
 
 <button onclick="salvarInquilino()">Salvar</button>
 <div id="listaInquilinos"></div>
-
+  
+ <h3>Histórico do Inquilino</h3>
+<div id="historicoInquilino"></div>
 
 <h3>Contratos</h3>
 
@@ -198,10 +202,16 @@ data.forEach(i=>{
 
 html += `
 <p>
-${i.nome} - ${i.telefone}
+${i.nome}
+
+<button onclick="verHistorico(${i.id})">
+📄 Histórico
+</button>
+
 <button onclick="cobrarWhatsapp('${i.telefone}','${i.nome}',${i.valor_aluguel})">
 📲 Cobrar
 </button>
+
 </p>
 `
 
@@ -591,7 +601,36 @@ html += `<p style="color:red">🔴 Unidade ${u.numero} - Vazia</p>`
 document.getElementById("mapaOcupacao").innerHTML = html
 
 }
+async function buscarInquilino(){
 
+const texto = document.getElementById("buscaInquilino").value.toLowerCase()
+
+const {data} = await client
+.from("inquilinos")
+.select("*")
+
+let html=""
+
+data.forEach(i=>{
+
+if(i.nome.toLowerCase().includes(texto)){
+
+html += `
+<p>
+${i.nome} - ${i.telefone}
+<button onclick="cobrarWhatsapp('${i.telefone}','${i.nome}',${i.valor_aluguel})">
+📲 Cobrar
+</button>
+</p>
+`
+
+}
+
+})
+
+document.getElementById("listaInquilinos").innerHTML = html
+
+}
 window.onload = async () => {
 
 await listarPredios()
