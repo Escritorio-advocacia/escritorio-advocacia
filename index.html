@@ -15,6 +15,9 @@
   
 <h2>Dashboard</h2>
 <div id="dashboard"></div>
+  
+<h3>Gráfico Financeiro</h3>
+<canvas id="graficoFinanceiro"></canvas>
 <h3>📅 Vencimentos de Hoje</h3>
 <div id="vencimentosHoje"></div>
 <canvas id="graficoFinanceiro" width="400" height="200"></canvas>
@@ -55,15 +58,26 @@ color:red;
   
 <input id="buscaInquilino" placeholder="Buscar inquilino" onkeyup="buscarInquilino()">
 
-<input id="nomeInquilino" placeholder="Nome do inquilino">
+<input id="nomeInquilino" placeholder="Nome completo">
 
-<select id="unidadeSelect"></select>
+<input id="cpfInquilino" placeholder="CPF">
 
 <input id="telefoneInquilino" placeholder="Telefone ou WhatsApp">
 
+<input id="emailInquilino" placeholder="Email">
+
+<select id="unidadeSelect"></select>
+
 <input id="valorAluguel" placeholder="Valor do aluguel">
 
+<input id="valorAgua" placeholder="Valor da água">
+
 <input id="diaVencimento" placeholder="Dia do vencimento">
+
+<select id="statusInquilino">
+<option value="ativo">Ativo</option>
+<option value="inativo">Inativo</option>
+</select>
 
 <button onclick="salvarInquilino()">Salvar</button>
 <div id="listaInquilinos"></div>
@@ -170,35 +184,37 @@ document.getElementById("listaUnidades").innerHTML = html
 
 }
 
-
-
 async function salvarInquilino(){
 
 const nome = document.getElementById("nomeInquilino").value
-
-const unidade_id = document.getElementById("unidadeSelect").value
-  
+const cpf = document.getElementById("cpfInquilino").value
 const telefone = document.getElementById("telefoneInquilino").value
-  
-const valor = document.getElementById("valorAluguel").value
+const email = document.getElementById("emailInquilino").value
+const unidade_id = document.getElementById("unidadeSelect").value
 
-const vencimento = document.getElementById("diaVencimento").value
+const valor_aluguel = document.getElementById("valorAluguel").value
+const valor_agua = document.getElementById("valorAgua").value
+const dia_vencimento = document.getElementById("diaVencimento").value
+
+const status = document.getElementById("statusInquilino").value
 
 await client.from("inquilinos").insert({
 
 nome,
+cpf,
 telefone,
+email,
 unidade_id,
-valor_aluguel: valor,
-dia_vencimento: vencimento
+valor_aluguel,
+valor_agua,
+dia_vencimento,
+status
 
 })
 
 listarInquilinos()
 
 }
-
-
 
 async function listarInquilinos(){
 
