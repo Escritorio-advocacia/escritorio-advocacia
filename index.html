@@ -6,7 +6,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
 </head>
 
 <body>
@@ -87,7 +87,14 @@ color:red;
   <h3>Pagamentos</h3>
 
 <div id="listaPagamentos"></div>
+  
+<h3>Relatório Financeiro</h3>
 
+<button onclick="relatorioFinanceiro()">Gerar relatório</button>
+
+<button onclick="exportarPDF()">📄 Exportar relatório PDF</button>
+
+<div id="relatorio"></div>
 <h2>Recibo</h2>
 <div id="recibo"></div>
 <script>
@@ -670,6 +677,40 @@ ${inquilino.nome} - R$${c.valor_aluguel}
 })
 
 document.getElementById("vencimentosHoje").innerHTML = html
+
+}
+async function exportarPDF(){
+
+const { jsPDF } = window.jspdf
+const doc = new jsPDF()
+
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+let recebido = 0
+let pendente = 0
+
+data.forEach(p=>{
+
+if(p.status=="pago"){
+recebido += Number(p.valor)
+}
+
+if(p.status=="pendente"){
+pendente += Number(p.valor)
+}
+
+})
+
+doc.setFontSize(18)
+doc.text("RELATÓRIO DE RECEBIMENTOS",20,20)
+
+doc.setFontSize(12)
+doc.text(`Total recebido: R$ ${recebido}`,20,40)
+doc.text(`Total pendente: R$ ${pendente}`,20,50)
+
+doc.save("relatorio-aluguel.pdf")
 
 }
 window.onload = async () => {
