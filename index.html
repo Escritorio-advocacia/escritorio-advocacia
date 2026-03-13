@@ -15,6 +15,8 @@
   
 <h2>Dashboard</h2>
 <div id="dashboard"></div>
+<h3>📅 Vencimentos de Hoje</h3>
+<div id="vencimentosHoje"></div>
 <canvas id="graficoFinanceiro" width="400" height="200"></canvas>
 <div id="alertaInadimplentes" style="
 background:#ffe5e5;
@@ -631,6 +633,45 @@ ${i.nome} - ${i.telefone}
 document.getElementById("listaInquilinos").innerHTML = html
 
 }
+  async function vencimentosHoje(){
+
+const hoje = new Date()
+const diaHoje = hoje.getDate()
+
+const { data: contratos } = await client
+.from("contratos")
+.select("*")
+
+const { data: inquilinos } = await client
+.from("inquilinos")
+.select("*")
+
+let html=""
+
+contratos.forEach(c=>{
+
+if(c.dia_vencimento == diaHoje){
+
+const inquilino = inquilinos.find(i=>i.id==c.inquilino_id)
+
+if(!inquilino) return
+
+html += `
+<p>
+${inquilino.nome} - R$${c.valor_aluguel}
+<button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}',${c.valor_aluguel})">
+📲 Cobrar
+</button>
+</p>
+`
+
+}
+
+})
+
+document.getElementById("vencimentosHoje").innerHTML = html
+
+}
 window.onload = async () => {
 
 await listarPredios()
@@ -646,6 +687,7 @@ await listarDevedores()
 await alertaInadimplentes()
 await graficoFinanceiro()
 await mapaOcupacao()
+await vencimentosHoje()
 
 }
 
