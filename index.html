@@ -405,7 +405,7 @@ valor: total
 })
 
 }
-
+gerarReciboPDF(inquilino.nome,total,pagamento.mes)
 listarPagamentos()
 
 }
@@ -959,6 +959,27 @@ Multa água: ${multaAgua.toFixed(2)}
 TOTAL: ${total.toFixed(2)}`
 
 )
+
+}
+  function gerarReciboPDF(nome,valor,mes){
+
+const { jsPDF } = window.jspdf
+
+const doc = new jsPDF()
+
+doc.text("RECIBO DE ALUGUEL",20,20)
+
+doc.text(`Inquilino: ${nome}`,20,40)
+
+doc.text(`Mês: ${mes}`,20,50)
+
+doc.text(`Valor pago: R$ ${valor}`,20,60)
+
+doc.text(`Data: ${new Date().toLocaleDateString()}`,20,70)
+
+doc.text("Assinatura digital",20,90)
+
+doc.save("recibo.pdf")
 
 }
 window.onload = async () => {
