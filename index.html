@@ -294,20 +294,14 @@ urlContrato = nomeArquivo
 }
 
 }
-  .insert({
-inquilino_id,
-unidade_id,
-valor_aluguel: valor,
-dia_vencimento: vencimento,
-arquivo_contrato: urlContrato
-})
 const { data: contratoCriado } = await client
 .from("contratos")
 .insert({
 inquilino_id,
 unidade_id,
 valor_aluguel: valor,
-dia_vencimento: vencimento
+dia_vencimento: vencimento,
+arquivo_contrato: urlContrato
 })
 .select()
 .single()
@@ -316,7 +310,7 @@ await client
 .from("unidades")
 .update({ status: "ocupada" })
 .eq("id", unidade_id)
-.
+
 for(let mes = 1; mes <= 12; mes++){
 
 await client.from("pagamentos").insert({
