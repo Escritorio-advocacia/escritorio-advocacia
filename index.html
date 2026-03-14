@@ -1070,6 +1070,54 @@ XLSX.utils.book_append_sheet(wb, ws, "Relatorio")
 XLSX.writeFile(wb, "relatorio_aluguel.xlsx")
 
 }
+  async function historicoInquilino(inquilino_id){
+
+const { data: contratos } = await client
+.from("contratos")
+.select("*")
+.eq("inquilino_id", inquilino_id)
+
+if(!contratos.length){
+document.getElementById("historicoPagamentos").innerHTML = "Sem histórico"
+return
+}
+
+const contrato_id = contratos[0].id
+
+const { data: pagamentos } = await client
+.from("pagamentos")
+.select("*")
+.eq("contrato_id", contrato_id)
+.order("mes")
+
+let html = ""
+
+pagamentos.forEach(p => {
+
+let status = p.status
+let cor = "black"
+
+if(p.status == "pago"){
+status = "✔ Pago"
+cor = "green"
+}
+
+if(p.status == "pendente"){
+status = "⏳ Pendente"
+cor = "orange"
+}
+
+html += `
+<p style="color:${cor}">
+Mês ${p.mes} - R$ ${p.valor} - ${status}
+</p>
+`
+
+})
+
+document.getElementById("historicoPagamentos").innerHTML = html
+
+}
 window.onload = async () => {
 
 await listarPredios()
