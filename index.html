@@ -82,6 +82,8 @@ color:red;
 </select>
 
 <button onclick="salvarInquilino()">Salvar</button>
+<button onclick="simularValor()">Simular valor</button>
+<div id="resultadoSimulacao"></div>
 <div id="listaInquilinos"></div>
   
 <h3>Histórico do Inquilino</h3>
@@ -816,6 +818,53 @@ data: valores
 }
 
 })
+
+}
+  function simularValor(){
+
+const aluguel = Number(document.getElementById("valorAluguel").value)
+const agua = Number(document.getElementById("valorAgua").value)
+const vencimento = Number(document.getElementById("diaVencimento").value)
+
+const hoje = new Date()
+const diaHoje = hoje.getDate()
+
+let atraso = diaHoje - vencimento
+
+if(atraso < 0){
+atraso = 0
+}
+
+let jurosAluguel = 0
+let multaAgua = 0
+
+// tolerância de 5 dias
+if(atraso > 5){
+
+const diasJuros = atraso
+jurosAluguel = aluguel * (0.005 * diasJuros)
+
+multaAgua = agua * 0.10
+
+}
+
+const total = aluguel + agua + jurosAluguel + multaAgua
+
+document.getElementById("resultadoSimulacao").innerHTML = `
+
+<p>Dias em atraso: ${atraso}</p>
+
+<p>Aluguel: R$ ${aluguel}</p>
+
+<p>Água: R$ ${agua}</p>
+
+<p>Juros aluguel: R$ ${jurosAluguel.toFixed(2)}</p>
+
+<p>Multa água: R$ ${multaAgua.toFixed(2)}</p>
+
+<h3>Total atualizado: R$ ${total.toFixed(2)}</h3>
+
+`
 
 }
 window.onload = async () => {
