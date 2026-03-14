@@ -7,6 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
@@ -119,7 +120,9 @@ color:red;
 <div id="listaPagamentos"></div>
   
 <h3>Relatório Financeiro</h3>
-
+  
+<button onclick="exportarExcel()">Exportar Excel</button>
+  
 <button onclick="relatorioFinanceiro()">Gerar relatório</button>
 
 <button onclick="exportarPDF()">📄 Exportar relatório PDF</button>
@@ -1042,6 +1045,27 @@ async function logout(){
 await client.auth.signOut()
 
 document.getElementById("usuarioLogado").innerText = ""
+
+}
+async function exportarExcel(){
+
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+const planilha = data.map(p => ({
+Mes: p.mes,
+Valor: p.valor,
+Status: p.status
+}))
+
+const ws = XLSX.utils.json_to_sheet(planilha)
+
+const wb = XLSX.utils.book_new()
+
+XLSX.utils.book_append_sheet(wb, ws, "Relatorio")
+
+XLSX.writeFile(wb, "relatorio_aluguel.xlsx")
 
 }
 window.onload = async () => {
