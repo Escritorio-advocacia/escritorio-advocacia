@@ -230,10 +230,11 @@ data.forEach(i=>{
 
 html += `
 <p>
-${i.nome}
 
-<button onclick="verHistorico(${i.id})">
-📜 Histórico
+${i.nome} - R$${i.valor_aluguel}
+
+<button onclick="simularInquilino(${i.valor_aluguel},${i.valor_agua},${i.dia_vencimento})">
+Simular
 </button>
 
 </p>
@@ -349,10 +350,61 @@ document.getElementById("listaPagamentos").innerHTML = html
 
 async function pagar(id){
 
+const { data: pagamento } = await client
+.from("pagamentos")
+.select("*")
+.eq("id", id)
+.single()
+
+const { data: contrato } = await client
+.from("contratos")
+.select("*")
+.eq("id", pagamento.contrato_id)
+.single()
+
+const { data: inquilino } = await client
+.from("inquilinos")
+.select("*")
+.eq("id", contrato.inquilino_id)
+.single()
+
+const hoje = new Date()
+const diaHoje = hoje.getDate()
+
+let atraso = diaHoje - inquilino.dia_vencimento
+
+if(atraso < 0){
+atraso = 0
+}
+
+let juros = 0
+let multaAgua = 0
+
+if(atraso > 5){
+
+juros = inquilino.valor_aluguel * (0.005 * atraso)
+multaAgua = inquilino.valor_agua * 0.10
+
+}
+
+const total = Number(pagamento.valor) + juros + multaAgua
+
 await client
 .from("pagamentos")
-.update({ status: "pago" })
+.update({
+status:"pago",
+valor_pago: total
+})
 .eq("id", id)
+
+listarPagamentos()
+
+gerarRecibo({
+...pagamento,
+valor: total
+})
+
+}
 
 listarPagamentos()
 
@@ -865,6 +917,48 @@ document.getElementById("resultadoSimulacao").innerHTML = `
 <h3>Total atualizado: R$ ${total.toFixed(2)}</h3>
 
 `
+
+}
+  function simularInquilino(aluguel,agua,vencimento){
+
+const hoje = new Date()
+const diaHoje = hoje.getDate()
+
+let atraso = diaHoje - vencimento
+
+if(atraso < 0){
+atraso = 0
+}
+
+let jurosAluguel = 0
+let multaAgua = 0
+
+if(atraso > 5){
+
+const diasJuros = atraso
+jurosAluguel = aluguel * (0.005 * diasJuros)
+
+multaAgua = agua * 0.10
+
+}
+
+const total = aluguel + agua + jurosAluguel + multaAgua
+
+alert(
+
+`Dias atraso: ${atraso}
+
+Aluguel: ${aluguel}
+
+Água: ${agua}
+
+Juros: ${jurosAluguel.toFixed(2)}
+
+Multa água: ${multaAgua.toFixed(2)}
+
+TOTAL: ${total.toFixed(2)}`
+
+)
 
 }
 window.onload = async () => {
