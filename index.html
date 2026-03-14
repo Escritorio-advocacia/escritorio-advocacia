@@ -10,7 +10,18 @@
 </head>
 
 <body>
+<h3>Login</h3>
 
+<input id="emailLogin" placeholder="Email">
+
+<input id="senhaLogin" type="password" placeholder="Senha">
+
+<button onclick="login()">Entrar</button>
+
+<button onclick="logout()">Sair</button>
+
+<div id="usuarioLogado"></div>
+  
 <h2>Sistema de Aluguel</h2>
   
 <h2>Dashboard</h2>
@@ -1005,6 +1016,32 @@ doc.text(`Data: ${new Date().toLocaleDateString()}`,20,70)
 doc.text("Assinatura digital",20,90)
 
 doc.save("recibo.pdf")
+
+}
+async function login(){
+
+const email = document.getElementById("emailLogin").value
+const senha = document.getElementById("senhaLogin").value
+
+const { data, error } = await client.auth.signInWithPassword({
+email: email,
+password: senha
+})
+
+if(error){
+alert("Erro login")
+return
+}
+
+document.getElementById("usuarioLogado").innerText =
+"Logado como: " + data.user.email
+
+}
+async function logout(){
+
+await client.auth.signOut()
+
+document.getElementById("usuarioLogado").innerText = ""
 
 }
 window.onload = async () => {
