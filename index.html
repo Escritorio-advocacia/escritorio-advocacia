@@ -316,7 +316,7 @@ await client
 .from("unidades")
 .update({ status: "ocupada" })
 .eq("id", unidade_id)
-  
+.
 for(let mes = 1; mes <= 12; mes++){
 
 await client.from("pagamentos").insert({
