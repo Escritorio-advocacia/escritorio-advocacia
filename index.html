@@ -11,17 +11,19 @@
 </head>
 
 <body>
-<h3>Login</h3>
+<h2>Login</h2>
 
 <input id="emailLogin" placeholder="Email">
 
 <input id="senhaLogin" type="password" placeholder="Senha">
 
 <button onclick="login()">Entrar</button>
-
+  
 <button onclick="logout()">Sair</button>
-
+  
 <div id="usuarioLogado"></div>
+
+<hr>
   
 <h2>Sistema de Aluguel</h2>
   
@@ -1032,19 +1034,19 @@ password: senha
 })
 
 if(error){
-alert("Erro login")
+alert("Erro no login")
 return
 }
 
-document.getElementById("usuarioLogado").innerText =
-"Logado como: " + data.user.email
+document.getElementById("usuarioLogado").innerHTML =
+"Usuário logado: " + data.user.email
 
 }
 async function logout(){
 
 await client.auth.signOut()
 
-document.getElementById("usuarioLogado").innerText = ""
+document.getElementById("usuarioLogado").innerHTML = "Deslogado"
 
 }
 async function exportarExcel(){
