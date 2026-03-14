@@ -257,7 +257,23 @@ const unidade_id = Number(document.getElementById("unidadeContratoSelect").value
 
 const valor = Number(document.getElementById("valorContrato").value)
 const vencimento = Number(document.getElementById("vencimentoContrato").value)
+const arquivo = document.getElementById("contratoPDF").files[0]
 
+let urlContrato = null
+
+if(arquivo){
+
+const nomeArquivo = Date.now() + "_" + arquivo.name
+
+const { data, error } = await client.storage
+.from("contratos")
+.upload(nomeArquivo, arquivo)
+
+if(!error){
+urlContrato = nomeArquivo
+}
+
+}
 const { data: contratoCriado } = await client
 .from("contratos")
 .insert({
