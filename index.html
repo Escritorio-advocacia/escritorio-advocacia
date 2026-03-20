@@ -15,6 +15,22 @@
 </head>
 
 <body>
+<div style="background:#222;padding:10px">
+
+<button onclick="abrirTela('dashboard')">Dashboard</button>
+
+<button onclick="abrirTela('predios')">Prédios</button>
+
+<button onclick="abrirTela('inquilinos')">Inquilinos</button>
+
+<button onclick="abrirTela('contratos')">Contratos</button>
+
+<button onclick="abrirTela('pagamentos')">Pagamentos</button>
+
+<button onclick="abrirTela('relatorios')">Relatórios</button>
+
+</div>
+  
 <h2>Login</h2>
 
 <input id="emailLogin" placeholder="Email">
@@ -1206,6 +1222,15 @@ Mês ${p.mes} - R$ ${p.valor} - ${status}
 })
 
 document.getElementById("historicoPagamentos").innerHTML = html
+
+}
+function abrirTela(tela){
+
+document.querySelectorAll(".tela").forEach(div => {
+div.style.display = "none"
+})
+
+document.getElementById(tela).style.display = "block"
 
 }
 window.onload = async () => {
