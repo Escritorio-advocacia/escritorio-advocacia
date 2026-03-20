@@ -1248,35 +1248,34 @@ document.getElementById("historicoPagamentos").innerHTML = html
 function abrirTela(tela){
 
 document.querySelectorAll(".tela").forEach(div => {
-div.style.display = "none"
+    div.style.display = "none"
 })
 
 document.getElementById(tela).style.display = "block"
 
 }
 
-abrirTela("dashboard")
-
 window.onload = async () => {
+
+abrirTela("dashboard")
 
 await listarPredios()
 await listarUnidades()
 await listarInquilinos()
-
 await listarContratos()
 await listarPagamentos()
 
 await carregarDashboard()
 await listarDevedores()
-  
+
 await alertaInadimplentes()
 await graficoFinanceiro()
 await mapaOcupacao()
 await vencimentosHoje()
 await graficoMensal()
 await calcularInadimplentes()
-}
 
+}
 </script>
 
 </body>
