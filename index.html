@@ -1115,7 +1115,7 @@ XLSX.utils.book_append_sheet(wb, ws, "Relatorio")
 XLSX.writeFile(wb, "relatorio_aluguel.xlsx")
 
 }
-  async function historicoInquilino(inquilino_id){
+async function historicoInquilino(inquilino_id){
 
 const { data: contratos } = await client
 .from("contratos")
@@ -1161,6 +1161,7 @@ Mês ${p.mes} - R$ ${p.valor} - ${status}
 })
 
 document.getElementById("historicoPagamentos").innerHTML = html
+
 }
 function verContrato(arquivo){
 
