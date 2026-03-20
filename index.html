@@ -705,7 +705,6 @@ div.innerHTML = `
 async function graficoFinanceiro(){
 
 const canvas = document.getElementById("graficoFinanceiro")
-
 if(!canvas) return
 
 const ctx = canvas.getContext("2d")
@@ -717,16 +716,9 @@ const { data } = await client
 let pago = 0
 let pendente = 0
 
-data.forEach(p => {
-
-if(p.status=="pago"){
-pago += Number(p.valor)
-}
-
-if(p.status=="pendente"){
-pendente += Number(p.valor)
-}
-
+data.forEach(p=>{
+if(p.status=="pago") pago += Number(p.valor)
+if(p.status=="pendente") pendente += Number(p.valor)
 })
 
 new Chart(ctx,{
@@ -805,7 +797,6 @@ document.getElementById("listaInquilinos").innerHTML = html
 async function vencimentosHoje(){
 
 const div = document.getElementById("vencimentosHoje")
-
 if(!div) return
 
 const hoje = new Date()
@@ -823,13 +814,12 @@ let html=""
 
 contratos.forEach(c=>{
 
-if(c.dia_vencimento==diaHoje){
+if(c.dia_vencimento == diaHoje){
 
 const inquilino = inquilinos.find(i=>i.id==c.inquilino_id)
-
 if(!inquilino) return
 
-html+=`
+html += `
 <p>
 ${inquilino.nome} - R$${c.valor_aluguel}
 <button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}',${c.valor_aluguel})">
