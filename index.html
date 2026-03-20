@@ -704,6 +704,12 @@ div.innerHTML = `
 }
 async function graficoFinanceiro(){
 
+const canvas = document.getElementById("graficoFinanceiro")
+
+if(!canvas) return
+
+const ctx = canvas.getContext("2d")
+
 const { data } = await client
 .from("pagamentos")
 .select("*")
@@ -722,8 +728,6 @@ pendente += Number(p.valor)
 }
 
 })
-
-const ctx = document.getElementById("graficoFinanceiro")
 
 new Chart(ctx, {
 
@@ -801,7 +805,11 @@ ${i.nome} - ${i.telefone}
 document.getElementById("listaInquilinos").innerHTML = html
 
 }
-  async function vencimentosHoje(){
+async function vencimentosHoje(){
+
+const div = document.getElementById("vencimentosHoje")
+
+if(!div) return
 
 const hoje = new Date()
 const diaHoje = hoje.getDate()
@@ -837,7 +845,7 @@ ${inquilino.nome} - R$${c.valor_aluguel}
 
 })
 
-document.getElementById("vencimentosHoje").innerHTML = html
+div.innerHTML = html
 
 }
 async function exportarPDF(){
