@@ -1207,14 +1207,41 @@ window.open(url,"_blank")
 
 function abrirTela(tela){
 
-document.querySelectorAll(".tela").forEach(div => {
-div.style.display = "none"
+document.querySelectorAll(".tela").forEach(div=>{
+div.style.display="none"
 })
 
-document.getElementById(tela).style.display = "block"
+const telaAtual = document.getElementById(tela)
 
-if(tela === "dashboard"){
+if(!telaAtual) return
+
+telaAtual.style.display="block"
+
+if(tela==="dashboard"){
+
+carregarDashboard()
 listarDevedores()
+graficoFinanceiro()
+graficoMensal()
+vencimentosHoje()
+calcularInadimplentes()
+
+}
+
+if(tela==="predios"){
+listarPredios()
+}
+
+if(tela==="inquilinos"){
+listarInquilinos()
+}
+
+if(tela==="contratos"){
+listarContratos()
+}
+
+if(tela==="pagamentos"){
+listarPagamentos()
 }
 
 }
@@ -1228,14 +1255,6 @@ await listarInquilinos()
 await listarContratos()
 await listarPagamentos()
 
-await carregarDashboard()
-await listarDevedores()
-await alertaInadimplentes()
-await graficoFinanceiro()
-await mapaOcupacao()
-await vencimentosHoje()
-await graficoMensal()
-await calcularInadimplentes()
 
 }
   
