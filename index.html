@@ -349,10 +349,15 @@ data.forEach(c=>{
 
 html += `
 <p>
+
 Contrato ${c.id}
 
 <button onclick="verContrato('${c.arquivo_contrato}')">
 📄 Ver contrato
+</button>
+
+<button onclick="historicoInquilino('${c.id}')">
+📅 Histórico
 </button>
 
 </p>
@@ -409,7 +414,39 @@ document.getElementById("listaPagamentos").innerHTML = html
 
 }
 
+async function historicoInquilino(id){
 
+const { data } = await client
+.from("pagamentos")
+.select("*")
+.eq("contrato_id", id)
+.order("mes")
+
+let html = ""
+
+data.forEach(p => {
+
+let status = "⏳"
+
+if(p.status == "pago"){
+status = "✔"
+}
+
+if(p.status == "pendente"){
+status = "⚠"
+}
+
+html += `
+<p>
+Mês ${p.mes} - ${status}
+</p>
+`
+
+})
+
+document.getElementById("historicoPagamentos").innerHTML = html
+
+}
 
 async function pagar(id){
 
