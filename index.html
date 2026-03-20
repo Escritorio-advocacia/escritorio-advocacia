@@ -1200,8 +1200,11 @@ div.style.display = "none"
 
 document.getElementById(tela).style.display = "block"
 
+if(tela === "dashboard"){
+listarDevedores()
 }
 
+}
 window.onload = async () => {
 
 abrirTela("dashboard")
@@ -1213,7 +1216,7 @@ await listarContratos()
 await listarPagamentos()
 
 await carregarDashboard()
-setTimeout(listarDevedores,500)
+await listarDevedores()
 
 await alertaInadimplentes()
 await graficoFinanceiro()
