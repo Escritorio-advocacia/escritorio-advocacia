@@ -1213,7 +1213,7 @@ await listarContratos()
 await listarPagamentos()
 
 await carregarDashboard()
-await listarDevedores()
+setTimeout(listarDevedores,500)
 
 await alertaInadimplentes()
 await graficoFinanceiro()
