@@ -1202,18 +1202,20 @@ const url = `https://foegiwrgbkkhsqzpgcou.supabase.co/storage/v1/object/public/c
 window.open(url,"_blank")
 
 }
+
 function abrirTela(tela){
 
 document.querySelectorAll(".tela").forEach(div => {
-    div.style.display = "none"
+div.style.display = "none"
 })
 
 document.getElementById(tela).style.display = "block"
 
 }
+
 window.onload = async () => {
 
-abrirTela("dashboard");
+abrirTela("dashboard")
 
 await listarPredios()
 await listarUnidades()
@@ -1231,7 +1233,7 @@ await vencimentosHoje()
 await graficoMensal()
 await calcularInadimplentes()
 
-};
+}
   
 </script>
 
