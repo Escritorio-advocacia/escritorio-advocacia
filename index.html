@@ -1217,7 +1217,7 @@ const { data: pagamentos } = await client
 .eq("contrato_id", contrato_id)
 .order("mes")
 
-let html = ""
+let html = ``
 
 pagamentos.forEach(p => {
 
