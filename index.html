@@ -12,11 +12,12 @@
   
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   
-  <style>
+<style>
 .tela{
 display:none;
 }
 </style>
+  
 </head>
 
 <body>
@@ -52,28 +53,31 @@ display:none;
   
 <h2>Sistema de Aluguel</h2>
   
+<div id="dashboard" class="tela">
+
 <h2>Dashboard</h2>
-<div id="dashboard"></div>
-  
+
+<div id="dashboardDados"></div>
+
 <h3>Gráfico Financeiro</h3>
 <canvas id="graficoFinanceiro"></canvas>
+
 <h3>Recebimentos por mês</h3>
 <canvas id="graficoMensal"></canvas>
+
 <h3>📅 Vencimentos de Hoje</h3>
 <div id="vencimentosHoje"></div>
-<canvas id="graficoFinanceiro" width="400" height="200"></canvas>
-<div id="alertaInadimplentes" style="
-background:#ffe5e5;
-padding:10px;
-margin:10px 0;
-font-weight:bold;
-color:red;
-"></div>
-  
+
+<div id="alertaInadimplentes"></div>
+
 <h2>Devedores</h2>
 <div id="inadimplentes"></div>
+
 <button onclick="cobrarTodos()">📲 Cobrar todos atrasados</button>
+
 <div id="listaDevedores"></div>
+
+</div>
   
  <div id="predios" class="tela">
 <h3>Prédios</h3>
@@ -1250,8 +1254,9 @@ div.style.display = "none"
 document.getElementById(tela).style.display = "block"
 
 }
+
 abrirTela("dashboard")
-}
+
 window.onload = async () => {
 
 await listarPredios()
