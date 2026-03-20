@@ -561,7 +561,7 @@ const { count } = await client
 .from("contratos")
 .select("*", { count: "exact", head: true })
 
-document.getElementById("dashboard").innerHTML = `
+document.getElementById("dashboardDados").innerHTML = `
 <p>💰 Recebido: R$ ${recebido}</p>
 <p>📅 A receber: R$ ${pendente}</p>
 <p>📄 Contratos ativos: ${count}</p>
