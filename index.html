@@ -294,7 +294,13 @@ urlContrato = nomeArquivo
 }
 
 }
+function verContrato(arquivo){
 
+const url = `https://foegiwrgbkkhsqzpgcou.supabase.co/storage/v1/object/public/contratos/${arquivo}`
+
+window.open(url,"_blank")
+
+}
 // criar contrato no banco
 const { data: contratoCriado } = await client
 .from("contratos")
@@ -341,7 +347,16 @@ let html=""
 
 data.forEach(c=>{
 
-html += `<p>Contrato ${c.id}</p>`
+html += `
+<p>
+Contrato ${c.id}
+
+<button onclick="verContrato('${c.arquivo_contrato}')">
+📄 Ver contrato
+</button>
+
+</p>
+`
 
 })
 
