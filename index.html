@@ -69,11 +69,13 @@ color:red;
 <div id="inadimplentes"></div>
 <button onclick="cobrarTodos()">📲 Cobrar todos atrasados</button>
 <div id="listaDevedores"></div>
+  
+ <div id="predios" class="tela">
 <h3>Prédios</h3>
 
 <input id="nomePredio" placeholder="Nome do prédio ou endereço">
 <button onclick="salvarPredio()">Salvar</button>
-
+</div>
 <div id="listaPredios"></div>
 
 
@@ -90,7 +92,7 @@ color:red;
 
 <div id="listaUnidades"></div>
 
-
+<div id="inquilinos" class="tela">
 <h3>Inquilinos</h3>
   
 <input id="buscaInquilino" placeholder="Buscar inquilino" onkeyup="buscarInquilino()">
@@ -110,7 +112,7 @@ color:red;
 <input id="valorAgua" placeholder="Valor da água">
 
 <input id="diaVencimento" placeholder="Dia do vencimento">
-
+  
 <select id="statusInquilino">
 <option value="ativo">Ativo</option>
 <option value="inativo">Inativo</option>
@@ -120,6 +122,8 @@ color:red;
 <button onclick="simularValor()">Simular valor</button>
 <div id="resultadoSimulacao"></div>
 <div id="listaInquilinos"></div>
+  
+</div>
   
 <h3>Histórico do Inquilino</h3>
 <div id="historicoPagamentos"></div>
@@ -149,7 +153,7 @@ color:red;
 <button onclick="relatorioFinanceiro()">Gerar relatório</button>
 
 <button onclick="exportarPDF()">📄 Exportar relatório PDF</button>
-
+  
 <div id="relatorio"></div>
 <h2>Recibo</h2>
 <div id="recibo"></div>
