@@ -729,18 +729,15 @@ pendente += Number(p.valor)
 
 })
 
-new Chart(ctx, {
-
-type: 'doughnut',
-
-data: {
-labels: ['Recebido', 'Pendente'],
-datasets: [{
-data: [pago, pendente],
-backgroundColor: ['green','orange']
+new Chart(ctx,{
+type:"doughnut",
+data:{
+labels:["Recebido","Pendente"],
+datasets:[{
+data:[pago,pendente],
+backgroundColor:["green","orange"]
 }]
 }
-
 })
 
 }
@@ -822,19 +819,19 @@ const { data: inquilinos } = await client
 .from("inquilinos")
 .select("*")
 
-let html=""
+let html = ""
 
-contratos.forEach(c=>{
+contratos.forEach(c => {
 
 if(c.dia_vencimento == diaHoje){
 
-const inquilino = inquilinos.find(i=>i.id==c.inquilino_id)
+const inquilino = inquilinos.find(i => i.id == c.inquilino_id)
 
 if(!inquilino) return
 
 html += `
 <p>
-${inquilino.nome} - R$${c.valor_aluguel}
+${inquilino.nome} - R$ ${c.valor_aluguel}
 <button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}',${c.valor_aluguel})">
 📲 Cobrar
 </button>
