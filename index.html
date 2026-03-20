@@ -50,6 +50,7 @@ color:red;
 "></div>
   
 <h2>Devedores</h2>
+<div id="inadimplentes"></div>
 <button onclick="cobrarTodos()">📲 Cobrar todos atrasados</button>
 <div id="listaDevedores"></div>
 <h3>Prédios</h3>
@@ -413,7 +414,38 @@ Mês ${p.mes} - R$ ${p.valor} - ${status}
 document.getElementById("listaPagamentos").innerHTML = html
 
 }
+async function calcularInadimplentes(){
 
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+let html = ""
+
+const hoje = new Date()
+const diaHoje = hoje.getDate()
+
+data.forEach(p => {
+
+if(p.status == "pendente"){
+
+let atraso = diaHoje - p.mes
+
+if(atraso > 5){
+
+html += `
+<p>⚠ Pagamento ${p.id} — ${atraso} dias de atraso</p>
+`
+
+}
+
+}
+
+})
+
+document.getElementById("inadimplentes").innerHTML = html
+
+}
 async function historicoInquilino(id){
 
 const { data } = await client
@@ -1193,7 +1225,7 @@ await graficoFinanceiro()
 await mapaOcupacao()
 await vencimentosHoje()
 await graficoMensal()
-
+await calcularInadimplentes()
 }
 
 </script>
