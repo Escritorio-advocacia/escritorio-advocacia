@@ -331,8 +331,7 @@ if(!error){
 urlContrato = nomeArquivo
 }
 
-}
-function verContrato(arquivo){
+  function verContrato(arquivo){
 
 const url = `https://foegiwrgbkkhsqzpgcou.supabase.co/storage/v1/object/public/contratos/${arquivo}`
 
@@ -672,44 +671,7 @@ window.open(url,"_blank")
 
 }
 
-async function cobrarTodos(){
 
-const hoje = new Date()
-const mesAtual = hoje.getMonth() + 1
-
-const { data: pagamentos } = await client.from("pagamentos").select("*")
-const { data: contratos } = await client.from("contratos").select("*")
-const { data: inquilinos } = await client.from("inquilinos").select("*")
-
-pagamentos.forEach(p => {
-
-if(p.status == "pendente" && p.mes < mesAtual){
-
-const contrato = contratos.find(c => c.id == p.contrato_id)
-
-if(!contrato) return
-
-const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
-
-if(!inquilino) return
-
-const mensagem = `Olá ${inquilino.nome}.
-
-Seu aluguel do mês ${p.mes} está em atraso.
-
-Valor: R$${p.valor}
-
-Favor regularizar.`
-
-const url = `https://wa.me/55${inquilino.telefone}?text=${encodeURIComponent(mensagem)}`
-
-window.open(url)
-
-}
-
-})
-
-}
 async function cobrarTodos(){
 
 const hoje = new Date()
