@@ -669,7 +669,11 @@ window.open(url)
 })
 
 }
- async function alertaInadimplentes(){
+async function alertaInadimplentes(){
+
+const div = document.getElementById("alertaInadimplentes")
+
+if(!div) return
 
 const hoje = new Date()
 const mesAtual = hoje.getMonth() + 1
@@ -692,7 +696,7 @@ total += Number(p.valor)
 
 })
 
-document.getElementById("alertaInadimplentes").innerHTML = `
+div.innerHTML = `
 ⚠ ${atrasados} pagamentos atrasados | Total em aberto: R$ ${total}
 `
 
