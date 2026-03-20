@@ -1115,6 +1115,27 @@ XLSX.utils.book_append_sheet(wb, ws, "Relatorio")
 XLSX.writeFile(wb, "relatorio_aluguel.xlsx")
 
 }
+async function relatorioFinanceiro(){
+
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+let html = ""
+
+data.forEach(p => {
+
+html += `
+<p>
+Mês ${p.mes} - R$ ${p.valor} - ${p.status}
+</p>
+`
+
+})
+
+document.getElementById("relatorio").innerHTML = html
+
+}
 async function historicoInquilino(inquilino_id){
 
 const { data: contratos } = await client
