@@ -572,6 +572,10 @@ document.getElementById("dashboard").innerHTML = `
 
 async function listarDevedores(){
 
+const div = document.getElementById("listaDevedores")
+
+if(!div) return
+
 const hoje = new Date()
 const mesAtual = hoje.getMonth() + 1
 
@@ -605,9 +609,8 @@ Dívida: R$ ${p.valor}
 
 })
 
-const div = document.getElementById("listaDevedores")
-if(div){
 div.innerHTML = html
+
 }
 
 
