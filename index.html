@@ -331,7 +331,6 @@ if(!error){
 urlContrato = nomeArquivo
 }
 
- 
 // criar contrato no banco
 const { data: contratoCriado } = await client
 .from("contratos")
@@ -344,14 +343,6 @@ arquivo_contrato: urlContrato
 })
 .select()
 .single()
-  
-function verContrato(arquivo){
-
-const url = `https://foegiwrgbkkhsqzpgcou.supabase.co/storage/v1/object/public/contratos/${arquivo}`
-
-window.open(url,"_blank")
-
-}
   
 // marcar unidade como ocupada
 await client
@@ -1207,6 +1198,13 @@ Mês ${p.mes} - R$ ${p.valor} - ${status}
 })
 
 document.getElementById("historicoPagamentos").innerHTML = html
+}
+function verContrato(arquivo){
+
+const url = `https://foegiwrgbkkhsqzpgcou.supabase.co/storage/v1/object/public/contratos/${arquivo}`
+
+window.open(url,"_blank")
+
 }
 function abrirTela(tela){
 
