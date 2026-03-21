@@ -338,7 +338,26 @@ Simular
 document.getElementById("listaInquilinos").innerHTML = html
 
 }
+async function verHistoricoInquilino(id){
 
+const { data } = await client
+.from("pagamentos")
+.select("*")
+.eq("inquilino_id", id)
+
+let html=""
+
+data.forEach(p=>{
+html += `
+<p>
+Mês ${p.mes} - R$ ${p.valor} - ${p.status}
+</p>
+`
+})
+
+document.getElementById("historicoInquilino").innerHTML = html
+
+}
 
 async function salvarContrato(){
 
