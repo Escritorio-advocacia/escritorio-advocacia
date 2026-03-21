@@ -1315,7 +1315,7 @@ pendente += Number(p.valor)
 
 })
 
-const ctx = document.getElementById("graficoFinanceiro")
+const ctx = document.getElementById("graficoFinanceiro").getContext("2d")
 
 if(graficoFinanceiroChart){
 graficoFinanceiroChart.destroy()
@@ -1331,12 +1331,13 @@ data:[pago,pendente],
 backgroundColor:["green","orange"]
 }]
 },
+
 options:{
 responsive:false,
 maintainAspectRatio:false
 }
-})
 
+})
 }
 async function cobrarInadimplentesAutomatico(){
 
