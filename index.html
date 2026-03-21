@@ -698,8 +698,8 @@ div.innerHTML = `
 `
 
 }
+  
 let graficoFinanceiroChart
-
 async function graficoFinanceiro(){
 
 const { data } = await client
@@ -723,13 +723,11 @@ pendente += Number(p.valor)
 
 const ctx = document.getElementById("graficoFinanceiro")
 
-// destruir gráfico anterior
 if(graficoFinanceiroChart){
 graficoFinanceiroChart.destroy()
 }
 
 graficoFinanceiroChart = new Chart(ctx,{
-
 type:'doughnut',
 
 data:{
@@ -934,6 +932,7 @@ Mês ${p.mes} - R$ ${p.valor} - ${status}
 
 document.getElementById("historicoPagamentos").innerHTML = html
 }
+  
 let graficoMensalChart
 async function graficoMensal(){
 
