@@ -118,12 +118,12 @@ height:250px !important;
 
 <div class="graficoBox">
 <h3>Gráfico Financeiro</h3>
-<canvas id="graficoFinanceiro"></canvas>
+<canvas id="graficoFinanceiro" width="400" height="250"></canvas>
 </div>
 
 <div class="graficoBox">
 <h3>Recebimentos por mês</h3>
-<canvas id="graficoMensal"></canvas>
+<canvas id="graficoMensal" width="400" height="250"></canvas>
 </div>
 
 </div>
@@ -1196,11 +1196,14 @@ data:[pago,pendente],
 backgroundColor:["green","orange"]
 }]
 }
-
+options:{
+responsive:false,
+maintainAspectRatio:false
+}
 })
 
 }
-  async function cobrarInadimplentesAutomatico(){
+async function cobrarInadimplentesAutomatico(){
 
 const hoje = new Date()
 const mesAtual = hoje.getMonth() + 1
