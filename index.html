@@ -384,14 +384,48 @@ let html=""
 
 data.forEach(u=>{
 
-html += `<p>Unidade ${u.numero}</p>`
+html += `
+<p>
+
+Unidade ${u.numero}
+
+<button onclick="editarUnidade('${u.id}','${u.numero}')">
+✏️ Editar
+</button>
+
+<button onclick="excluirUnidade('${u.id}')">
+🗑 Excluir
+</button>
+
+</p>
+`
 
 })
 
 document.getElementById("listaUnidades").innerHTML = html
 
 }
+async function editarUnidade(id,numero){
 
+document.getElementById("numeroUnidade").value = numero
+
+window.unidadeEditando = id
+
+}
+  async function excluirUnidade(id){
+
+if(!confirm("Deseja excluir esta unidade?")){
+return
+}
+
+await client
+.from("unidades")
+.delete()
+.eq("id",id)
+
+listarUnidades()
+
+}
 async function salvarInquilino(){
 
 const nome = document.getElementById("nomeInquilino").value
