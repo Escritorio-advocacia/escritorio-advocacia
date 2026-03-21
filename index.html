@@ -81,6 +81,8 @@ margin-top:5px;
 
 <div id="dashboardDados"></div>
   
+<div id="ocupacaoPredios"></div>
+  
 <div id="alertaInadimplentes"></div>
   
 <h3>Gráfico Financeiro</h3>
@@ -666,7 +668,27 @@ document.getElementById("dashboardDados").innerHTML = `
 </div>
 `
 }
+async function calcularOcupacao(){
 
+const { data: unidades } = await client
+.from("unidades")
+.select("*")
+
+let total = unidades.length
+
+let ocupadas = unidades.filter(u => u.status === "ocupado").length
+
+let vazias = total - ocupadas
+
+let porcentagem = total > 0 ? Math.round((ocupadas / total) * 100) : 0
+
+document.getElementById("ocupacaoPredios").innerHTML = `
+🏢 Prédios: ${total}<br>
+🏠 Ocupados: ${ocupadas}<br>
+⬜ Vazios: ${vazias}<br>
+📊 Ocupação: ${porcentagem}%
+`
+}
 async function listarDevedores(){
 
 const div = document.getElementById("listaDevedores")
@@ -1370,6 +1392,7 @@ window.onload = async () => {
 
 abrirTela("dashboard")
   
+await calcularOcupacao()
 await listarPredios()
 await listarUnidades()
 await listarInquilinos()
