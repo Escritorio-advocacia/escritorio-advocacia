@@ -156,7 +156,8 @@ margin-top:5px;
 <button onclick="simularValor()">Simular valor</button>
 <div id="resultadoSimulacao"></div>
 <div id="listaInquilinos"></div>
-  
+<h3>Histórico de Pagamentos</h3>
+<div id="historicoInquilino"></div>
 </div>
   
 <h3>Histórico do Inquilino</h3>
@@ -326,7 +327,9 @@ ${i.nome} - R$${i.valor_aluguel}
 <button onclick="simularInquilino(${i.valor_aluguel},${i.valor_agua},${i.dia_vencimento})">
 Simular
 </button>
-
+<button onclick="verHistoricoInquilino('${i.id}')">
+📜 Histórico
+</button>
 </p>
 `
 
