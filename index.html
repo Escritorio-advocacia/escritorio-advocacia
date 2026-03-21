@@ -1217,7 +1217,9 @@ if(!telaAtual) return
 
 telaAtual.style.display="block"
 
-if(tela==="dashboard"){
+if(tela === "dashboard"){
+
+setTimeout(()=>{
 
 carregarDashboard()
 listarDevedores()
@@ -1226,6 +1228,10 @@ graficoFinanceiro()
 graficoMensal()
 vencimentosHoje()
 calcularInadimplentes()
+
+},100)
+
+}
 
 }
 
