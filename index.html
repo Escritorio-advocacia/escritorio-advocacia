@@ -967,6 +967,10 @@ const { data: contratos } = await client
 .from("contratos")
 .select("*")
 
+const { data: inquilinos } = await client
+.from("inquilinos")
+.select("*")
+
 let html = ""
 
 unidades.forEach(u => {
@@ -975,11 +979,21 @@ const contrato = contratos.find(c => c.unidade_id == u.id)
 
 if(contrato){
 
-html += `<p style="color:green">🟢 Unidade ${u.numero} - Ocupada</p>`
+const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
+
+html += `
+<p style="color:green">
+🟢 Unidade ${u.numero} - ${inquilino ? inquilino.nome : "Ocupada"}
+</p>
+`
 
 }else{
 
-html += `<p style="color:red">🔴 Unidade ${u.numero} - Vazia</p>`
+html += `
+<p style="color:red">
+🔴 Unidade ${u.numero} - Vazia
+</p>
+`
 
 }
 
@@ -1469,6 +1483,8 @@ calcularInadimplentes()
 
 if(tela==="predios"){
 listarPredios()
+listarUnidades()
+mapaOcupacao()
 }
 
 if(tela==="inquilinos"){
