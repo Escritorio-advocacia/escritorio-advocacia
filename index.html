@@ -1345,44 +1345,9 @@ responsive: false,
 maintainAspectRatio: false
 }
 
-})
+});
 }
 async function cobrarInadimplentesAutomatico(){
-
-const hoje = new Date()
-const mesAtual = hoje.getMonth() + 1
-
-const { data: pagamentos } = await client.from("pagamentos").select("*")
-const { data: contratos } = await client.from("contratos").select("*")
-const { data: inquilinos } = await client.from("inquilinos").select("*")
-
-let lista = []
-
-pagamentos.forEach(p=>{
-
-if(p.status=="pendente" && p.mes < mesAtual){
-
-const contrato = contratos.find(c=>c.id==p.contrato_id)
-if(!contrato) return
-
-const inquilino = inquilinos.find(i=>i.id==contrato.inquilino_id)
-if(!inquilino) return
-
-lista.push({
-nome: inquilino.nome,
-telefone: inquilino.telefone,
-valor: p.valor,
-mes: p.mes
-})
-
-}
-
-})
-
-enviarCobrancas(lista,0)
-
-}
-  async function cobrarInadimplentesAutomatico(){
 
 const hoje = new Date()
 const mesAtual = hoje.getMonth() + 1
