@@ -637,7 +637,12 @@ html += `
 <p style="color:red">
 ⚠ ${inquilino.nome}<br>
 Mês ${p.mes} atrasado<br>
-Dívida: R$ ${p.valor}
+Divida: R$ ${p.valor}<br>
+
+<button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}','${p.valor}')">
+📲 Cobrar
+</button>
+
 </p>
 `
 
@@ -653,18 +658,15 @@ function cobrarWhatsapp(telefone,nome,valor){
 
 const mensagem = `Olá ${nome}.
 
-Seu aluguel está em aberto.
+Seu aluguel no valor de R$ ${valor} está em atraso.
 
-Valor: R$${valor}
-
-Favor realizar o pagamento. Obrigado.`
+Por favor regularize o pagamento.`
 
 const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`
 
 window.open(url,"_blank")
 
 }
-
 
 async function cobrarTodos(){
 
