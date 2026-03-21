@@ -454,17 +454,37 @@ document.getElementById("listaContratos").innerHTML = html
 
 async function listarPagamentos(){
 
-const { data } = await client
+const { data: pagamentos } = await client
 .from("pagamentos")
 .select("*")
 .order("mes")
 
-let html = ""
+const { data: contratos } = await client
+.from("contratos")
+.select("*")
 
-data.forEach(p => {
+const { data: inquilinos } = await client
+.from("inquilinos")
+.select("*")
+
+const { data: unidades } = await client
+.from("unidades")
+.select("*")
+
+let html = ""
 
 const hoje = new Date()
 const mesAtual = hoje.getMonth() + 1
+
+pagamentos.forEach(p => {
+
+const contrato = contratos.find(c => c.id == p.contrato_id)
+if(!contrato) return
+
+const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
+if(!inquilino) return
+
+const unidade = unidades.find(u => u.id == contrato.unidade_id)
 
 let status = p.status
 let cor = "black"
@@ -484,11 +504,21 @@ cor = "red"
 
 html += `
 <p style="color:${cor}">
+
+<b>${inquilino.nome}</b><br>
+
+Unidade: ${unidade ? unidade.numero : ""}<br>
+
 Mês ${p.mes} - R$ ${p.valor} - ${status}
+
+<br>
+
 <button onclick="pagar(${p.id})">Pagar</button>
-<button onclick="cobrarWhatsApp('${p.nome}','${p.telefone}','${p.valor}')">
+
+<button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}','${p.valor}')">
 💬 Cobrar
 </button>
+
 </p>
 `
 
