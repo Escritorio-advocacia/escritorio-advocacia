@@ -1754,7 +1754,18 @@ document.querySelector("button[onclick=\"abrirTela('contratos')\"]").style.displ
 
 }
 function abrirTela(tela){
+  
+if(window.nivelUsuario === "funcionario"){
 
+if(tela === "predios" || tela === "contratos"){
+
+alert("Você não tem permissão para acessar esta área")
+
+return
+
+}
+
+}
 document.querySelectorAll(".tela").forEach(div=>{
 div.style.display="none"
 })
