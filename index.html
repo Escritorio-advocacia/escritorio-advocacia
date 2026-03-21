@@ -698,13 +698,9 @@ div.innerHTML = `
 `
 
 }
+let graficoFinanceiroChart
+
 async function graficoFinanceiro(){
-
-const canvas = document.getElementById("graficoFinanceiro")
-
-if(!canvas) return
-
-const ctx = canvas.getContext("2d")
 
 const { data } = await client
 .from("pagamentos")
@@ -715,18 +711,27 @@ let pendente = 0
 
 data.forEach(p => {
 
-if(p.status=="pago"){
+if(p.status == "pago"){
 pago += Number(p.valor)
 }
 
-if(p.status=="pendente"){
+if(p.status == "pendente"){
 pendente += Number(p.valor)
 }
 
 })
 
-new Chart(ctx,{
-type:"doughnut",
+const ctx = document.getElementById("graficoFinanceiro")
+
+// destruir gráfico anterior
+if(graficoFinanceiroChart){
+graficoFinanceiroChart.destroy()
+}
+
+graficoFinanceiroChart = new Chart(ctx,{
+
+type:'doughnut',
+
 data:{
 labels:["Recebido","Pendente"],
 datasets:[{
@@ -734,6 +739,7 @@ data:[pago,pendente],
 backgroundColor:["green","orange"]
 }]
 }
+
 })
 
 }
