@@ -181,6 +181,7 @@ margin-top:5px;
   
   <div id="pagamentos" class="tela">
   <h3>Pagamentos</h3>
+  <input type="text" placeholder="Buscar pagamento..." onkeyup="buscarPagamentos(this.value)">
 <div>
 
 <button onclick="listarPagamentos()">Todos</button>
@@ -462,6 +463,33 @@ html += `
 <p style="color:${cor}">
 Mês ${p.mes} - R$ ${p.valor} - ${status}
 <button onclick="pagar(${p.id})">Pagar</button>
+</p>
+`
+
+})
+
+document.getElementById("listaPagamentos").innerHTML = html
+
+}
+  async function buscarPagamentos(texto){
+
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+let filtrados = data.filter(p => 
+String(p.mes).includes(texto) ||
+String(p.valor).includes(texto) ||
+String(p.status).toLowerCase().includes(texto.toLowerCase())
+)
+
+let html = ""
+
+filtrados.forEach(p => {
+
+html += `
+<p>
+Mês ${p.mes} - R$ ${p.valor} - ${p.status}
 </p>
 `
 
