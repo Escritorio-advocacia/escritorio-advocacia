@@ -397,8 +397,6 @@ document.getElementById("listaContratos").innerHTML = html
 
 }
 
-
-
 async function listarPagamentos(){
 
 const { data } = await client
@@ -530,8 +528,6 @@ listarPagamentos()
 
 }
 
-
-
 async function carregarDashboard(){
 
 const { data } = await client
@@ -559,13 +555,13 @@ const { count } = await client
 
 document.getElementById("dashboardDados").innerHTML = `
 <p>💰 Recebido: R$ ${recebido}</p>
-<p>📅 A receber: R$ ${pendente}</p>
+<p>📅 Para receber: R$ ${pendente}</p>
 <p>📄 Contratos ativos: ${count}</p>
+<p>🏢 Prédios cadastrados: ${totalPredios}</p>
+<p>👤 Inquilinos: ${totalInquilinos}</p>
 `
 
 }
-
-
 
 async function listarDevedores(){
 
