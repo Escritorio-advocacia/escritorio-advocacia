@@ -67,26 +67,121 @@ box-shadow:0 4px 10px rgba(0,0,0,0.15);
 width:400px !important;
 height:250px !important;
 }
+  body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#f4f6fb;
+}
+
+/* Layout */
+
+.layout{
+display:flex;
+height:100vh;
+}
+
+/* Menu lateral */
+
+.sidebar{
+width:220px;
+background:#1f2937;
+color:white;
+padding:20px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.sidebar h2{
+margin-bottom:20px;
+}
+
+.sidebar button{
+background:none;
+border:none;
+color:white;
+text-align:left;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+font-size:15px;
+}
+
+.sidebar button:hover{
+background:#374151;
+}
+
+/* Área principal */
+
+.conteudo{
+flex:1;
+padding:30px;
+overflow:auto;
+}
+
+/* cards */
+
+.cards{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+min-width:180px;
+}
+
+.card span{
+font-size:22px;
+font-weight:bold;
+}
+
+/* inputs */
+
+input,select{
+padding:8px;
+border-radius:6px;
+border:1px solid #ccc;
+margin:5px;
+}
+
+button{
+padding:6px 12px;
+border-radius:6px;
+border:none;
+background:#2563eb;
+color:white;
+cursor:pointer;
+}
+
+button:hover{
+background:#1d4ed8;
+}
 </style>
   
 </head>
 
 <body>
-<div style="background:#222;padding:12px;border-radius:6px;margin-bottom:15px">
+<div class="layout">
+
+<div class="sidebar">
+
+<h2>🏢 Aluguel</h2>
 
 <button onclick="abrirTela('dashboard')">📊 Painel</button>
-  
 <button onclick="abrirTela('predios')">🏢 Prédios</button>
-  
 <button onclick="abrirTela('inquilinos')">👤 Inquilinos</button>
-  
 <button onclick="abrirTela('contratos')">📄 Contratos</button>
-  
 <button onclick="abrirTela('pagamentos')">💳 Pagamentos</button>
-
-<button onclick="abrirTela('relatorios')">Relatórios</button>
+<button onclick="abrirTela('relatorios')">📑 Relatórios</button>
 
 </div>
+
+<div class="conteudo">
   
 <h2>Login</h2>
 
@@ -1918,6 +2013,8 @@ await listarPagamentos()
 await atualizarStatusAtrasados()
 }
 </script>
-
+    
+</div>
+</div>
 </body>
 </html>
