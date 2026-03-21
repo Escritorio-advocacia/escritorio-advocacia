@@ -489,6 +489,9 @@ html += `
 <p style="color:${cor}">
 Mês ${p.mes} - R$ ${p.valor} - ${status}
 <button onclick="pagar(${p.id})">Pagar</button>
+<button onclick="cobrarWhatsApp('${p.nome}','${p.telefone}','${p.valor}')">
+💬 Cobrar
+</button>
 </p>
 `
 
