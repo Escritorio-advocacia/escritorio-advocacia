@@ -1211,15 +1211,9 @@ document.querySelectorAll(".tela").forEach(div=>{
 div.style.display="none"
 })
 
-const telaAtual = document.getElementById(tela)
+document.getElementById(tela).style.display="block"
 
-if(!telaAtual) return
-
-telaAtual.style.display="block"
-
-if(tela === "dashboard"){
-
-setTimeout(()=>{
+if(tela==="dashboard"){
 
 carregarDashboard()
 listarDevedores()
@@ -1229,12 +1223,9 @@ graficoMensal()
 vencimentosHoje()
 calcularInadimplentes()
 
-},100)
-
 }
 
 }
-
 if(tela==="predios"){
 listarPredios()
 }
