@@ -203,6 +203,8 @@ margin-top:5px;
 <button onclick="relatorioFinanceiro()">Gerar relatório</button>
 
 <button onclick="exportarPDF()">📄 Exportar relatório PDF</button>
+
+<button onclick="relatorioInadimplentes()">Relatório de Inadimplentes</button>
   
 <div id="relatorio"></div>
 </div>
@@ -576,7 +578,42 @@ html += `
 document.getElementById("inadimplentes").innerHTML = html
 
 }
+async function relatorioInadimplentes(){
 
+const { data: pagamentos } = await client
+.from("pagamentos")
+.select("*")
+
+const { data: inquilinos } = await client
+.from("inquilinos")
+.select("*")
+
+let html = "<h3>Relatório de Inadimplentes</h3>"
+
+pagamentos.forEach(p => {
+
+if(p.status === "ATRASADO"){
+
+const inquilino = inquilinos.find(i => i.id == p.inquilino_id)
+
+if(inquilino){
+
+html += `
+<p>
+${inquilino.nome}<br>
+Mês ${p.mes} - R$ ${p.valor}
+</p>
+`
+
+}
+
+}
+
+})
+
+document.getElementById("relatorio").innerHTML = html
+
+}
 async function pagar(id){
 
 const { data: pagamento } = await client
