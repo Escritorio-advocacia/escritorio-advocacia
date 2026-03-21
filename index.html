@@ -226,13 +226,41 @@ const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 
 const client = supabase.createClient(supabaseUrl, supabaseKey)
 
-
-
+  
 async function salvarPredio(){
 
 const nome = document.getElementById("nomePredio").value
 
-await client.from("predios").insert({nome})
+if(window.predioEditando){
+
+await client
+.from("predios")
+.update({nome})
+.eq("id",window.predioEditando)
+
+window.predioEditando = null
+
+}else{
+
+await client
+.from("predios")
+.insert({nome})
+
+}
+
+listarPredios()
+
+}
+async function excluirPredio(id){
+
+if(!confirm("Deseja excluir este prédio?")){
+return
+}
+
+await client
+.from("predios")
+.delete()
+.eq("id",id)
 
 listarPredios()
 
@@ -302,7 +330,21 @@ let html=""
 
 data.forEach(p=>{
 
-html += `<p>${p.nome}</p>`
+html += `
+<p>
+
+${p.nome}
+
+<button onclick="editarPredio('${p.id}','${p.nome}')">
+✏️ Editar
+</button>
+
+<button onclick="excluirPredio('${p.id}')">
+🗑 Excluir
+</button>
+
+</p>
+`
 
 })
 
@@ -310,8 +352,13 @@ document.getElementById("listaPredios").innerHTML = html
 
 }
 
+async function editarPredio(id,nome){
 
+document.getElementById("nomePredio").value = nome
 
+window.predioEditando = id
+
+}
 async function salvarUnidade(){
 
 const predio_id = document.getElementById("predioSelect").value
