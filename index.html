@@ -1249,7 +1249,30 @@ const url = `https://foegiwrgbkkhsqzpgcou.supabase.co/storage/v1/object/public/c
 window.open(url,"_blank")
 
 }
+async function atualizarStatusAtrasados(){
 
+const hoje = new Date()
+const mesAtual = hoje.getMonth() + 1
+
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+for(const p of data){
+
+if(p.status === "pendente" && p.mes < mesAtual){
+
+await client
+.from("pagamentos")
+.update({ status: "ATRASADO" })
+.eq("id", p.id)
+
+}
+
+}
+
+}
+  
 function abrirTela(tela){
 
 document.querySelectorAll(".tela").forEach(div=>{
@@ -1294,7 +1317,7 @@ await listarUnidades()
 await listarInquilinos()
 await listarContratos()
 await listarPagamentos()
-
+await atualizarStatusAtrasados()
 }
 </script>
 
