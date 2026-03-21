@@ -933,9 +933,9 @@ Mês ${p.mes} - R$ ${p.valor} - ${status}
 })
 
 document.getElementById("historicoPagamentos").innerHTML = html
-
 }
-  async function graficoMensal(){
+let graficoMensalChart
+async function graficoMensal(){
 
 const { data } = await client
 .from("pagamentos")
@@ -957,7 +957,11 @@ valores.push(totalMes)
 
 const ctx = document.getElementById("graficoMensal")
 
-new Chart(ctx, {
+if(graficoMensalChart){
+graficoMensalChart.destroy()
+}
+
+graficoMensalChart = new Chart(ctx,{
 
 type: "bar",
 
