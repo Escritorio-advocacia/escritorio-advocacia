@@ -1210,7 +1210,6 @@ div.style.display="none"
 document.getElementById(tela).style.display="block"
 
 if(tela==="dashboard"){
-
 carregarDashboard()
 listarDevedores()
 alertaInadimplentes()
@@ -1218,10 +1217,8 @@ graficoFinanceiro()
 graficoMensal()
 vencimentosHoje()
 calcularInadimplentes()
-
 }
 
-}
 if(tela==="predios"){
 listarPredios()
 }
@@ -1238,6 +1235,7 @@ if(tela==="pagamentos"){
 listarPagamentos()
 }
 
+}
 window.onload = async () => {
 
 await listarPredios()
