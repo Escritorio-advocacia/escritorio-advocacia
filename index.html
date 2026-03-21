@@ -161,6 +161,45 @@ cursor:pointer;
 button:hover{
 background:#1d4ed8;
 }
+  .cardRecebido{
+border-left:6px solid #16a34a;
+}
+
+.cardPendente{
+border-left:6px solid #f59e0b;
+}
+
+.cardContrato{
+border-left:6px solid #2563eb;
+}
+
+.cardPredio{
+border-left:6px solid #9333ea;
+}
+
+.cardInquilino{
+border-left:6px solid #0891b2;
+}
+  .listaSistema p{
+background:white;
+padding:10px;
+border-radius:6px;
+margin-bottom:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+button{
+padding:6px 12px;
+border:none;
+border-radius:6px;
+background:#2563eb;
+color:white;
+cursor:pointer;
+font-size:14px;
+}
+
+button:hover{
+background:#1d4ed8;
+}
 </style>
   
 </head>
@@ -650,7 +689,8 @@ Simular
 `
 })
 
-document.getElementById("listaInquilinos").innerHTML = html
+document.getElementById("listaInquilinos").innerHTML =
+'<div class="listaSistema">'+html+'</div>'
 
 }
 async function editarInquilino(id){
@@ -1074,27 +1114,27 @@ const { count } = await client
 document.getElementById("dashboardDados").innerHTML = `
 <div class="cards">
 
-<div class="card">
+<div class="card cardRecebido">
 💰 Recebido
 <span>R$ ${recebido}</span>
 </div>
 
-<div class="card">
+<div class="card cardPendente">
 📅 A receber
 <span>R$ ${pendente}</span>
 </div>
 
-<div class="card">
+<div class="card cardContrato">
 📄 Contratos ativos
 <span>${count}</span>
 </div>
 
-<div class="card">
+<div class="card cardPredio">
 🏢 Prédios
 <span>${totalPredios}</span>
 </div>
 
-<div class="card">
+<div class="card cardInquilino">
 👤 Inquilinos
 <span>${totalInquilinos}</span>
 </div>
