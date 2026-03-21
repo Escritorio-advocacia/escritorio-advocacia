@@ -181,9 +181,16 @@ margin-top:5px;
   
   <div id="pagamentos" class="tela">
   <h3>Pagamentos</h3>
+<div>
+
+<button onclick="listarPagamentos()">Todos</button>
+<button onclick="filtrarPagamentos('pago')">Pagos</button>
+<button onclick="filtrarPagamentos('pendente')">Pendentes</button>
+<button onclick="filtrarPagamentos('ATRASADO')">Atrasados</button>
+
+</div>
 
 <div id="listaPagamentos"></div>
-  </div>
   
 <div id="relatorios" class="tela">
 <h3>Relatório Financeiro</h3>
@@ -455,6 +462,29 @@ html += `
 <p style="color:${cor}">
 Mês ${p.mes} - R$ ${p.valor} - ${status}
 <button onclick="pagar(${p.id})">Pagar</button>
+</p>
+`
+
+})
+
+document.getElementById("listaPagamentos").innerHTML = html
+
+}
+async function filtrarPagamentos(status){
+
+const { data } = await client
+.from("pagamentos")
+.select("*")
+
+let filtrados = data.filter(p => p.status === status)
+
+let html = ""
+
+filtrados.forEach(p => {
+
+html += `
+<p>
+Mês ${p.mes} - R$ ${p.valor} - ${p.status}
 </p>
 `
 
