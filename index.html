@@ -1321,20 +1321,21 @@ if(graficoFinanceiroChart){
 graficoFinanceiroChart.destroy()
 }
 
-graficoFinanceiroChart = new Chart(ctx,{
-type:'doughnut',
+graficoFinanceiroChart = new Chart(ctx, {
+type: 'doughnut',
 
-data:{
-labels:["Recebido","Pendente"],
-datasets:[{
-data:[pago,pendente],
-backgroundColor:["green","orange"]
+data: {
+labels: ["Recebido","Pendente"],
+datasets: [{
+data: [pago, pendente],
+backgroundColor: ["green","orange"],
+borderWidth: 1
 }]
 },
 
-options:{
-responsive:false,
-maintainAspectRatio:false
+options: {
+responsive: false,
+maintainAspectRatio: false
 }
 
 })
