@@ -1547,12 +1547,29 @@ return
 document.getElementById("usuarioLogado").innerHTML =
 "Usuário logado: " + data.user.email
 
+await pegarNivelUsuario(data.user.email)
+
+controlarPermissoes()
+
 }
 async function logout(){
 
 await client.auth.signOut()
 
 document.getElementById("usuarioLogado").innerHTML = "Deslogado"
+
+}
+async function pegarNivelUsuario(email){
+
+const { data } = await client
+.from("usuarios")
+.select("*")
+.eq("email", email)
+.single()
+
+if(data){
+window.nivelUsuario = data.nivel
+}
 
 }
 async function exportarExcel(){
@@ -1725,7 +1742,17 @@ await client
 }
 
 }
-  
+function controlarPermissoes(){
+
+if(window.nivelUsuario === "funcionario"){
+
+document.querySelector("button[onclick=\"abrirTela('predios')\"]").style.display = "none"
+
+document.querySelector("button[onclick=\"abrirTela('contratos')\"]").style.display = "none"
+
+}
+
+}
 function abrirTela(tela){
 
 document.querySelectorAll(".tela").forEach(div=>{
