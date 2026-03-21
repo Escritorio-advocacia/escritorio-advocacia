@@ -49,6 +49,24 @@ max-width:500px;
 max-height:300px;
 margin-top:20px;
 }
+  .areaGraficos{
+display:flex;
+gap:40px;
+flex-wrap:wrap;
+margin-top:20px;
+}
+
+.graficoBox{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+
+.graficoBox canvas{
+width:400px !important;
+height:250px !important;
+}
 </style>
   
 </head>
@@ -96,11 +114,19 @@ margin-top:20px;
   
 <div id="alertaInadimplentes"></div>
   
+<div class="areaGraficos">
+
+<div class="graficoBox">
 <h3>Gráfico Financeiro</h3>
 <canvas id="graficoFinanceiro"></canvas>
-  
+</div>
+
+<div class="graficoBox">
 <h3>Recebimentos por mês</h3>
 <canvas id="graficoMensal"></canvas>
+</div>
+
+</div>
   
 <h3>⚠️ Vencimentos hoje</h3>
 <div id="vencimentosHoje"></div>
