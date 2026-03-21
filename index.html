@@ -206,6 +206,8 @@ color:#333;
   
 <button onclick="exportarExcel()">Exportar Excel</button>
   
+<button onclick="backupSistema()">💾 Backup completo</button>
+  
 <button onclick="relatorioFinanceiro()">Gerar relatório</button>
 
 <button onclick="exportarPDF()">📄 Exportar relatório PDF</button>
@@ -1501,6 +1503,31 @@ const wb = XLSX.utils.book_new()
 XLSX.utils.book_append_sheet(wb, ws, "Relatorio")
 
 XLSX.writeFile(wb, "relatorio_aluguel.xlsx")
+
+}
+async function backupSistema(){
+
+const { data: predios } = await client.from("predios").select("*")
+const { data: unidades } = await client.from("unidades").select("*")
+const { data: inquilinos } = await client.from("inquilinos").select("*")
+const { data: contratos } = await client.from("contratos").select("*")
+const { data: pagamentos } = await client.from("pagamentos").select("*")
+
+const wb = XLSX.utils.book_new()
+
+const wsPredios = XLSX.utils.json_to_sheet(predios)
+const wsUnidades = XLSX.utils.json_to_sheet(unidades)
+const wsInquilinos = XLSX.utils.json_to_sheet(inquilinos)
+const wsContratos = XLSX.utils.json_to_sheet(contratos)
+const wsPagamentos = XLSX.utils.json_to_sheet(pagamentos)
+
+XLSX.utils.book_append_sheet(wb, wsPredios, "Predios")
+XLSX.utils.book_append_sheet(wb, wsUnidades, "Unidades")
+XLSX.utils.book_append_sheet(wb, wsInquilinos, "Inquilinos")
+XLSX.utils.book_append_sheet(wb, wsContratos, "Contratos")
+XLSX.utils.book_append_sheet(wb, wsPagamentos, "Pagamentos")
+
+XLSX.writeFile(wb, "backup_sistema_aluguel.xlsx")
 
 }
 async function relatorioFinanceiro(){
