@@ -235,7 +235,63 @@ await client.from("predios").insert({nome})
 listarPredios()
 
 }
+async function ocupacaoPorPredio(){
 
+const { data: predios } = await client
+.from("predios")
+.select("*")
+
+const { data: unidades } = await client
+.from("unidades")
+.select("*")
+
+const { data: contratos } = await client
+.from("contratos")
+.select("*")
+
+let html = "<h3>📊 Ocupação por prédio</h3>"
+
+predios.forEach(predio=>{
+
+const unidadesPredio = unidades.filter(u => u.predio_id == predio.id)
+
+const total = unidadesPredio.length
+
+let ocupadas = 0
+
+unidadesPredio.forEach(u=>{
+
+const contrato = contratos.find(c => c.unidade_id == u.id)
+
+if(contrato){
+ocupadas++
+}
+
+})
+
+const vazias = total - ocupadas
+
+const porcentagem = total > 0 ? Math.round((ocupadas/total)*100) : 0
+
+html += `
+<p>
+
+🏢 <b>${predio.nome}</b><br>
+
+🟢 Ocupadas: ${ocupadas}<br>
+
+⚪ Vazias: ${vazias}<br>
+
+📊 Ocupação: ${porcentagem}%
+
+</p>
+`
+
+})
+
+document.getElementById("ocupacaoPredios").innerHTML = html
+
+}
 async function listarPredios(){
 
 const {data} = await client.from("predios").select("*")
@@ -1563,6 +1619,7 @@ graficoFinanceiro()
 graficoMensal()
 vencimentosHoje()
 calcularInadimplentes()
+ocupacaoPorPredio()
 }
 
 if(tela==="predios"){
