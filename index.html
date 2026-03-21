@@ -301,6 +301,41 @@ const dia_vencimento = document.getElementById("diaVencimento").value
 
 const status = document.getElementById("statusInquilino").value
 
+  if(window.idEditando){
+
+await client
+.from("inquilinos")
+.update({
+nome,
+cpf,
+telefone,
+email,
+unidade_id,
+valor_aluguel,
+valor_agua,
+dia_vencimento,
+status
+})
+.eq("id", window.idEditando)
+
+window.idEditando = null
+
+}else{
+
+await client.from("inquilinos").insert({
+nome,
+cpf,
+telefone,
+email,
+unidade_id,
+valor_aluguel,
+valor_agua,
+dia_vencimento,
+status
+})
+
+}
+
 await client.from("inquilinos").insert({
 
 nome,
@@ -318,7 +353,20 @@ status
 listarInquilinos()
 
 }
+async function excluirInquilino(id){
 
+if(!confirm("Deseja realmente excluir este inquilino?")){
+return
+}
+
+await client
+.from("inquilinos")
+.delete()
+.eq("id", id)
+
+listarInquilinos()
+
+}
 async function listarInquilinos(){
 
 const {data} = await client.from("inquilinos").select("*")
@@ -335,15 +383,43 @@ ${i.nome} - R$${i.valor_aluguel}
 <button onclick="simularInquilino(${i.valor_aluguel},${i.valor_agua},${i.dia_vencimento})">
 Simular
 </button>
+
 <button onclick="verHistoricoInquilino('${i.id}')">
 📜 Histórico
 </button>
+
+<button onclick="editarInquilino('${i.id}')">
+✏️ Editar
+</button>
+
+<button onclick="excluirInquilino('${i.id}')">
+🗑 Excluir
+</button>
+
 </p>
 `
-
 })
 
 document.getElementById("listaInquilinos").innerHTML = html
+
+}
+async function editarInquilino(id){
+
+const { data } = await client
+.from("inquilinos")
+.select("*")
+.eq("id", id)
+.single()
+
+document.getElementById("nomeInquilino").value = data.nome
+document.getElementById("cpfInquilino").value = data.cpf
+document.getElementById("telefoneInquilino").value = data.telefone
+document.getElementById("emailInquilino").value = data.email
+document.getElementById("valorAluguel").value = data.valor_aluguel
+document.getElementById("valorAgua").value = data.valor_agua
+document.getElementById("diaVencimento").value = data.dia_vencimento
+
+window.idEditando = id
 
 }
 async function verHistoricoInquilino(id){
