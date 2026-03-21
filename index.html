@@ -18,31 +18,39 @@ display:none;
 }
 .cards{
 display:flex;
-gap:15px;
+gap:20px;
 flex-wrap:wrap;
-margin-top:15px;
+margin-top:20px;
 }
 
 .card{
-background:#f5f5f5;
-padding:15px;
-border-radius:8px;
-min-width:150px;
+background:white;
+padding:20px;
+border-radius:10px;
+min-width:180px;
 font-weight:bold;
-box-shadow:0 2px 5px rgba(0,0,0,0.2);
+box-shadow:0 4px 10px rgba(0,0,0,0.15);
+border-left:6px solid #007bff;
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.03);
 }
 
 .card span{
 display:block;
-font-size:20px;
-margin-top:5px;
+font-size:24px;
+margin-top:8px;
+color:#333;
 }
+
 </style>
   
 </head>
 
 <body>
-<div style="background:#222;padding:10px">
+<div style="background:#222;padding:12px;border-radius:6px;margin-bottom:15px">
 
 <button onclick="abrirTela('dashboard')">📊 Painel</button>
   
