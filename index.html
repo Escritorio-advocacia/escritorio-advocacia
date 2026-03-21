@@ -721,7 +721,14 @@ pendente += Number(p.valor)
 }
 
 })
+const { count: totalPredios } = await client
+.from("predios")
+.select("*", { count: "exact", head: true })
 
+const { count: totalInquilinos } = await client
+.from("inquilinos")
+.select("*", { count: "exact", head: true })
+  
 const { count } = await client
 .from("contratos")
 .select("*", { count: "exact", head: true })
