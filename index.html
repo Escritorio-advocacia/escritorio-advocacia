@@ -923,7 +923,9 @@ Mês ${p.mes} - R$ ${p.valor} - ${status}
 
 <br>
 
-<button onclick="abrirPagamento(${p.id})">Pagar</button>
+<button onclick="abrirPagamento(${p.id}, ${p.valor})" class="btnPagar">
+💰 Receber
+</button>
 
 <button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}','${p.valor}')">
 💬 Cobrar
@@ -964,40 +966,48 @@ Mês ${p.mes} - R$ ${p.valor} - ${p.status}
 document.getElementById("listaPagamentos").innerHTML = html
 
 }
-function abrirPagamento(id){
+function abrirPagamento(id, valor){
+const modal = document.createElement("div")
+modal.className = "modalPagamento"
 
-const forma = prompt("Escolha forma: pix, dinheiro ou cartao")
+modal.innerHTML = `
+<div class="modalBox">
+<h3>💳 Receber pagamento</h3>
+<p>Valor: R$ ${valor}</p>
 
-if(!forma){
-alert("Informe a forma")
-return
-}
+<button onclick="confirmarPagamento(${id}, 'PIX')">PIX</button>
+<button onclick="confirmarPagamento(${id}, 'DINHEIRO')">Dinheiro</button>
+<button onclick="confirmarPagamento(${id}, 'CARTÃO')">Cartão</button>
 
-pagar(id, forma)
-
-}
-async function filtrarPagamentos(status){
-
-const { data } = await client
-.from("pagamentos")
-.select("*")
-
-let filtrados = data.filter(p => p.status === status)
-
-let html = ""
-
-filtrados.forEach(p => {
-
-html += `
-<p>
-Mês ${p.mes} - R$ ${p.valor} - ${p.status}
-</p>
+<br><br>
+<button onclick="fecharModal()">Cancelar</button>
+</div>
 `
 
+document.body.appendChild(modal)
+}
+
+function fecharModal(){
+document.querySelector(".modalPagamento").remove()
+}
+
+async function confirmarPagamento(id, forma){
+
+const hoje = new Date()
+
+await client
+.from("pagamentos")
+.update({
+status:"pago",
+forma_pagamento: forma,
+data_pagamento: hoje.toISOString()
 })
+.eq("id", id)
 
-document.getElementById("listaPagamentos").innerHTML = html
+fecharModal()
+listarPagamentos()
 
+alert("Pagamento registrado!")
 }
 async function calcularInadimplentes(){
 
