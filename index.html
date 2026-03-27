@@ -1299,7 +1299,7 @@ div.innerHTML = `
 }
   
 
-let grafico1 = null
+let graficoFinanceiroChart = null
 async function graficoFinanceiro(){
 
 const { data } = await client
@@ -1310,30 +1310,36 @@ let pago = 0
 let pendente = 0
 
 data.forEach(p => {
-if(p.status == "pago") pago += Number(p.valor)
-if(p.status == "pendente") pendente += Number(p.valor)
+
+if(p.status == "pago"){
+pago += Number(p.valor)
+}
+
+if(p.status == "pendente"){
+pendente += Number(p.valor)
+}
+
 })
 
 const ctx = document.getElementById("graficoFinanceiro")
 
-// 🔥 DESTROI O GRÁFICO ANTIGO
-if(grafico1){
-grafico1.destroy()
+// 🔥 destruir gráfico antigo
+if(graficoFinanceiroChart){
+graficoFinanceiroChart.destroy()
 }
 
-// 🔥 CRIA NOVO
-grafico1 = new Chart(ctx, {
+graficoFinanceiroChart = new Chart(ctx, {
+
 type: 'doughnut',
+
 data: {
 labels: ['Recebido', 'Pendente'],
 datasets: [{
 data: [pago, pendente],
 backgroundColor: ['green','orange']
 }]
-},
-options: {
-responsive: true
 }
+
 })
 
 }
@@ -1956,27 +1962,18 @@ document.querySelector("button[onclick=\"abrirTela('contratos')\"]").style.displ
 
 }
 function abrirTela(tela){
-  
-if(window.nivelUsuario === "funcionario"){
 
-if(tela === "predios" || tela === "contratos"){
-
-alert("Você não tem permissão para acessar esta área")
-
-return
-
-}
-
-}
-document.querySelectorAll(".tela").forEach(div=>{
-div.style.display="none"
+document.querySelectorAll(".tela").forEach(div => {
+div.style.display = "none"
 })
 
-document.getElementById(tela).style.display="block"
+document.getElementById(tela).style.display = "block"
 
-if(tela==="dashboard"){
+if(tela === "dashboard"){
 carregarDashboard()
 listarDevedores()
+graficoFinanceiro()
+graficoMensal()
 alertaInadimplentes()
 graficoFinanceiro()
 graficoMensal()
