@@ -200,6 +200,85 @@ font-size:14px;
 button:hover{
 background:#1d4ed8;
 }
+
+  button{
+padding:10px 16px;
+border:none;
+border-radius:8px;
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
+color:white;
+cursor:pointer;
+font-size:14px;
+font-weight:bold;
+transition:0.2s;
+box-shadow:0 3px 8px rgba(0,0,0,0.2);
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 6px 12px rgba(0,0,0,0.25);
+}
+
+button:active{
+transform:scale(0.97);
+}
+  .card{
+background:white;
+padding:20px;
+border-radius:12px;
+min-width:180px;
+font-weight:bold;
+box-shadow:0 8px 20px rgba(0,0,0,0.1);
+transition:0.3s;
+position:relative;
+overflow:hidden;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card::after{
+content:"";
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:4px;
+background:linear-gradient(90deg,#2563eb,#06b6d4);
+}
+  .modalPagamento{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.modalBox{
+background:white;
+padding:30px;
+border-radius:12px;
+width:300px;
+text-align:center;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+animation:fadeIn 0.3s ease;
+}
+
+.modalBox button{
+margin:5px;
+width:100%;
+}
+
+@keyframes fadeIn{
+from{opacity:0; transform:scale(0.9)}
+to{opacity:1; transform:scale(1)}
+}
 </style>
   
 </head>
@@ -913,29 +992,31 @@ cor = "red"
 }
 
 html += `
-<p style="color:${cor}">
+<div style="
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:10px;
+box-shadow:0 3px 8px rgba(0,0,0,0.1);
+">
 
 <b>${inquilino.nome}</b><br>
-
 Unidade: ${unidade ? unidade.numero : ""}<br>
-
 Mês ${p.mes} - R$ ${p.valor} - ${status}
 
-<br>
+<br><br>
 
 ${p.status === "pago" ? 
-`<button disabled style="background:green;color:white;">✅ Pago</button>` 
+`<button disabled style="background:green;">✅ Pago</button>` 
 :
-`<button onclick="abrirPagamento(${p.id}, ${p.valor})" class="btnPagar">
-💰 Receber
-</button>`
+`<button onclick="abrirPagamento(${p.id}, ${p.valor})">💰 Receber</button>`
 }
 
 <button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}','${p.valor}')">
 💬 Cobrar
 </button>
 
-</p>
+</div>
 `
 
 })
@@ -1032,7 +1113,7 @@ data_pagamento: hoje.toISOString()
 fecharModal()
 listarPagamentos()
 
-alert("Pagamento registrado com sucesso!")
+mostrarAlerta("Pagamento registrado com sucesso!")
 
 }
 async function calcularInadimplentes(){
@@ -2032,6 +2113,30 @@ await client
 }
 
 }
+
+}
+function mostrarAlerta(msg, tipo="sucesso"){
+
+const div = document.createElement("div")
+
+div.innerText = msg
+
+div.style.position = "fixed"
+div.style.top = "20px"
+div.style.right = "20px"
+div.style.padding = "12px 18px"
+div.style.borderRadius = "8px"
+div.style.color = "white"
+div.style.fontWeight = "bold"
+div.style.zIndex = "9999"
+
+div.style.background = tipo === "erro" ? "#dc2626" : "#16a34a"
+
+document.body.appendChild(div)
+
+setTimeout(()=>{
+div.remove()
+},3000)
 
 }
 function controlarPermissoes(){
