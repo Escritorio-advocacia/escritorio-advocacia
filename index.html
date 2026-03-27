@@ -1298,7 +1298,8 @@ div.innerHTML = `
 
 }
   
-let graficoFinanceiroChart
+
+let grafico1 = null
 async function graficoFinanceiro(){
 
 const { data } = await client
@@ -1315,7 +1316,13 @@ if(p.status == "pendente") pendente += Number(p.valor)
 
 const ctx = document.getElementById("graficoFinanceiro")
 
-new Chart(ctx, {
+// 🔥 DESTROI O GRÁFICO ANTIGO
+if(grafico1){
+grafico1.destroy()
+}
+
+// 🔥 CRIA NOVO
+grafico1 = new Chart(ctx, {
 type: 'doughnut',
 data: {
 labels: ['Recebido', 'Pendente'],
@@ -1324,7 +1331,7 @@ data: [pago, pendente],
 backgroundColor: ['green','orange']
 }]
 },
-options: {   // ✅ AGORA CORRETO
+options: {
 responsive: true
 }
 })
