@@ -491,6 +491,24 @@ html += `
 document.getElementById("ocupacaoPredios").innerHTML = html
 
 }
+async function carregarSelects(){
+
+const { data: predios } = await client.from("predios").select("*")
+const { data: unidades } = await client.from("unidades").select("*")
+
+let htmlPredios = ""
+predios.forEach(p=>{
+htmlPredios += `<option value="${p.id}">${p.nome}</option>`
+})
+
+let htmlUnidades = ""
+unidades.forEach(u=>{
+htmlUnidades += `<option value="${u.id}">${u.numero}</option>`
+})
+
+document.getElementById("predioSelect").innerHTML = htmlPredios
+document.getElementById("unidadeSelect").innerHTML = htmlUnidades
+}
 async function listarPredios(){
 
 const {data} = await client.from("predios").select("*")
@@ -1375,7 +1393,9 @@ mes: p.mes
 
 })
 
-enviarCobrancas(lista,0)
+lista.forEach(i=>{
+cobrarWhatsapp(i.telefone,i.nome,i.valor)
+})
 
 }
 async function mapaOcupacao(){
@@ -1975,8 +1995,6 @@ listarDevedores()
 graficoFinanceiro()
 graficoMensal()
 alertaInadimplentes()
-graficoFinanceiro()
-graficoMensal()
 vencimentosHoje()
 calcularInadimplentes()
 ocupacaoPorPredio()
@@ -2012,6 +2030,7 @@ await listarInquilinos()
 await listarContratos()
 await listarPagamentos()
 await atualizarStatusAtrasados()
+await carregarSelects()
 }
 </script>
     
