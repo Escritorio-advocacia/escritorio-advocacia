@@ -923,9 +923,13 @@ Mês ${p.mes} - R$ ${p.valor} - ${status}
 
 <br>
 
-<button onclick="abrirPagamento(${p.id}, ${p.valor})" class="btnPagar">
+${p.status === "pago" ? 
+`<button disabled style="background:green;color:white;">✅ Pago</button>` 
+:
+`<button onclick="abrirPagamento(${p.id}, ${p.valor})" class="btnPagar">
 💰 Receber
-</button>
+</button>`
+}
 
 <button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}','${p.valor}')">
 💬 Cobrar
@@ -1000,6 +1004,20 @@ document.querySelector(".modalPagamento").remove()
 
 async function confirmarPagamento(id, forma){
 
+// 🔒 busca pagamento atual
+const { data: pagamento } = await client
+.from("pagamentos")
+.select("*")
+.eq("id", id)
+.single()
+
+// 🚫 BLOQUEIO
+if(pagamento.status === "pago"){
+alert("Esse pagamento já foi realizado!")
+fecharModal()
+return
+}
+
 const hoje = new Date()
 
 await client
@@ -1014,7 +1032,8 @@ data_pagamento: hoje.toISOString()
 fecharModal()
 listarPagamentos()
 
-alert("Pagamento registrado!")
+alert("Pagamento registrado com sucesso!")
+
 }
 async function calcularInadimplentes(){
 
