@@ -967,26 +967,33 @@ document.getElementById("listaPagamentos").innerHTML = html
 
 }
 function abrirPagamento(id, valor){
+
 const modal = document.createElement("div")
 modal.className = "modalPagamento"
 
 modal.innerHTML = `
 <div class="modalBox">
+
 <h3>💳 Receber pagamento</h3>
+
 <p>Valor: R$ ${valor}</p>
 
 <button onclick="confirmarPagamento(${id}, 'PIX')">PIX</button>
+
 <button onclick="confirmarPagamento(${id}, 'DINHEIRO')">Dinheiro</button>
+
 <button onclick="confirmarPagamento(${id}, 'CARTÃO')">Cartão</button>
 
 <br><br>
+
 <button onclick="fecharModal()">Cancelar</button>
+
 </div>
 `
 
 document.body.appendChild(modal)
-}
 
+}
 function fecharModal(){
 document.querySelector(".modalPagamento").remove()
 }
