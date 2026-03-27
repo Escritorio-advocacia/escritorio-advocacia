@@ -1309,43 +1309,26 @@ let pago = 0
 let pendente = 0
 
 data.forEach(p => {
-
-if(p.status == "pago"){
-pago += Number(p.valor)
-}
-
-if(p.status == "pendente"){
-pendente += Number(p.valor)
-}
-
+if(p.status == "pago") pago += Number(p.valor)
+if(p.status == "pendente") pendente += Number(p.valor)
 })
 
-const ctx = document.getElementById("graficoFinanceiro").getContext("2d")
+const ctx = document.getElementById("graficoFinanceiro")
 
-if(graficoFinanceiroChart){
-graficoFinanceiroChart.destroy()
-}
-
-graficoFinanceiroChart = new Chart(ctx, {
+new Chart(ctx, {
 type: 'doughnut',
-
 data: {
-labels: ["Recebido","Pendente"],
-datasets: [
-{
+labels: ['Recebido', 'Pendente'],
+datasets: [{
 data: [pago, pendente],
-backgroundColor: ["green","orange"],
-borderWidth: 1
-}
-]
+backgroundColor: ['green','orange']
+}]
 },
-
-options: {
-responsive: false,
-maintainAspectRatio: false
+options: {   // ✅ AGORA CORRETO
+responsive: true
 }
+})
 
-});
 }
 async function cobrarInadimplentesAutomatico(){
 
