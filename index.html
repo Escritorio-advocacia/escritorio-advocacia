@@ -923,7 +923,7 @@ Mês ${p.mes} - R$ ${p.valor} - ${status}
 
 <br>
 
-<button onclick="pagar(${p.id})">Pagar</button>
+<button onclick="abrirPagamento(${p.id})">Pagar</button>
 
 <button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}','${p.valor}')">
 💬 Cobrar
@@ -962,6 +962,18 @@ Mês ${p.mes} - R$ ${p.valor} - ${p.status}
 })
 
 document.getElementById("listaPagamentos").innerHTML = html
+
+}
+function abrirPagamento(id){
+
+const forma = prompt("Escolha forma: pix, dinheiro ou cartao")
+
+if(!forma){
+alert("Informe a forma")
+return
+}
+
+pagar(id, forma)
 
 }
 async function filtrarPagamentos(status){
@@ -1055,16 +1067,7 @@ Mês ${p.mes} - R$ ${p.valor}
 document.getElementById("relatorio").innerHTML = html
 
 }
-async function pagar(id){
-
-// 🔒 trava segurança
-if(window.nivelUsuario !== "admin" && window.nivelUsuario !== "funcionario"){
-alert("Sem permissão")
-return
-}
-
-// funcionário NÃO pode alterar valor manual
-// só usar cálculo automático
+async function pagar(id, forma){
 
 const { data: pagamento } = await client
 .from("pagamentos")
@@ -1107,15 +1110,19 @@ await client
 .from("pagamentos")
 .update({
 status:"pago",
-valor_pago: total
+valor_pago: total,
+forma_pagamento: forma,
+data_pagamento: new Date().toISOString()
 })
 .eq("id", id)
 
+alert("Pagamento registrado!")
+
 listarPagamentos()
 
-}
-
 gerarReciboPDF(inquilino.nome,total,pagamento.mes)
+
+}
 listarPagamentos()
 
 }
@@ -1614,6 +1621,10 @@ cor="red"
 html += `
 <p style="color:${cor}">
 Mês ${p.mes} - R$ ${p.valor} - ${status}
+<br>
+💳 Forma: ${p.forma_pagamento || "-"}
+<br>
+📅 Pago em: ${p.data_pagamento ? new Date(p.data_pagamento).toLocaleDateString() : "-"}
 </p>
 `
 
