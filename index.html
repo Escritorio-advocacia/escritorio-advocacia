@@ -339,6 +339,107 @@ font-size: 14px;
 color: #555;
 text-align: center;
 }
+  .loginContainer{
+display:flex;
+height:100vh;
+}
+
+.loginLeft{
+flex:1;
+background: linear-gradient(135deg,#2563eb,#1e40af);
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:40px;
+}
+
+.loginLeft h1{
+font-size:32px;
+margin-bottom:10px;
+}
+
+.loginLeft p{
+opacity:0.9;
+font-size:16px;
+text-align:center;
+max-width:300px;
+}
+
+.loginRight{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#f4f6fb;
+}
+
+.loginCard{
+background:white;
+padding:40px;
+border-radius:12px;
+width:320px;
+box-shadow:0 10px 30px rgba(0,0,0,0.15);
+animation:fadeIn 0.6s ease;
+}
+
+.loginCard h2{
+margin-bottom:20px;
+text-align:center;
+}
+
+.loginCard input{
+width:100%;
+padding:12px;
+margin-bottom:12px;
+border-radius:8px;
+border:1px solid #ddd;
+}
+
+.loginCard input:focus{
+outline:none;
+border-color:#2563eb;
+box-shadow:0 0 5px rgba(37,99,235,0.3);
+}
+
+.btnLogin{
+width:100%;
+padding:12px;
+background:#2563eb;
+color:white;
+border-radius:8px;
+font-weight:bold;
+}
+
+.btnLogin:hover{
+background:#1d4ed8;
+}
+
+.btnLogout{
+width:100%;
+padding:10px;
+background:#ef4444;
+margin-top:10px;
+}
+
+.btnLogout:hover{
+background:#dc2626;
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+.conteudo{
+display:none;
+}
 </style>
   
 </head>
@@ -363,21 +464,33 @@ text-align: center;
   
 <h2>Login</h2>
 
-<div class="loginBox">
+<div class="loginContainer">
 
-<h2>🔐 Acesso ao Sistema</h2>
+  <div class="loginLeft">
+    <h1>🏢 Sistema de Aluguel</h1>
+    <p>Controle completo de imóveis, contratos e pagamentos</p>
+  </div>
 
-<input id="emailLogin" placeholder="Seu email">
-<input id="senhaLogin" type="password" placeholder="Sua senha">
+  <div class="loginRight">
 
-<button class="btnLogin" onclick="login()">Entrar</button>
+    <div class="loginCard">
 
-<button class="btnLogout" onclick="logout()">Sair</button>
+      <h2>Entrar</h2>
 
-<div id="usuarioLogado"></div>
+      <input id="emailLogin" placeholder="Seu email">
+      <input id="senhaLogin" type="password" placeholder="Sua senha">
+
+      <button class="btnLogin" onclick="login()">Entrar</button>
+
+      <button class="btnLogout" onclick="logout()">Sair</button>
+
+      <div id="usuarioLogado"></div>
+
+    </div>
+
+  </div>
 
 </div>
-
 <hr>
   
 <h2>Sistema de Aluguel</h2>
@@ -1988,7 +2101,10 @@ document.getElementById("usuarioLogado").innerHTML =
 await pegarNivelUsuario(data.user.email)
 
 controlarPermissoes()
-
+  
+document.querySelector(".loginContainer").style.display = "none"
+document.querySelector(".conteudo").style.display = "block"
+  
 }
 async function logout(){
 
