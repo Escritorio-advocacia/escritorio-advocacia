@@ -397,7 +397,7 @@ const client = supabase.createClient(supabaseUrl, supabaseKey)
 
   
 async function salvarPredio(){
-
+  
 const nome = document.getElementById("nomePredio").value
 
 if(window.predioEditando){
@@ -1048,6 +1048,15 @@ document.getElementById("relatorio").innerHTML = html
 }
 async function pagar(id){
 
+// 🔒 trava segurança
+if(window.nivelUsuario !== "admin" && window.nivelUsuario !== "funcionario"){
+alert("Sem permissão")
+return
+}
+
+// funcionário NÃO pode alterar valor manual
+// só usar cálculo automático
+
 const { data: pagamento } = await client
 .from("pagamentos")
 .select("*")
@@ -1079,10 +1088,8 @@ let juros = 0
 let multaAgua = 0
 
 if(atraso > 5){
-
 juros = inquilino.valor_aluguel * (0.005 * atraso)
 multaAgua = inquilino.valor_agua * 0.10
-
 }
 
 const total = Number(pagamento.valor) + juros + multaAgua
@@ -1096,6 +1103,8 @@ valor_pago: total
 .eq("id", id)
 
 listarPagamentos()
+
+}
 
 gerarReciboPDF(inquilino.nome,total,pagamento.mes)
 listarPagamentos()
@@ -1974,9 +1983,19 @@ function controlarPermissoes(){
 
 if(window.nivelUsuario === "funcionario"){
 
+// ❌ esconder coisas perigosas
 document.querySelector("button[onclick=\"abrirTela('predios')\"]").style.display = "none"
-
 document.querySelector("button[onclick=\"abrirTela('contratos')\"]").style.display = "none"
+
+// ❌ bloquear exclusão e edição
+document.querySelectorAll("button").forEach(btn => {
+
+if(btn.innerText.includes("Excluir") || 
+   btn.innerText.includes("Editar")){
+btn.style.display = "none"
+}
+
+})
 
 }
 
