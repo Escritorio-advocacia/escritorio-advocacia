@@ -541,6 +541,11 @@ document.getElementById("listaPredios").innerHTML = html
 
 async function editarPredio(id,nome){
 
+if(window.nivelUsuario === "funcionario" && window.idEditando){
+alert("Funcionário não pode editar")
+return
+}
+
 document.getElementById("nomePredio").value = nome
 
 window.predioEditando = id
@@ -600,7 +605,11 @@ window.unidadeEditando = id
 
 }
   async function excluirUnidade(id){
-
+if(window.nivelUsuario === "funcionario" && window.idEditando){
+alert("Funcionário não pode editar")
+return
+}
+    
 if(!confirm("Deseja excluir esta unidade?")){
 return
 }
