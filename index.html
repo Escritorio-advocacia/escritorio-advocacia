@@ -968,22 +968,54 @@ const cpf = document.getElementById("cpfInquilino").value
 const telefone = document.getElementById("telefoneInquilino").value
 const email = document.getElementById("emailInquilino").value
 const unidade_id = document.getElementById("unidadeSelect").value
-  
-const whatsapp = document.getElementById("telefoneInquilino").value
+
+const whatsapp = telefone
 const whatsappResponsavel = document.getElementById("whatsappResponsavel").value
+
 const valor_aluguel = document.getElementById("valorAluguel").value
 const valor_agua = document.getElementById("valorAgua").value
 const dia_vencimento = document.getElementById("diaVencimento").value
 const data_inicio = document.getElementById("dataInicioContrato").value
 const data_fim = document.getElementById("dataFimContrato").value
 const status = document.getElementById("statusInquilino").value
+
 const nome_responsavel = document.getElementById("nomeResponsavel").value
 const cpf_responsavel = document.getElementById("cpfResponsavel").value
 const telefone_responsavel = document.getElementById("telefoneResponsavel").value
-  if(window.idEditando){
+
 const rg = document.getElementById("rg").value
 const rg_responsavel = document.getElementById("rg_responsavel").value
-await client.from("inquilinos").insert({
+
+let result
+
+if(window.idEditando){
+
+result = await client.from("inquilinos").update({
+  nome,
+  nome_responsavel,
+  whatsapp,
+  whatsapp_responsavel: whatsappResponsavel,
+  rg,
+  rg_responsavel,
+  cpf,
+  cpf_responsavel,
+  email,
+  unidade_id,
+  valor_aluguel,
+  valor_agua,
+  dia_vencimento,
+  status,
+  data_inicio,
+  data_fim,
+  telefone,
+  telefone_responsavel
+}).eq("id", window.idEditando)
+
+window.idEditando = null
+
+}else{
+
+result = await client.from("inquilinos").insert({
   nome,
   cpf,
   telefone,
@@ -993,13 +1025,28 @@ await client.from("inquilinos").insert({
   valor_agua,
   dia_vencimento,
   status,
-  whatsapp: telefone,
+  whatsapp,
   whatsapp_responsavel: whatsappResponsavel,
   nome_responsavel,
   cpf_responsavel,
-  telefone_responsavel
+  telefone_responsavel,
+  rg,
+  rg_responsavel,
+  data_inicio,
+  data_fim
 })
 
+}
+
+if(result.error){
+  console.log(result.error)
+  alert(result.error.message)
+  return
+}
+
+listarInquilinos()
+
+}
 }else{
 
 await client.from("inquilinos").insert({
