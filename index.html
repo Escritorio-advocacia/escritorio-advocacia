@@ -972,11 +972,12 @@ const unidade_id = document.getElementById("unidadeSelect").value
 const whatsapp = telefone
 const whatsappResponsavel = document.getElementById("whatsappResponsavel").value
 
-const valor_aluguel = document.getElementById("valorAluguel").value
-const valor_agua = document.getElementById("valorAgua").value
-const dia_vencimento = document.getElementById("diaVencimento").value
-const data_inicio = document.getElementById("dataInicioContrato").value
-const data_fim = document.getElementById("dataFimContrato").value
+const valor_aluguel = Number(document.getElementById("valorAluguel").value)
+const valor_agua = Number(document.getElementById("valorAgua").value)
+const dia_vencimento = Number(document.getElementById("diaVencimento").value)
+
+const data_inicio = document.getElementById("dataInicioContrato").value || null
+const data_fim = document.getElementById("dataFimContrato").value || null
 const status = document.getElementById("statusInquilino").value
 
 const nome_responsavel = document.getElementById("nomeResponsavel").value
