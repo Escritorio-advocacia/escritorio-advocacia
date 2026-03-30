@@ -706,7 +706,8 @@ transition: all 0.2s ease;
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
 const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 
-const client = supabase.createClient(supabaseUrl, supabaseKey)
+const { createClient } = supabase
+const client = createClient(supabaseUrl, supabaseKey)
 
   
 async function salvarPredio(){
@@ -2439,7 +2440,7 @@ listarPagamentos()
 
 }
 window.onload = async () => {
-
+document.querySelector(".conteudo").style.display = "block"
 abrirTela("dashboard")
   
 await calcularOcupacao()
