@@ -990,51 +990,53 @@ let result
 
 if(window.idEditando){
 
-result = await client.from("inquilinos").update({
-  nome,
-  nome_responsavel,
-  whatsapp,
-  whatsapp_responsavel: whatsappResponsavel,
-  rg,
-  rg_responsavel,
-  cpf,
-  cpf_responsavel,
-  email,
-  unidade_id,
-  valor_aluguel,
-  valor_agua,
-  dia_vencimento,
-  status,
-  data_inicio,
-  data_fim,
-  telefone,
-  telefone_responsavel
-}).eq("id", window.idEditando)
+  // ✅ UPDATE
+  result = await client.from("inquilinos").update({
+    nome,
+    nome_responsavel,
+    whatsapp,
+    whatsapp_responsavel: whatsappResponsavel,
+    rg,
+    rg_responsavel,
+    cpf,
+    cpf_responsavel,
+    email,
+    unidade_id,
+    valor_aluguel,
+    valor_agua,
+    dia_vencimento,
+    status,
+    data_inicio,
+    data_fim,
+    telefone,
+    telefone_responsavel
+  }).eq("id", window.idEditando)
 
-window.idEditando = null
+  window.idEditando = null
 
 }else{
 
-result = await client.from("inquilinos").insert({
-  nome,
-  cpf,
-  telefone,
-  email,
-  unidade_id,
-  valor_aluguel,
-  valor_agua,
-  dia_vencimento,
-  status,
-  whatsapp,
-  whatsapp_responsavel: whatsappResponsavel,
-  nome_responsavel,
-  cpf_responsavel,
-  telefone_responsavel,
-  rg,
-  rg_responsavel,
-  data_inicio,
-  data_fim
-})
+  // ✅ INSERT
+  result = await client.from("inquilinos").insert({
+    nome,
+    cpf,
+    telefone,
+    email,
+    unidade_id,
+    valor_aluguel,
+    valor_agua,
+    dia_vencimento,
+    status,
+    whatsapp,
+    whatsapp_responsavel: whatsappResponsavel,
+    nome_responsavel,
+    cpf_responsavel,
+    telefone_responsavel,
+    rg,
+    rg_responsavel,
+    data_inicio,
+    data_fim
+  })
 
 }
 
@@ -1042,30 +1044,6 @@ if(result.error){
   console.log(result.error)
   alert(result.error.message)
   return
-}
-
-listarInquilinos()
-
-}
-}else{
-
-await client.from("inquilinos").insert({
-nome,
-cpf,
-telefone,
-email,
-unidade_id,
-valor_aluguel,
-valor_agua,
-dia_vencimento,
-status,
-whatsapp: telefone,
-whatsapp_responsavel: whatsappResponsavel,
-nome_responsavel,
-cpf_responsavel,
-telefone_responsavel
-})
-
 }
 
 listarInquilinos()
