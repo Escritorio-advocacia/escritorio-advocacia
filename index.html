@@ -2143,6 +2143,7 @@ async function login(){
 
 const email = document.getElementById("emailLogin").value
 const senha = document.getElementById("senhaLogin").value
+
 const { data, error } = await client.auth.signInWithPassword({
 email: email,
 password: senha
@@ -2153,18 +2154,19 @@ alert("Erro no login")
 return
 }
 
+// 👇 MOSTRA USUÁRIO NO TOPO
+document.getElementById("usuarioTopo").innerText = data.user.email
+
 document.getElementById("usuarioLogado").innerHTML =
 "Usuário logado: " + data.user.email
-  
-document.getElementById("usuarioTopo").innerText = data.user.email
-  
+
 await pegarNivelUsuario(data.user.email)
 
 controlarPermissoes()
-  
+
 document.querySelector(".loginContainer").style.display = "none"
 document.querySelector(".conteudo").style.display = "block"
-  
+
 }
 async function logout(){
 
@@ -2451,6 +2453,10 @@ await listarContratos()
 await listarPagamentos()
 await atualizarStatusAtrasados()
 await carregarSelects()
+}
+window.onerror = function(msg, url, line){
+console.error("ERRO:", msg, "Linha:", line)
+alert("Erro no sistema! Aperte F12 e veja o console.")
 }
 </script>
     
