@@ -963,95 +963,114 @@ listarUnidades()
 }
 async function salvarInquilino(){
 
-const nome = document.getElementById("nomeInquilino").value
-const cpf = document.getElementById("cpfInquilino").value
-const telefone = document.getElementById("telefoneInquilino").value
-const email = document.getElementById("emailInquilino").value
-const unidade_id = document.getElementById("unidadeSelect").value
+  const nome = document.getElementById("nomeInquilino").value
+  const cpf = document.getElementById("cpfInquilino").value
+  const telefone = document.getElementById("telefoneInquilino").value
+  const email = document.getElementById("emailInquilino").value
+  const unidade_id = document.getElementById("unidadeSelect").value
 
-const whatsapp = telefone
-const whatsappResponsavel = document.getElementById("whatsappResponsavel").value
+  console.log("unidade_id:", unidade_id)
+  
+  const whatsapp = telefone
+  const whatsappResponsavel = document.getElementById("whatsappResponsavel").value
 
-const valor_aluguel = Number(document.getElementById("valorAluguel").value)
-const valor_agua = Number(document.getElementById("valorAgua").value)
-const dia_vencimento = Number(document.getElementById("diaVencimento").value)
+  const valor_aluguel = Number(document.getElementById("valorAluguel").value) || 0
+  const valor_agua = Number(document.getElementById("valorAgua").value) || 0
+  const dia_vencimento = Number(document.getElementById("diaVencimento").value) || 1
 
-const data_inicio = document.getElementById("dataInicioContrato").value || null
-const data_fim = document.getElementById("dataFimContrato").value || null
-const status = document.getElementById("statusInquilino").value
+  const data_inicio = document.getElementById("dataInicioContrato").value || null
+  const data_fim = document.getElementById("dataFimContrato").value || null
+  const status = document.getElementById("statusInquilino").value
 
-const nome_responsavel = document.getElementById("nomeResponsavel").value
-const cpf_responsavel = document.getElementById("cpfResponsavel").value
-const telefone_responsavel = document.getElementById("telefoneResponsavel").value
+  const nome_responsavel = document.getElementById("nomeResponsavel").value
+  const cpf_responsavel = document.getElementById("cpfResponsavel").value
+  const telefone_responsavel = document.getElementById("telefoneResponsavel").value
 
-const rg = document.getElementById("rg").value
-const rg_responsavel = document.getElementById("rg_responsavel").value
+  const rg = document.getElementById("rg").value
+  const rg_responsavel = document.getElementById("rg_responsavel").value
 
-let result
+  let result
 
-if(window.idEditando){
+  // 🚨 VALIDAÇÃO IMPORTANTE
+  if(!unidade_id){
+    alert("Selecione uma unidade antes de salvar")
+    return
+  }
 
-  // ✅ UPDATE
-  result = await client.from("inquilinos").update({
-    nome,
-    nome_responsavel,
-    whatsapp,
-    whatsapp_responsavel: whatsappResponsavel,
-    rg,
-    rg_responsavel,
-    cpf,
-    cpf_responsavel,
-    email,
-    unidade_id,
-    valor_aluguel,
-    valor_agua,
-    dia_vencimento,
-    status,
-    data_inicio,
-    data_fim,
-    telefone,
-    telefone_responsavel
-  }).eq("id", window.idEditando)
+  if(!nome){
+    alert("Digite o nome do inquilino")
+    return
+  }
 
-  window.idEditando = null
+  if(window.idEditando){
 
-}else{
+    // ✅ UPDATE
+    result = await client
+      .from("inquilinos")
+      .update({
+        nome,
+        nome_responsavel,
+        whatsapp,
+        whatsapp_responsavel: whatsappResponsavel,
+        rg,
+        rg_responsavel,
+        cpf,
+        cpf_responsavel,
+        email,
+        unidade_id,
+        valor_aluguel,
+        valor_agua,
+        dia_vencimento,
+        status,
+        data_inicio,
+        data_fim,
+        telefone,
+        telefone_responsavel
+      })
+      .eq("id", window.idEditando)
 
-if(!unidade_id){
-  alert("Selecione uma unidade antes de salvar")
-  return
-}
-  result = await client.from("inquilinos").insert({
-    nome,
-    cpf,
-    telefone,
-    email,
-    unidade_id,
-    valor_aluguel,
-    valor_agua,
-    dia_vencimento,
-    status,
-    whatsapp,
-    whatsapp_responsavel: whatsappResponsavel,
-    nome_responsavel,
-    cpf_responsavel,
-    telefone_responsavel,
-    rg,
-    rg_responsavel,
-    data_inicio,
-    data_fim,
-     created_at: new Date().toISOString()
-  })
+    window.idEditando = null
 
-}
+  }else{
 
-if(result.error){
-  console.log("ERRO COMPLETO:", result.error)
-  alert(result.error.message)
-  return
-}
+    // ✅ INSERT
+    result = await client
+      .from("inquilinos")
+      .insert([
+        {
+          nome,
+          cpf,
+          telefone,
+          email,
+          unidade_id,
+          valor_aluguel,
+          valor_agua,
+          dia_vencimento,
+          status,
+          whatsapp,
+          whatsapp_responsavel: whatsappResponsavel,
+          nome_responsavel,
+          cpf_responsavel,
+          telefone_responsavel,
+          rg,
+          rg_responsavel,
+          data_inicio,
+          data_fim
+        }
+      ])
 
-listarInquilinos()
+  }
+
+  // 🔥 DEBUG COMPLETO
+  if(result.error){
+    console.log("ERRO COMPLETO:", result.error)
+    alert("Erro: " + result.error.message)
+    return
+  }
+
+  alert("Inquilino salvo com sucesso!")
+
+  listarInquilinos()
 
 }
 async function excluirInquilino(id){
@@ -2581,7 +2600,8 @@ mapaOcupacao()
 }
 
 if(tela==="inquilinos"){
-listarInquilinos()
+await carregarSelects() // 🔥 ESSENCIAL
+  listarInquilinos()
 }
 
 if(tela==="contratos"){
