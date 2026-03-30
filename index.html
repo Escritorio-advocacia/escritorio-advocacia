@@ -1041,39 +1041,60 @@ listarInquilinos()
 }
 async function listarInquilinos(){
 
-const {data} = await client.from("inquilinos").select("*")
+  const { data } = await client.from("inquilinos").select("*")
 
-let html=""
+  let html = ""
 
-data.forEach(i=>{
+  data.forEach(i => {
 
-html += `
-<p>
-<b>${i.nome}</b> (CPF: ${i.cpf} | RG: ${i.rg || "-"})
-<br>
-${i.nome_responsavel ? "<b>" + i.nome_responsavel + "</b> (CPF: " + i.cpf_responsavel + " | RG: " + (i.rg_responsavel || "-") + ")" : ""}
-<br>
-💰 R$ ${i.valor_aluguel}
-</p>
+    html += `
+    <p>
 
-<button onclick="cobrarWhatsApp('${i.nome}', '${i.whatsapp}', '${i.whatsapp_responsavel}', ${i.valor_aluguel})">
-📲 Cobrar
-</button>
+    <b>${i.nome}</b>
+    ${i.nome_responsavel ? `<br><b>${i.nome_responsavel}</b>` : ""}
 
-<button onclick="simularInquilino(${i.valor_aluguel}, ${i.valor_agua}, ${i.dia_vencimento})">Simular</button>
+    <br>📞 WhatsApp: ${i.whatsapp || "-"}
+    ${i.whatsapp_responsavel ? `<br>👤 Resp: ${i.whatsapp_responsavel}` : ""}
 
-<button onclick="verHistoricoInquilino('${i.id}')">📄 Histórico</button>
+    <br>🪪 CPF: ${i.cpf || "-"}
+    ${i.cpf_responsavel ? `<br>👤 CPF Resp: ${i.cpf_responsavel}` : ""}
 
-<button onclick="editarInquilino('${i.id}')">✏️ Editar</button>
+    <br>🆔 RG: ${i.rg || "-"}
+    ${i.rg_responsavel ? `<br>👤 RG Resp: ${i.rg_responsavel}` : ""}
 
-<button onclick="excluirInquilino('${i.id}')">🗑️ Excluir</button>
-`
-})
-WhatsApp: ${i.whatsapp}
-${i.whatsapp_responsavel ? `<br>Resp: ${i.whatsapp_responsavel}` : ""}
-document.getElementById("listaInquilinos").innerHTML =
-  
-'<div class="listaSistema">'+html+'</div>'
+    <br>💰 R$ ${i.valor_aluguel || 0}
+
+    <br><br>
+
+    <button onclick="cobrarWhatsApp('${i.nome}', '${i.whatsapp}', '${i.whatsapp_responsavel}', ${i.valor_aluguel || 0})">
+    📲 Cobrar
+    </button>
+
+    <button onclick="simularInquilino(${i.valor_aluguel || 0}, ${i.valor_agua || 0}, ${i.dia_vencimento || 1})">
+    💰 Simular
+    </button>
+
+    <button onclick="verHistoricoInquilino('${i.id}')">
+    📄 Histórico
+    </button>
+
+    <button onclick="editarInquilino('${i.id}')">
+    ✏️ Editar
+    </button>
+
+    <button onclick="excluirInquilino('${i.id}')">
+    🗑 Excluir
+    </button>
+
+    <hr>
+
+    </p>
+    `
+
+  })
+
+  document.getElementById("listaInquilinos").innerHTML =
+  '<div class="listaSistema">' + html + '</div>'
 
 }
 function cobrarWhatsApp(nome, whatsapp1, whatsapp2, valor){
@@ -1083,13 +1104,12 @@ Seu aluguel está pendente.
 
 💰 Valor: R$ ${valor}
 
-Por favor, realizar o pagamento. Obrigado!`
+Por favor, realizar o pagamento.`
 
   let numeros = [whatsapp1, whatsapp2].filter(n => n && n.trim() !== "")
 
   numeros.forEach(numero => {
 
-    // limpa tudo (remove espaços, traços, etc)
     numero = numero.replace(/\D/g, "")
 
     let link = `https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`
