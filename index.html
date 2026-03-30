@@ -1017,7 +1017,10 @@ if(window.idEditando){
 
 }else{
 
-  // ✅ INSERT
+if(!unidade_id){
+  alert("Selecione uma unidade antes de salvar")
+  return
+}
   result = await client.from("inquilinos").insert({
     nome,
     cpf,
@@ -1036,7 +1039,8 @@ if(window.idEditando){
     rg,
     rg_responsavel,
     data_inicio,
-    data_fim
+    data_fim,
+     created_at: new Date().toISOString()
   })
 
 }
