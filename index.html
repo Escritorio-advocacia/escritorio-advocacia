@@ -1039,7 +1039,7 @@ data.forEach(i=>{
 html += `
 <p>
 
-${i.nome} - R$${i.valor_aluguel}
+${i.nome} ${i.nome_responsavel ? " / " + i.nome_responsavel : ""} - R$${i.valor_aluguel}
 
 <button onclick="simularInquilino(${i.valor_aluguel},${i.valor_agua},${i.dia_vencimento})">
 Simular
@@ -1113,7 +1113,11 @@ const valor = document.getElementById("valorContrato").value
 const vencimento = document.getElementById("vencimentoContrato").value
 
 const arquivo = document.getElementById("contratoPDF").files[0]
-
+const { data: inquilino } = await client
+.from("inquilinos")
+.select("*")
+.eq("id", inquilino_id)
+.single()
 let urlContrato = null
 
 // upload do contrato
@@ -1500,8 +1504,12 @@ alert("Pagamento registrado!")
 
 listarPagamentos()
 
-gerarReciboPDF(inquilino.nome,total,pagamento.mes)
-
+gerarReciboPDF(
+inquilino.nome,
+total,
+pagamento.mes,
+inquilino.nome_responsavel
+)
 listarPagamentos()
 
 }
@@ -1635,20 +1643,24 @@ div.innerHTML = html
 
 }
 
-function cobrarWhatsapp(telefone,nome,valor){
+function cobrarWhatsapp(telefone,nome,valor,telefone2,nome2){
 
-const mensagem = `Olá ${nome}.
+const mensagem1 = `Olá ${nome}.
+Seu aluguel no valor de R$ ${valor} está em atraso.`
 
-Seu aluguel no valor de R$ ${valor} está em atraso.
+window.open(`https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem1)}`)
 
-Por favor regularize o pagamento.`
+if(telefone2){
+const mensagem2 = `Olá ${nome2}.
+O aluguel vinculado ao contrato está em atraso.
+Valor: R$ ${valor}`
 
-const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`
-
-window.open(url,"_blank")
-
+setTimeout(()=>{
+window.open(`https://wa.me/55${telefone2}?text=${encodeURIComponent(mensagem2)}`)
+},1000)
 }
 
+}
 async function cobrarTodos(){
 
 const hoje = new Date()
@@ -1867,7 +1879,13 @@ if(i.nome.toLowerCase().includes(texto)){
 html += `
 <p>
 ${i.nome} - ${i.telefone}
-<button onclick="cobrarWhatsapp('${i.telefone}','${i.nome}',${i.valor_aluguel})">
+cobrarWhatsapp(
+'${i.telefone}',
+'${i.nome}',
+'${i.valor_aluguel}',
+'${i.telefone_responsavel}',
+'${i.nome_responsavel}'
+)
 📲 Cobrar
 </button>
 </p>
@@ -2147,27 +2165,26 @@ TOTAL: ${total.toFixed(2)}`
 )
 
 }
-  function gerarReciboPDF(nome,valor,mes){
+ function gerarReciboPDF(nome,valor,mes,nome2){
 
 const { jsPDF } = window.jspdf
-
 const doc = new jsPDF()
 
 doc.text("RECIBO DE ALUGUEL",20,20)
 
 doc.text(`Inquilino: ${nome}`,20,40)
 
-doc.text(`Mês: ${mes}`,20,50)
+if(nome2){
+doc.text(`Responsável: ${nome2}`,20,50)
+}
 
-doc.text(`Valor pago: R$ ${valor}`,20,60)
-
-doc.text(`Data: ${new Date().toLocaleDateString()}`,20,70)
-
-doc.text("Assinatura digital",20,90)
+doc.text(`Mês: ${mes}`,20,60)
+doc.text(`Valor pago: R$ ${valor}`,20,70)
+doc.text(`Data: ${new Date().toLocaleDateString()}`,20,80)
 
 doc.save("recibo.pdf")
 
-}
+} 
 async function login(){
 
 const email = document.getElementById("emailLogin").value
