@@ -612,6 +612,10 @@ transition: all 0.2s ease;
 <div id="inquilinos" class="tela">
 <h3>Inquilinos</h3>
   
+<input id="dataInicioContrato" type="date" placeholder="Data início">
+  
+<input id="dataFimContrato" type="date" placeholder="Data término">
+  
 <input id="buscaInquilino" placeholder="Buscar inquilino" onkeyup="buscarInquilino()">
 
 <input id="nomeInquilino" placeholder="Nome completo">
@@ -956,14 +960,13 @@ const unidade_id = document.getElementById("unidadeSelect").value
 const valor_aluguel = document.getElementById("valorAluguel").value
 const valor_agua = document.getElementById("valorAgua").value
 const dia_vencimento = document.getElementById("diaVencimento").value
-
+const data_inicio = document.getElementById("dataInicioContrato").value
+const data_fim = document.getElementById("dataFimContrato").value
 const status = document.getElementById("statusInquilino").value
 
   if(window.idEditando){
 
-await client
-.from("inquilinos")
-.update({
+await client.from("inquilinos").insert({
 nome,
 cpf,
 telefone,
@@ -972,7 +975,9 @@ unidade_id,
 valor_aluguel,
 valor_agua,
 dia_vencimento,
-status
+status,
+data_inicio,
+data_fim
 })
 .eq("id", window.idEditando)
 
