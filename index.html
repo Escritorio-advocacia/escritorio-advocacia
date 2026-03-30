@@ -600,7 +600,7 @@ transition: all 0.2s ease;
 <h3>Mapa de Ocupação</h3>
 <div id="mapaOcupacao"></div>
 
-<select id="predioSelect"></select>
+<select id="predioSelect" onchange="listarUnidades(); mapaOcupacao()"></select>
 
 <input id="numeroUnidade" placeholder="Número ou nome da unidade">
 
@@ -879,7 +879,12 @@ await carregarSelects()
 
 async function listarUnidades(){
 
-const {data} = await client.from("unidades").select("*")
+const predio_id = document.getElementById("predioSelect").value
+
+const {data} = await client
+.from("unidades")
+.select("*")
+.eq("predio_id", predio_id) // 🔥 FILTRO AQUI
 
 let html=""
 
@@ -1773,9 +1778,12 @@ cobrarWhatsapp(i.telefone,i.nome,i.valor)
 }
 async function mapaOcupacao(){
 
+const predio_id = document.getElementById("predioSelect").value
+
 const { data: unidades } = await client
 .from("unidades")
 .select("*")
+.eq("predio_id", predio_id) // 🔥 FILTRO
 
 const { data: contratos } = await client
 .from("contratos")
