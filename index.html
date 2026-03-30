@@ -968,8 +968,9 @@ const cpf = document.getElementById("cpfInquilino").value
 const telefone = document.getElementById("telefoneInquilino").value
 const email = document.getElementById("emailInquilino").value
 const unidade_id = document.getElementById("unidadeSelect").value
-const whatsappResponsavel = document.getElementById("whatsappResponsavel").value
   
+const whatsapp = document.getElementById("whatsapp").value
+const whatsappResponsavel = document.getElementById("whatsappResponsavel").value
 const valor_aluguel = document.getElementById("valorAluguel").value
 const valor_agua = document.getElementById("valorAgua").value
 const dia_vencimento = document.getElementById("diaVencimento").value
@@ -982,26 +983,24 @@ const telefone_responsavel = document.getElementById("telefoneResponsavel").valu
   if(window.idEditando){
 const rg = document.getElementById("rg").value
 const rg_responsavel = document.getElementById("rg_responsavel").value
-await client.from("inquilinos").insert({
-whatsapp_responsavel,
-rg,
-rg_responsavel,
-nome_responsavel,
-cpf_responsavel,
-telefone_responsavel,
-nome,
-cpf,
-telefone,
-email,
-unidade_id,
-valor_aluguel,
-valor_agua,
-dia_vencimento,
-status,
-data_inicio,
-data_fim
-
-})
+await client.from("inquilinos").insert([{
+  nome,
+  nome_responsavel,
+  whatsapp,
+  whatsapp_responsavel,
+  rg,
+  rg_responsavel,
+  cpf,
+  cpf_responsavel,
+  email,
+  unidade_id,
+  valor_aluguel,
+  valor_agua,
+  dia_vencimento,
+  status,
+  data_inicio,
+  data_fim
+}])
 .eq("id", window.idEditando)
 
 window.idEditando = null
