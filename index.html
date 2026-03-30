@@ -619,7 +619,13 @@ transition: all 0.2s ease;
 <input id="buscaInquilino" placeholder="Procurar inquilino" onkeyup="buscarInquilino()">
 
 <input id="nomeInquilino" placeholder="Nome completo">
-
+  
+<input id="nomeResponsavel" placeholder="Nome do 2º responsável">
+  
+<input id="cpfResponsavel" placeholder="CPF do responsável">
+  
+<input id="telefoneResponsavel" placeholder="Telefone do responsável">
+  
 <input id="cpfInquilino" placeholder="CPF">
 
 <input id="telefoneInquilino" placeholder="Telefone ou WhatsApp">
@@ -963,10 +969,15 @@ const dia_vencimento = document.getElementById("diaVencimento").value
 const data_inicio = document.getElementById("dataInicioContrato").value
 const data_fim = document.getElementById("dataFimContrato").value
 const status = document.getElementById("statusInquilino").value
-
+const nome_responsavel = document.getElementById("nomeResponsavel").value
+const cpf_responsavel = document.getElementById("cpfResponsavel").value
+const telefone_responsavel = document.getElementById("telefoneResponsavel").value
   if(window.idEditando){
 
 await client.from("inquilinos").insert({
+nome_responsavel,
+cpf_responsavel,
+telefone_responsavel,
 nome,
 cpf,
 telefone,
@@ -978,6 +989,7 @@ dia_vencimento,
 status,
 data_inicio,
 data_fim
+
 })
 .eq("id", window.idEditando)
 
