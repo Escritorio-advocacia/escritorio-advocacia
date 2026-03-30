@@ -1045,17 +1045,7 @@ data.forEach(i=>{
 
 html += `
 <p>
-<b>${i.nome}</b>
-(CPF: ${i.cpf} | RG: ${i.rg || "-"})
-
-${i.nome_responsavel ? `
-<br>
-<b>${i.nome_responsavel}</b>
-(CPF: ${i.cpf_responsavel} | RG: ${i.rg_responsavel || "-"})
-` : ""}
-
-<br>
-💰 R$ ${i.valor_aluguel}
+${i.nome} ${i.nome_responsavel ? " / " + i.nome_responsavel : ""}
 </p>
 `
 
