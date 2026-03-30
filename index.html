@@ -2404,7 +2404,12 @@ btn.style.display = "none"
 
 }
 function abrirTela(tela){
-
+if(tela==="predios"){
+listarPredios()
+listarUnidades()
+mapaOcupacao()
+carregarSelects() // 👈 ESSENCIAL
+}
 document.querySelectorAll(".tela").forEach(div => {
 div.style.display = "none"
 })
@@ -2442,6 +2447,7 @@ listarPagamentos()
 
 }
 window.onload = async () => {
+await carregarSelects()
 document.querySelector(".conteudo").style.display = "block"
 abrirTela("dashboard")
   
@@ -2452,7 +2458,6 @@ await listarInquilinos()
 await listarContratos()
 await listarPagamentos()
 await atualizarStatusAtrasados()
-await carregarSelects()
 }
 window.onerror = function(msg, url, line){
 console.error("ERRO:", msg, "Linha:", line)
