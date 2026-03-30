@@ -711,27 +711,23 @@ const client = createClient(supabaseUrl, supabaseKey)
 
   
 async function salvarPredio(){
-  
+
 const nome = document.getElementById("nomePredio").value
 
 if(window.predioEditando){
 
-await client
-.from("predios")
-.update({nome})
-.eq("id",window.predioEditando)
-
+await client.from("predios").update({nome}).eq("id",window.predioEditando)
 window.predioEditando = null
 
 }else{
 
-await client
-.from("predios")
-.insert({nome})
+await client.from("predios").insert({nome})
 
 }
 
+// 🔥 ATUALIZA AUTOMÁTICO
 listarPredios()
+await carregarSelects()
 
 }
 async function excluirPredio(id){
@@ -868,17 +864,16 @@ window.predioEditando = id
 async function salvarUnidade(){
 
 const predio_id = document.getElementById("predioSelect").value
-
 const numero = document.getElementById("numeroUnidade").value
 
 await client.from("unidades").insert({
-
 predio_id,
 numero
-
 })
 
 listarUnidades()
+mapaOcupacao()
+await carregarSelects()
 
 }
 
@@ -2463,6 +2458,14 @@ window.onerror = function(msg, url, line){
 console.error("ERRO:", msg, "Linha:", line)
 alert("Erro no sistema! Aperte F12 e veja o console.")
 }
+setInterval(() => {
+
+listarPagamentos()
+listarInquilinos()
+listarPredios()
+carregarDashboard()
+
+}, 10000)
 </script>
     
 </div>
