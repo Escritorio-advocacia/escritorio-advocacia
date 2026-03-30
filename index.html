@@ -2142,7 +2142,6 @@ async function login(){
 
 const email = document.getElementById("emailLogin").value
 const senha = document.getElementById("senhaLogin").value
-document.getElementById("usuarioTopo").innerText = data.user.email
 const { data, error } = await client.auth.signInWithPassword({
 email: email,
 password: senha
