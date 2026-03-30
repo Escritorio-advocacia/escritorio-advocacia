@@ -640,6 +640,10 @@ transition: all 0.2s ease;
 
 <input id="diaVencimento" placeholder="Dia do vencimento">
   
+<input type="text" id="rg" placeholder="RG do inquilino">
+  
+<input type="text" id="rg_responsavel" placeholder="RG do responsável">
+  
 <select id="statusInquilino">
 <option value="ativo">Ativo</option>
 <option value="inativo">Inativo</option>
@@ -973,8 +977,11 @@ const nome_responsavel = document.getElementById("nomeResponsavel").value
 const cpf_responsavel = document.getElementById("cpfResponsavel").value
 const telefone_responsavel = document.getElementById("telefoneResponsavel").value
   if(window.idEditando){
-
+const rg = document.getElementById("rg").value
+const rg_responsavel = document.getElementById("rg_responsavel").value
 await client.from("inquilinos").insert({
+rg,
+rg_responsavel,
 nome_responsavel,
 cpf_responsavel,
 telefone_responsavel,
@@ -1038,8 +1045,19 @@ data.forEach(i=>{
 
 html += `
 <p>
+<b>${i.nome}</b>
+(CPF: ${i.cpf} | RG: ${i.rg || "-"})
 
-${i.nome} ${i.nome_responsavel ? " / " + i.nome_responsavel : ""} - R$${i.valor_aluguel}
+${i.nome_responsavel ? `
+<br>
+<b>${i.nome_responsavel}</b>
+(CPF: ${i.cpf_responsavel} | RG: ${i.rg_responsavel || "-"})
+` : ""}
+
+<br>
+💰 R$ ${i.valor_aluguel}
+</p>
+`
 
 <button onclick="simularInquilino(${i.valor_aluguel},${i.valor_agua},${i.dia_vencimento})">
 Simular
