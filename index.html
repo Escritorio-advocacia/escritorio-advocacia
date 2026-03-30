@@ -1045,16 +1045,20 @@ data.forEach(i=>{
 
 html += `
 <p>
-${i.nome} ${i.nome_responsavel ? " / " + i.nome_responsavel : ""}
+<b>${i.nome}</b>
+(CPF: ${i.cpf} | RG: ${i.rg || "-"})
+<br>
+${i.nome_responsavel ? "<b>" + i.nome_responsavel + "</b> (CPF: " + i.cpf_responsavel + " | RG: " + (i.rg_responsavel || "-") + ")" : ""}
+<br>
+💰 R$ ${i.valor_aluguel}
 </p>
-`
 
-<button onclick="simularInquilino(${i.valor_aluguel},${i.valor_agua},${i.dia_vencimento})">
+<button onclick="simularInquilino(${i.valor_aluguel}, ${i.valor_agua}, ${i.dia_vencimento})">
 Simular
 </button>
 
 <button onclick="verHistoricoInquilino('${i.id}')">
-📜 Histórico
+📄 Histórico
 </button>
 
 <button onclick="editarInquilino('${i.id}')">
@@ -1062,10 +1066,8 @@ Simular
 </button>
 
 <button onclick="excluirInquilino('${i.id}')">
-🗑 Excluir
+🗑️ Excluir
 </button>
-
-</p>
 `
 })
 
