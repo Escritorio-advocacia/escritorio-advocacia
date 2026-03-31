@@ -729,6 +729,24 @@ transition: all 0.2s ease;
   
 <h2>Recibo</h2>
 <div id="recibo"></div>
+    <div id="modalContrato" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999; justify-content:center; align-items:center;">
+
+  <div style="background:white; width:80%; height:80%; border-radius:10px; overflow:hidden; display:flex; flex-direction:column;">
+
+    <div style="padding:10px; display:flex; justify-content:space-between; background:#f1f5f9;">
+      <b>📄 Visualizar contrato</b>
+      
+      <div>
+        <button onclick="baixarContrato()">⬇️ Baixar</button>
+        <button onclick="fecharContrato()">❌ Fechar</button>
+      </div>
+    </div>
+
+    <iframe id="iframeContrato" style="flex:1; border:none;"></iframe>
+
+  </div>
+
+</div>
 <script>
 
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
@@ -2455,11 +2473,29 @@ listarUnidades()
 mapaOcupacao()
 
 }
+let contratoAtual = ""
+
 function verContrato(arquivo){
 
-const url = `https://foegiwrgbkkhsqzpgcou.supabase.co/storage/v1/object/public/contratos/${arquivo}`
+  contratoAtual = arquivo
 
-window.open(url,"_blank")
+  const url = `https://foegiwrgbkkhsqzpgcou.supabase.co/storage/v1/object/public/contratos/${arquivo}`
+
+  document.getElementById("iframeContrato").src = url
+  document.getElementById("modalContrato").style.display = "flex"
+
+}
+  function fecharContrato(){
+  document.getElementById("modalContrato").style.display = "none"
+}
+  function baixarContrato(){
+
+  const url = `https://foegiwrgbkkhsqzpgcou.supabase.co/storage/v1/object/public/contratos/${contratoAtual}`
+
+  const a = document.createElement("a")
+  a.href = url
+  a.download = "contrato.pdf"
+  a.click()
 
 }
 async function atualizarStatusAtrasados(){
