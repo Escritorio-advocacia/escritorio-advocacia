@@ -650,8 +650,9 @@ transition: all 0.2s ease;
 
 <input id="diaVencimento" placeholder="Dia do vencimento">
 
+<input type="file" id="contratoPDF">
+
 <select id="statusInquilino">
-  <input type="file" id="contratoPDF">
   <option value="ativo">Ativo</option>
   <option value="inativo">Inativo</option>
 </select>
@@ -994,7 +995,6 @@ async function salvarInquilino() {
   const data_inicio = document.getElementById("dataInicioContrato").value || null
   const data_fim = document.getElementById("dataFimContrato").value || null
   const status = document.getElementById("statusInquilino").value
-  const contrato_url = document.getElementById("contratoPDF")?.value || ""
   const arquivo = document.getElementById("contratoPDF").files[0]
 
   let contrato_url = null
