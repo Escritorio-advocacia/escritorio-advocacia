@@ -651,6 +651,7 @@ transition: all 0.2s ease;
 <input id="diaVencimento" placeholder="Dia do vencimento">
 
 <select id="statusInquilino">
+  <input type="file" id="contratoPDF">
   <option value="ativo">Ativo</option>
   <option value="inativo">Inativo</option>
 </select>
@@ -993,16 +994,22 @@ async function salvarInquilino(){
   const data_inicio = document.getElementById("dataInicioContrato").value || null
   const data_fim = document.getElementById("dataFimContrato").value || null
   const status = document.getElementById("statusInquilino").value
+  const contrato_url = document.getElementById("contratoPDF")?.value || ""
+  const arquivo = document.getElementById("contratoPDF").files[0]
 
-  // 🔒 validação
-  if(!nome){
-    alert("Digite o nome do inquilino")
-    return
-  }
+  let contrato_url = null
 
-  if(!unidade_id){
-    alert("Selecione uma unidade")
-    return
+  // 🔥 UPLOAD DO CONTRATO
+  if(arquivo){
+    const nomeArquivo = Date.now() + "_" + arquivo.name
+
+    const { error } = await client.storage
+      .from("contratos")
+      .upload(nomeArquivo, arquivo)
+
+    if(!error){
+      contrato_url = nomeArquivo
+    }
   }
 
   const { error } = await client
@@ -1027,7 +1034,9 @@ async function salvarInquilino(){
         status,
 
         data_inicio,
-        data_fim
+        data_fim,
+
+        contrato_url
       }
     ])
 
@@ -1037,7 +1046,7 @@ async function salvarInquilino(){
     return
   }
 
-  alert("Inquilino salvo com sucesso!")
+  alert("Inquilino salvo com contrato!")
 
   listarInquilinos()
 }
@@ -1090,19 +1099,21 @@ async function listarInquilinos(){
     💰 Simular
     </button>
 
-    <button onclick="verHistoricoInquilino('${i.id}')">
-    📄 Histórico
-    </button>
+   <button onclick="verHistoricoInquilino('${i.id}')">📊 Histórico</button>
 
-    <button onclick="editarInquilino('${i.id}')">
-    ✏️ Editar
-    </button>
+<button onclick="editarInquilino('${i.id}')">✏️ Editar</button>
 
-    <button onclick="excluirInquilino('${i.id}')">
-    🗑 Excluir
-    </button>
+<button onclick="excluirInquilino('${i.id}')">🗑 Excluir</button>
 
-    <hr>
+${i.contrato_url ? `
+  <button onclick="verContrato('${i.contrato_url}')">
+    📄 Ver contrato
+  </button>
+` : `
+  <span>Sem contrato</span>
+`}
+
+<hr>
 
     </p>
     `
