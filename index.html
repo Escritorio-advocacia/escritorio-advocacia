@@ -1671,7 +1671,8 @@ function fecharModal(){
   }
 }
 async function confirmarPagamento(id, forma){
-
+alert("CONFIRMAR PAGAMENTO")
+  
   const { data: pagamento, error } = await client
     .from("pagamentos")
     .select("*")
@@ -1806,7 +1807,8 @@ document.getElementById("relatorio").innerHTML = html
 
 }
 async function pagar(id, forma){
-
+alert("CONFIRMAR PAGAMENTO")
+  
 const { data: pagamento } = await client
 .from("pagamentos")
 .select("*")
