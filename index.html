@@ -1472,7 +1472,7 @@ pagamentos.forEach(pagamento => {
   const telefone = inquilino?.whatsapp || ""
 
   // 🔥 AGORA unidade e prédio (ordem correta)
-  const unidade = unidades.find(u => u.id == contrato?.unidade_id)
+  const unidade = unidades.find(u => String(u.id) === String(contrato?.unidade_id))
   const predio = predios.find(p => p.id == unidade?.predio_id)
 
   const enderecoCompleto = predio?.nome || "Não informado"
@@ -1798,7 +1798,7 @@ async function gerarReciboCompleto(pagamento_id){
   const { data: unidade } = await client
     .from("unidades")
     .select("*")
-    .eq("id", contrato.unidade_id)
+    .eq("id", String(contrato.unidade_id))
     .single()
 
   // 🔥 prédio
