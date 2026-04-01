@@ -1381,11 +1381,11 @@ async function listarPagamentos(filtro = null, busca = "") {
   const lista = document.getElementById("listaPagamentos")
   lista.innerHTML = ""
 
-  const { data: pagamentos, error } = await client
+ const { data: pagamentos, error } = await client
   .from("pagamentos")
   .select(`
   *,
-  contratos!pagamentos_contrato_fk (
+  contratos (
     dia_vencimento,
     inquilinos (
       nome
