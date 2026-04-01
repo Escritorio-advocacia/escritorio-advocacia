@@ -1777,17 +1777,8 @@ const { data: predio } = await client
   .eq("id", unidade.predio_id)
   .single()
 
-gerarRecibo({
-  nome: nome,
-  endereco: predio?.nome || "-",
-  unidade: unidade?.numero || "-",
-  mes: pagamento.mes,
-  aluguel: aluguel,
-  agua: agua,
-  juros: juros,
-  total: total,
-  forma: forma
-})
+const dados = await montarDadosRecibo(id)
+gerarRecibo(dados)
 
 }
 async function gerarReciboCompleto(pagamento_id){
@@ -2608,6 +2599,55 @@ TOTAL: ${total.toFixed(2)}`
 
 )
 
+}
+async function montarDadosRecibo(pagamento_id){
+
+  const { data: pagamento } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("id", pagamento_id)
+    .single()
+
+  const { data: contrato } = await client
+    .from("contratos")
+    .select("*")
+    .eq("id", pagamento.contrato_id)
+    .single()
+
+  const { data: inquilino } = await client
+    .from("inquilinos")
+    .select("*")
+    .eq("id", contrato.inquilino_id)
+    .single()
+
+  const { data: unidade } = await client
+    .from("unidades")
+    .select("*")
+    .eq("id", contrato.unidade_id)
+    .single()
+
+  const { data: predio } = await client
+    .from("predios")
+    .select("*")
+    .eq("id", unidade.predio_id)
+    .single()
+
+  const aluguel = pagamento.valor || 0
+  const agua = pagamento.valor_agua || 0
+  const juros = 0
+  const total = aluguel + agua + juros
+
+  return {
+    nome: inquilino?.nome || "-",
+    endereco: predio?.nome || "-",
+    unidade: unidade?.numero || "-",
+    mes: pagamento.mes,
+    aluguel,
+    agua,
+    juros,
+    total,
+    forma: pagamento.forma_pagamento || "PENDENTE"
+  }
 }
 function gerarRecibo(dados) {
 
