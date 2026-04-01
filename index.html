@@ -485,6 +485,59 @@ transform:scale(1.05);
   *{
 transition: all 0.2s ease;
 }
+.cardPagamento{
+  background:white;
+  padding:16px;
+  margin:10px;
+  border-radius:12px;
+  box-shadow:0 6px 15px rgba(0,0,0,0.1);
+}
+
+.acoes{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+
+.acoes button{
+  flex:1;
+  min-width:90px;
+  font-size:13px;
+  padding:10px;
+  border-radius:8px;
+}
+
+/* MOBILE TOP */
+@media(max-width:600px){
+
+  .conteudo{
+    padding:15px;
+  }
+
+  .cardPagamento{
+    padding:12px;
+  }
+
+  .acoes{
+    flex-direction:column;
+  }
+
+  .acoes button{
+    width:100%;
+  }
+
+  .sidebar{
+    display:none; /* some menu no celular */
+  }
+
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+}
 </style>
   
 </head>
@@ -1483,34 +1536,34 @@ async function listarPagamentos(filtro = null, busca = "") {
         ${
           pagamento.status !== "pago"
           ? `
-        <button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
+      <div class="acoes">
+
+<button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
 💳 Pagar
 </button>
-          <button onclick="enviarWhatsApp(
-            '${nome}',
-            '${telefone}',
-            ${total},
-            ${pagamento.mes}
-          )">
-            📲 WhatsApp
-          </button>
 
-          <button onclick="gerarRecibo({
+<button onclick="enviarWhatsApp(
+  '${nome}',
+  '${telefone}',
+  ${total},
+  ${pagamento.mes}
+)">
+📲 WhatsApp
+</button>
+
+<button onclick="gerarRecibo({
   nome: '${nome}',
   mes: ${pagamento.mes},
   aluguel: ${aluguel},
   agua: ${agua},
- juros: ${juros},
+  juros: ${juros},
   total: ${total},
   forma: '${pagamento.forma_pagamento || ""}'
 })">
-            📄 Recibo
-          </button>
-          `
-          : `<span style="color:green; font-weight:bold;">✔ Pago</span>`
-        }
+📄 Recibo
+</button>
 
-      </div>
+</div>
     `
 
     lista.appendChild(div)
@@ -1537,7 +1590,7 @@ function criarCard(pagamento, total) {
  const nome = pagamento.nome || "Inquilino"
 
   div.innerHTML = `
-    <div style="border:1px solid ${cor}; padding:15px; margin:10px; border-radius:10px; background:white;">
+    <div class="cardPagamento" style="border-left:5px solid ${cor};">
       
       <b style="font-size:16px;">${nome}</b><br><br>
 
