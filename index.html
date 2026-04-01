@@ -1383,7 +1383,28 @@ async function listarPagamentos(filtro = null, busca = "") {
     .select("*")
 
   pagamentos.forEach(pagamento => {
+const hoje = new Date()
+const vencimento = new Date(pagamento.ano, pagamento.mes - 1, pagamento.dia_vencimento)
 
+const diasAtraso = Math.floor((hoje - vencimento) / (1000 * 60 * 60 * 24))
+
+let total = pagamento.valor
+let agua = pagamento.valor_agua || 0
+
+if (diasAtraso > 5) {
+
+  // 🏠 JUROS DO ALUGUEL (conta TODOS os dias)
+  const jurosAluguel = pagamento.valor * 0.005 * diasAtraso
+  total += jurosAluguel
+
+  // 🚿 MULTA DA ÁGUA (aplica uma vez)
+  const multaAgua = agua * 0.10
+  agua += multaAgua
+
+  pagamento.status = "atrasado"
+}
+
+total += agua
     // 🔴 FILTRO POR STATUS
     if (filtro && pagamento.status !== filtro) return
 
@@ -1402,7 +1423,7 @@ async function listarPagamentos(filtro = null, busca = "") {
     div.innerHTML = `
       <div style="border:1px solid ${cor}; padding:10px; margin:10px; border-radius:8px;">
         <b>${pagamento.nome || "Inquilino"}</b><br>
-        Mês ${pagamento.mes} - R$ ${pagamento.valor}<br>
+        Mês ${pagamento.mes} - R$ ${total.toFixed(2)}<br>
         Status: ${pagamento.status}
       </div>
     `
