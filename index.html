@@ -1381,9 +1381,31 @@ async function listarPagamentos(filtro = null, busca = "") {
   const lista = document.getElementById("listaPagamentos")
   lista.innerHTML = ""
 
-  const { data: pagamentos } = await client
-  .from("pagamentos")
-  .select("*")
+  const { data: pagamentos, error } = await client
+    .from("pagamentos")
+    .select(`
+      *,
+      contratos (
+        dia_vencimento,
+        inquilinos (
+          nome,
+          whatsapp
+        )
+      )
+    `)
+
+  // 🔒 proteção contra erro
+  if (error || !pagamentos) {
+    console.log("Erro ao carregar pagamentos", error)
+    lista.innerHTML = "Erro ao carregar pagamentos"
+    return
+  }
+
+  if (pagamentos.length === 0) {
+    lista.innerHTML = "Nenhum pagamento encontrado"
+    return
+  }
+
   const hoje = new Date()
   const mesAtual = hoje.getMonth() + 1
 
@@ -1392,6 +1414,9 @@ async function listarPagamentos(filtro = null, busca = "") {
     // ❌ NÃO MOSTRAR MESES FUTUROS
     if (pagamento.mes > mesAtual) return
 
+    // 🔥 dados do contrato
+    const nome = pagamento.contratos?.inquilinos?.nome || "Inquilino"
+    const telefone = pagamento.contratos?.inquilinos?.whatsapp || ""
     const diaVencimento = pagamento.contratos?.dia_vencimento || 5
 
     const vencimento = new Date(
@@ -1404,36 +1429,27 @@ async function listarPagamentos(filtro = null, busca = "") {
       (hoje - vencimento) / (1000 * 60 * 60 * 24)
     )
 
-    let total = pagamento.valor
+    let aluguel = pagamento.valor || 0
     let agua = pagamento.valor_agua || 0
     let juros = 0
 
+    // 🔥 JUROS + MULTA (CORRIGIDO)
     if (diasAtraso > 5 && pagamento.status !== "pago") {
-    juros = pagamento.valor * 0.005 * diasAtraso
-    }
-    // 🔥 APLICA JUROS E MULTA
-    if (diasAtraso > 5 && pagamento.status !== "pago") {
+      juros = aluguel * 0.005 * diasAtraso
 
-      // 🏠 juros aluguel (0.5% ao dia)
-      const jurosAluguel = pagamento.valor * 0.005 * diasAtraso
-      total += jurosAluguel
-
-      // 🚿 multa água (10%)
       const multaAgua = agua * 0.10
       agua += multaAgua
 
       pagamento.status = "atrasado"
     }
 
-    total += agua
+    let total = aluguel + agua + juros
 
-    // 🔴 FILTRO POR STATUS
-    if (filtro && pagamento.status.toLowerCase() !== filtro) return
+    // 🔴 FILTRO
+    if (filtro && pagamento.status !== filtro) return
 
-    // 🔍 FILTRO POR BUSCA
-  const nome = pagamento.contratos?.inquilinos?.nome || ""
-
-if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
+    // 🔍 BUSCA
+    if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
 
     // 🎨 COR
     let cor = "#ccc"
@@ -1441,9 +1457,61 @@ if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
     if (pagamento.status === "pendente") cor = "orange"
     if (pagamento.status === "atrasado") cor = "red"
 
-    // 🟡 CARD
-   
-  criarCard(pagamento, total)
+    const div = document.createElement("div")
+
+    div.innerHTML = `
+      <div style="border:1px solid ${cor}; padding:15px; margin:10px; border-radius:10px; background:white;">
+        
+        <b style="font-size:16px;">${nome}</b><br><br>
+
+        📅 Mês: ${pagamento.mes}<br>
+        🏠 Aluguel: R$ ${aluguel.toFixed(2)}<br>
+        🚿 Água: R$ ${agua.toFixed(2)}<br>
+        💸 Juros: R$ ${juros.toFixed(2)}<br>
+
+        <br>
+        <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
+
+        <span style="color:${cor}; font-weight:bold;">
+          Status: ${pagamento.status}
+        </span>
+
+        <br><br>
+
+        ${
+          pagamento.status !== "pago"
+          ? `
+          <button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
+            💳 Receber
+          </button>
+
+          <button onclick="enviarWhatsApp(
+            '${nome}',
+            '${telefone}',
+            ${total},
+            ${pagamento.mes}
+          )">
+            📲 WhatsApp
+          </button>
+
+          <button onclick="gerarReciboPremium(
+            '${nome}',
+            ${total},
+            ${pagamento.mes},
+            '',
+            ${aluguel},
+            ${agua}
+          )">
+            📄 Recibo
+          </button>
+          `
+          : `<span style="color:green; font-weight:bold;">✔ Pago</span>`
+        }
+
+      </div>
+    `
+
+    lista.appendChild(div)
 
   })
 }
