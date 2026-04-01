@@ -1528,8 +1528,8 @@ pagamentos.forEach(pagamento => {
         <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
 
         <span style="color:${cor}; font-weight:bold;">
-          let status = (pagamento.status || "").toLowerCase().trim()
-        </span>
+  ${status.toUpperCase()}
+</span>
 
         <br><br>
 
@@ -1758,16 +1758,21 @@ async function confirmarPagamento(id, forma){
 
   const nome = inquilino?.nome || "Inquilino"
 
- gerarRecibo({
-  nome: '${nome}',
-  endereco: '${enderecoCompleto}',
-  unidade: '${numeroUnidade}',
-  mes: ${pagamento.mes},
-  aluguel: ${aluguel},
-  agua: ${agua},
-  juros: ${juros},
-  total: ${total},
-  forma: '${pagamento.forma_pagamento || ""}'
+ const aluguel = pagamento.valor || 0
+const agua = pagamento.valor_agua || 0
+const juros = 0
+const total = aluguel + agua + juros
+
+gerarRecibo({
+  nome: nome,
+  endereco: "-",
+  unidade: "-",
+  mes: pagamento.mes,
+  aluguel: aluguel,
+  agua: agua,
+  juros: juros,
+  total: total,
+  forma: forma
 })
 
 }
