@@ -1384,7 +1384,7 @@ async function listarPagamentos(filtro = null, busca = "") {
 
   pagamentos.forEach(pagamento => {
 const hoje = new Date()
-const vencimento = new Date(pagamento.ano, pagamento.mes - 1, pagamento.dia_vencimento)
+const vencimento = new Date(pagamento.ano, pagamento.mes - 1, 5)
 
 const diasAtraso = Math.floor((hoje - vencimento) / (1000 * 60 * 60 * 24))
 
