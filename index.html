@@ -1481,7 +1481,7 @@ async function listarPagamentos(filtro = null, busca = "") {
     let juros = 0
 
     // 🔥 CORREÇÃO STATUS
-    const status = pagamento.status?.toLowerCase().trim()
+    
 
     if (diasAtraso > 5 && status !== "pago") {
       juros = aluguel * 0.005 * diasAtraso
