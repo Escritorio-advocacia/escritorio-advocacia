@@ -1475,9 +1475,9 @@ async function listarPagamentos(filtro = null, busca = "") {
 
   listarPagamentos()
 }
- function criarCard(pagamento, total) {
+function criarCard(pagamento, total) {
   const lista = document.getElementById("listaPagamentos")
-  console.log("card criado")
+
   const div = document.createElement("div")
 
   let cor = "#ccc"
@@ -1495,12 +1495,12 @@ async function listarPagamentos(filtro = null, busca = "") {
       ${
         pagamento.status !== "pago"
         ? `
-        <button onclick="receberPagamento(${pagamento.id}, ${total})">
-          Receber
+        <button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
+          💳 Receber
         </button>
 
         <button onclick="gerarRecibo('${pagamento.nome || "Inquilino"}', ${total})">
-          Recibo
+          📄 Recibo
         </button>
         `
         : `<span style="color:green">✔ Pago</span>`
