@@ -1667,43 +1667,60 @@ document.querySelector(".modalPagamento").remove()
 
 async function confirmarPagamento(id, forma){
 
-// 🔒 busca pagamento atual
-const { data: pagamento } = await client
-.from("pagamentos")
-.select("*")
-.eq("id", id)
-.single()
+  // 🔥 busca pagamento com contrato + inquilino
+  const { data: pagamento, error } = await client
+    .from("pagamentos")
+    .select(`
+      *,
+      contratos!pagamentos_contrato_fk (
+        inquilinos!contratos_inquilino_fk (
+          nome
+        )
+      )
+    `)
+    .eq("id", id)
+    .single()
 
-// 🚫 BLOQUEIO
-if(pagamento.status === "pago"){
-alert("Esse pagamento já foi realizado!")
-fecharModal()
-return
-}
+  if(error || !pagamento){
+    console.log("Erro ao buscar pagamento:", error)
+    alert("Erro ao carregar pagamento")
+    return
+  }
 
-const hoje = new Date()
+  // 🚫 BLOQUEIO
+  if(pagamento.status === "pago"){
+    alert("Esse pagamento já foi realizado!")
+    fecharModal()
+    return
+  }
 
-await client
-.from("pagamentos")
-.update({
-status:"pago",
-forma_pagamento: forma,
-data_pagamento: hoje.toISOString()
-})
-.eq("id", id)
+  const hoje = new Date()
 
-fecharModal()
-listarPagamentos()
+  await client
+    .from("pagamentos")
+    .update({
+      status:"pago",
+      forma_pagamento: forma,
+      data_pagamento: hoje.toISOString()
+    })
+    .eq("id", id)
 
-mostrarAlerta("Pagamento registrado com sucesso!")
-gerarReciboPremium(
-  pagamento.contratos?.inquilinos?.nome || "Inquilino",
-  pagamento.valor,
-  pagamento.mes,
-  forma,
-  pagamento.valor,
-  pagamento.valor_agua || 0
-)
+  fecharModal()
+  listarPagamentos()
+
+  mostrarAlerta("Pagamento registrado com sucesso!")
+
+  // 🔥 nome seguro (não quebra mais)
+  const nome = pagamento.contratos?.inquilinos?.nome || "Inquilino"
+
+  gerarReciboPremium(
+    nome,
+    pagamento.valor,
+    pagamento.mes,
+    forma,
+    pagamento.valor,
+    pagamento.valor_agua || 0
+  )
 }
 async function calcularInadimplentes(){
 
