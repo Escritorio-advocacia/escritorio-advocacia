@@ -1516,27 +1516,7 @@ async function listarPagamentos(filtro = null, busca = "") {
 
   })
 }
-  async function receberPagamento(id, total) {
-
-  const confirmar = confirm("Confirmar pagamento de R$ " + total.toFixed(2) + "?")
-
-  if (!confirmar) return
-
-  const hoje = new Date().toISOString().split("T")[0]
-
-  await client
-    .from("pagamentos")
-    .update({
-      status: "pago",
-      valor_pago: total,
-      data_pagamento: hoje
-    })
-    .eq("id", id)
-
-  alert("Pagamento registrado!")
-
-  listarPagamentos()
-}
+ 
 function criarCard(pagamento, total) {
 
   const lista = document.getElementById("listaPagamentos")
@@ -1789,54 +1769,6 @@ Mês ${p.mes} - R$ ${p.valor}
 })
 
 document.getElementById("relatorio").innerHTML = html
-
-}
-async function pagar(id, forma){
-
-  const { data: pagamento } = await client
-    .from("pagamentos")
-    .select("*")
-    .eq("id", id)
-    .single()
-
-  const { data: contrato } = await client
-    .from("contratos")
-    .select("*")
-    .eq("id", pagamento.contrato_id)
-    .single()
-
-  const { data: inquilino } = await client
-    .from("inquilinos")
-    .select("*")
-    .eq("id", contrato.inquilino_id)
-    .single()
-
-  const hoje = new Date().toISOString()
-
-  await client
-    .from("pagamentos")
-    .update({
-      status:"pago",
-      forma_pagamento: forma,
-      data_pagamento: hoje
-    })
-    .eq("id", id)
-
-  alert("Pagamento registrado!")
-
-  listarPagamentos()
-
-  // 🔥 AGORA USA O RECIBO NOVO
-  gerarReciboPremium(
-    inquilino?.nome || "Inquilino",
-    pagamento.valor,
-    pagamento.mes,
-    forma,
-    pagamento.valor,
-    pagamento.valor_agua || 0
-  )
-}
-listarPagamentos()
 
 }
 
