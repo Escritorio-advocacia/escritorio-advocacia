@@ -1518,7 +1518,7 @@ const juros = total - aluguel - agua
           📲 WhatsApp
          </button>
          
-          <button onclick="gerarRecibo(
+          <button onclick="gerarReciboPremium(
          '${pagamento.contratos?.inquilinos?.nome || "Inquilino"}',
           ${total},
           ${pagamento.mes},
@@ -1750,11 +1750,13 @@ alert("Pagamento registrado!")
 
 listarPagamentos()
 
-gerarReciboPDF(
-inquilino.nome,
-total,
-pagamento.mes,
-inquilino.nome_responsavel
+gerarReciboPremium(
+  inquilino.nome,
+  total,
+  pagamento.mes,
+  pagamento.forma_pagamento || "",
+  pagamento.valor,
+  pagamento.valor_agua || 0
 )
 listarPagamentos()
 
@@ -2455,10 +2457,21 @@ TOTAL: ${total.toFixed(2)}`
 )
 
 }
-function gerarRecibo(nome, total, mes, forma, aluguel, agua) {
+function gerarReciboPremium(nome, total, mes, forma, aluguel, agua) {
 
-  alert("RECIBO NOVO FUNCIONANDO 🔥")
+  alert("AGORA FOI 🔥")
 
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF()
+
+  doc.setFontSize(18)
+  doc.text("RECIBO NOVO", 20, 20)
+
+  doc.text(`Nome: ${nome}`, 20, 40)
+  doc.text(`Total: ${total}`, 20, 50)
+
+  doc.save("teste.pdf")
+}
 }
 async function login(){
 
