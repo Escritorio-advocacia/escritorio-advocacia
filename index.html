@@ -1244,15 +1244,16 @@ async function verHistoricoInquilino(id){
 
   const contrato_id = contratos[0].id
 
-  const { data: pagamentos } = await client
-    .from("pagamentos")
-    .select("*")
-    .eq("contrato_id", contrato_id)
+const { data: pagamentos, error } = await client
+.from("pagamentos")
+.select("*")
+.eq("contrato_id", contrato_id)
 
-  if(!pagamentos || pagamentos.length === 0){
-    document.getElementById("historicoInquilino").innerHTML = "Sem pagamentos ainda"
-    return
-  }
+if (error || !pagamentos || pagamentos.length === 0) {
+  console.log("Erro ao buscar pagamentos", error)
+  document.getElementById("historicoInquilino").innerHTML = "Sem pagamentos"
+  return
+}
 
   let html=""
 
