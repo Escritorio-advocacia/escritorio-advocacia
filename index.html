@@ -1434,7 +1434,6 @@ async function listarPagamentos(filtro = null, busca = "") {
   const lista = document.getElementById("listaPagamentos")
   lista.innerHTML = ""
 
-  // 🔥 buscar tudo separado (SEM JOIN)
   const { data: pagamentos, error } = await client
     .from("pagamentos")
     .select("*")
@@ -1445,13 +1444,8 @@ async function listarPagamentos(filtro = null, busca = "") {
     return
   }
 
-  const { data: contratos } = await client
-    .from("contratos")
-    .select("*")
-
-  const { data: inquilinos } = await client
-    .from("inquilinos")
-    .select("*")
+  const { data: contratos } = await client.from("contratos").select("*")
+  const { data: inquilinos } = await client.from("inquilinos").select("*")
 
   if (!pagamentos.length) {
     lista.innerHTML = "Nenhum pagamento encontrado"
@@ -1463,10 +1457,8 @@ async function listarPagamentos(filtro = null, busca = "") {
 
   pagamentos.forEach(pagamento => {
 
-    // ❌ NÃO MOSTRAR MESES FUTUROS
     if (pagamento.mes > mesAtual) return
 
-    // 🔥 RELACIONAMENTO MANUAL (SEM ERRO)
     const contrato = contratos.find(c => c.id == pagamento.contrato_id)
     const inquilino = inquilinos.find(i => i.id == contrato?.inquilino_id)
 
@@ -1488,29 +1480,24 @@ async function listarPagamentos(filtro = null, busca = "") {
     let agua = pagamento.valor_agua || 0
     let juros = 0
 
-    // 🔥 JUROS + MULTA
-    if (diasAtraso > 5 && pagamento.status !== "pago") {
+    // 🔥 CORREÇÃO STATUS
+    const status = pagamento.status?.toLowerCase().trim()
+
+    if (diasAtraso > 5 && status !== "pago") {
       juros = aluguel * 0.005 * diasAtraso
-
-      const multaAgua = agua * 0.10
-      agua += multaAgua
-
+      agua += agua * 0.10
       pagamento.status = "atrasado"
     }
 
     let total = aluguel + agua + juros
 
-    // 🔴 FILTRO
     if (filtro && pagamento.status !== filtro) return
-
-    // 🔍 BUSCA
     if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
 
-    // 🎨 COR
     let cor = "#ccc"
-    if (pagamento.status === "pago") cor = "green"
-    if (pagamento.status === "pendente") cor = "orange"
-    if (pagamento.status === "atrasado") cor = "red"
+    if (status === "pago") cor = "green"
+    if (status === "pendente") cor = "orange"
+    if (status === "atrasado") cor = "red"
 
     const div = document.createElement("div")
 
@@ -1534,36 +1521,41 @@ async function listarPagamentos(filtro = null, busca = "") {
         <br><br>
 
         ${
-          pagamento.status !== "pago"
+          status !== "pago"
           ? `
-      <div class="acoes">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
 
-<button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
-💳 Pagar
-</button>
+            <button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
+              💳 Pagar
+            </button>
 
-<button onclick="enviarWhatsApp(
-  '${nome}',
-  '${telefone}',
-  ${total},
-  ${pagamento.mes}
-)">
-📲 WhatsApp
-</button>
+            <button onclick="enviarWhatsApp(
+              '${nome}',
+              '${telefone}',
+              ${total},
+              ${pagamento.mes}
+            )">
+              📲 WhatsApp
+            </button>
 
-<button onclick="gerarRecibo({
-  nome: '${nome}',
-  mes: ${pagamento.mes},
-  aluguel: ${aluguel},
-  agua: ${agua},
-  juros: ${juros},
-  total: ${total},
-  forma: '${pagamento.forma_pagamento || ""}'
-})">
-📄 Recibo
-</button>
+            <button onclick="gerarRecibo({
+              nome: '${nome}',
+              mes: ${pagamento.mes},
+              aluguel: ${aluguel},
+              agua: ${agua},
+              juros: ${juros},
+              total: ${total.toFixed(2)},
+              forma: '${pagamento.forma_pagamento || ""}'
+            })">
+              📄 Recibo
+            </button>
 
-</div>
+          </div>
+          `
+          : `<span style="color:green; font-weight:bold;">✔ Pago</span>`
+        }
+
+      </div>
     `
 
     lista.appendChild(div)
@@ -1608,7 +1600,7 @@ function criarCard(pagamento, total) {
       <br><br>
 
       ${
-        pagamento.status !== "pago"
+        pagamento.status?.toLowerCase().trim() !== "pago"
         ? `
         <button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
           💳 Receber
