@@ -1302,11 +1302,11 @@ urlContrato = nomeArquivo
 const { data: contratoCriado, error: erroContrato } = await client
   .from("contratos")
   .insert({
-    inquilino_id: inquilinoCriado.id,
+    inquilino_id: inquilino_id,
     unidade_id: Number(unidade_id),
-    valor_aluguel: Number(valor_aluguel),
-    dia_vencimento: Number(dia_vencimento),
-    arquivo_contrato: contrato_url || "",
+    valor_aluguel: Number(valor),
+    dia_vencimento: Number(vencimento),
+    arquivo_contrato: urlContrato || "",
     status: "ativo"
   })
   .select()
@@ -1670,7 +1670,6 @@ document.querySelector(".modalPagamento").remove()
 
 async function confirmarPagamento(id, forma){
 
-  // 🔥 BUSCA SIMPLES (SEM RELAÇÃO)
   const { data: pagamento, error } = await client
     .from("pagamentos")
     .select("*")
@@ -1683,21 +1682,20 @@ async function confirmarPagamento(id, forma){
     return
   }
 
-  // 🚫 BLOQUEIO
   if(pagamento.status === "pago"){
     alert("Esse pagamento já foi realizado!")
     fecharModal()
     return
   }
 
-  // 🔥 BUSCAR CONTRATO
+  // 🔥 busca contrato
   const { data: contrato } = await client
     .from("contratos")
     .select("*")
     .eq("id", pagamento.contrato_id)
     .single()
 
-  // 🔥 BUSCAR INQUILINO
+  // 🔥 busca inquilino
   let nome = "Inquilino"
 
   if(contrato){
@@ -1984,7 +1982,7 @@ html += `
 Mês ${p.mes} atrasado<br>
 Divida: R$ ${p.valor}<br>
 
-<button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}','${p.valor}')">
+<button onclick="cobrarWhatsapp('${inquilino.whatsapp}','${inquilino.nome}','${p.valor}')">
 📲 Cobrar
 </button>
 
@@ -2046,7 +2044,7 @@ Valor: R$${p.valor}
 
 Favor regularizar.`
 
-const url = `https://wa.me/55${inquilino.telefone}?text=${encodeURIComponent(mensagem)}`
+const url = `https://wa.me/55${inquilino.whatsapp}?text=${encodeURIComponent(mensagem)}`
 
 window.open(url)
 
@@ -2156,7 +2154,7 @@ if(!inquilino) return
 
 lista.push({
 nome: inquilino.nome,
-telefone: inquilino.telefone,
+telefone: inquilino.whatsapp,
 valor: p.valor,
 mes: p.mes
 })
@@ -2301,7 +2299,7 @@ if(!inquilino) return
 html+=`
 <p>
 ${inquilino.nome} - R$${c.valor_aluguel}
-<button onclick="cobrarWhatsapp('${inquilino.telefone}','${inquilino.nome}',${c.valor_aluguel})">
+<button onclick="cobrarWhatsapp('${inquilino.whatsapp}','${inquilino.nome}',${c.valor_aluguel})">
 📲 Cobrar
 </button>
 </p>
