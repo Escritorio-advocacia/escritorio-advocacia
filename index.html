@@ -1483,10 +1483,9 @@ async function listarPagamentos(filtro = null, busca = "") {
         ${
           pagamento.status !== "pago"
           ? `
-          <button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
-            💳 Receber
-          </button>
-
+        <button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
+💳 Pagar
+</button>
           <button onclick="enviarWhatsApp(
             '${nome}',
             '${telefone}',
@@ -1671,46 +1670,17 @@ function fecharModal(){
   }
 }
 async function confirmarPagamento(id, forma){
-alert("CONFIRMAR PAGAMENTO")
-  
-  const { data: pagamento, error } = await client
+
+  const { data: pagamento } = await client
     .from("pagamentos")
     .select("*")
     .eq("id", id)
     .single()
 
-  if(error || !pagamento){
-    console.log("Erro ao buscar pagamento:", error)
-    alert("Erro ao carregar pagamento")
-    return
-  }
-
   if(pagamento.status === "pago"){
     alert("Esse pagamento já foi realizado!")
     fecharModal()
     return
-  }
-
-  // 🔥 busca contrato
-  const { data: contrato } = await client
-    .from("contratos")
-    .select("*")
-    .eq("id", pagamento.contrato_id)
-    .single()
-
-  // 🔥 busca inquilino
-  let nome = "Inquilino"
-
-  if(contrato){
-    const { data: inquilino } = await client
-      .from("inquilinos")
-      .select("*")
-      .eq("id", contrato.inquilino_id)
-      .single()
-
-    if(inquilino){
-      nome = inquilino.nome
-    }
   }
 
   const hoje = new Date()
@@ -1728,6 +1698,21 @@ alert("CONFIRMAR PAGAMENTO")
   listarPagamentos()
 
   mostrarAlerta("Pagamento registrado com sucesso!")
+
+  // 🔥 busca nome separado (SEM ERRO DE RELAÇÃO)
+  const { data: contrato } = await client
+    .from("contratos")
+    .select("*")
+    .eq("id", pagamento.contrato_id)
+    .single()
+
+  const { data: inquilino } = await client
+    .from("inquilinos")
+    .select("*")
+    .eq("id", contrato.inquilino_id)
+    .single()
+
+  const nome = inquilino?.nome || "Inquilino"
 
   gerarReciboPremium(
     nome,
