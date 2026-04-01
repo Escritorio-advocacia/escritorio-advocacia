@@ -1381,26 +1381,26 @@ async function listarPagamentos(filtro = null, busca = "") {
   const lista = document.getElementById("listaPagamentos")
   lista.innerHTML = ""
 
-const { data: pagamentos, error } = await client
-  .from("pagamentos")
- .select(`
-  *,
-  contratos!pagamentos_contrato_fk (
-    dia_vencimento,
-    inquilinos!contratos_inquilino_fk (
-      nome,
-      whatsapp
-    )
-  )
-`)
-  // 🔒 proteção contra erro
+  // 🔥 buscar tudo separado (SEM JOIN)
+  const { data: pagamentos, error } = await client
+    .from("pagamentos")
+    .select("*")
+
   if (error || !pagamentos) {
     console.log("Erro ao carregar pagamentos", error)
     lista.innerHTML = "Erro ao carregar pagamentos"
     return
   }
 
-  if (pagamentos.length === 0) {
+  const { data: contratos } = await client
+    .from("contratos")
+    .select("*")
+
+  const { data: inquilinos } = await client
+    .from("inquilinos")
+    .select("*")
+
+  if (!pagamentos.length) {
     lista.innerHTML = "Nenhum pagamento encontrado"
     return
   }
@@ -1413,10 +1413,13 @@ const { data: pagamentos, error } = await client
     // ❌ NÃO MOSTRAR MESES FUTUROS
     if (pagamento.mes > mesAtual) return
 
-    // 🔥 dados do contrato + inquilino
-    const nome = pagamento.contratos?.inquilinos?.nome || "Inquilino"
-    const telefone = pagamento.contratos?.inquilinos?.whatsapp || ""
-    const diaVencimento = pagamento.contratos?.dia_vencimento || 5
+    // 🔥 RELACIONAMENTO MANUAL (SEM ERRO)
+    const contrato = contratos.find(c => c.id == pagamento.contrato_id)
+    const inquilino = inquilinos.find(i => i.id == contrato?.inquilino_id)
+
+    const nome = inquilino?.nome || "Inquilino"
+    const telefone = inquilino?.whatsapp || ""
+    const diaVencimento = contrato?.dia_vencimento || 5
 
     const vencimento = new Date(
       pagamento.ano,
