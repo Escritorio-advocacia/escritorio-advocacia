@@ -2565,18 +2565,43 @@ TOTAL: ${total.toFixed(2)}`
 }
 function gerarReciboPremium(nome, total, mes, forma, aluguel, agua) {
 
-  alert("AGORA FOI 🔥")
-
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
 
-  doc.setFontSize(18)
-  doc.text("RECIBO NOVO", 20, 20)
+  const data = new Date().toLocaleDateString()
 
-  doc.text(`Nome: ${nome}`, 20, 40)
-  doc.text(`Total: R$ ${total.toFixed(2)}`, 20, 50)
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(20)
+  doc.text("RECIBO DE PAGAMENTO", 60, 20)
 
-  doc.save("recibo.pdf")
+  doc.setFontSize(12)
+  doc.setFont("helvetica", "normal")
+
+  doc.text(`Data: ${data}`, 20, 40)
+  doc.text(`Inquilino: ${nome}`, 20, 50)
+  doc.text(`Mês referente: ${mes}`, 20, 60)
+
+  doc.text("--------------------------------------------------", 20, 70)
+
+  doc.text(`Aluguel: R$ ${aluguel.toFixed(2)}`, 20, 85)
+  doc.text(`Água: R$ ${agua.toFixed(2)}`, 20, 95)
+
+  doc.text("--------------------------------------------------", 20, 105)
+
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(14)
+  doc.text(`TOTAL PAGO: R$ ${total.toFixed(2)}`, 20, 120)
+
+  doc.setFontSize(12)
+  doc.setFont("helvetica", "normal")
+  doc.text(`Forma de pagamento: ${forma}`, 20, 135)
+
+  doc.text("--------------------------------------------------", 20, 150)
+
+  doc.text("Assinatura do responsável:", 20, 170)
+  doc.line(20, 180, 100, 180)
+
+  doc.save(`recibo_${nome}.pdf`)
 }
 async function login(){
 
