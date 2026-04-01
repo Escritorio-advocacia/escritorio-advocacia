@@ -1484,10 +1484,10 @@ async function listarPagamentos(filtro = null, busca = "") {
     
 
     if (diasAtraso > 5 && status !== "pago") {
-      juros = aluguel * 0.005 * diasAtraso
-      agua += agua * 0.10
-      pagamento.status = "atrasado"
-    }
+  juros = aluguel * 0.005 * diasAtraso
+  agua += agua * 0.10
+  status = "atrasado"
+}
 
     let total = aluguel + agua + juros
 
@@ -1515,7 +1515,7 @@ async function listarPagamentos(filtro = null, busca = "") {
         <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
 
         <span style="color:${cor}; font-weight:bold;">
-          Status: ${pagamento.status}
+          const status = (pagamento.status || "").toLowerCase().trim()
         </span>
 
         <br><br>
@@ -1594,7 +1594,7 @@ function criarCard(pagamento, total) {
       <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
 
       <span style="color:${cor}; font-weight:bold;">
-        Status: ${pagamento.status}
+        const status = (pagamento.status || "").toLowerCase().trim()
       </span>
 
       <br><br>
