@@ -1381,9 +1381,8 @@ async function listarPagamentos(filtro = null, busca = "") {
   lista.innerHTML = ""
 
   const { data: pagamentos } = await client
-    .from("pagamentos")
-    .select("*, contratos(dia_vencimento, inquilinos(nome))")
-
+  .from("pagamentos")
+  .select("*")
   const hoje = new Date()
   const mesAtual = hoje.getMonth() + 1
 
@@ -1541,7 +1540,7 @@ const juros = total - aluguel - agua
 
 const { data } = await client
 .from("pagamentos")
-.select("*, contratos(dia_vencimento, inquilinos(nome))")
+.select("*")
 
 let filtrados = data.filter(p => 
 String(p.mes).includes(texto) ||
