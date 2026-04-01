@@ -704,7 +704,7 @@ transition: all 0.2s ease;
 <button onclick="filtrarPagamentos('pago')">Pagos</button>
 <button onclick="filtrarPagamentos('pendente')">Pendentes</button>
 <button onclick="filtrarPagamentos('atrasado')">Atrasados</button>
-
+<button onclick="atualizarAtrasos()">Atualizar atrasos</button>
 </div>
 
 <div id="listaPagamentos"></div>
@@ -2262,6 +2262,33 @@ document.getElementById("resultadoSimulacao").innerHTML = `
 
 `
 
+}
+  async function atualizarAtrasos() {
+
+  const { data: pagamentos } = await client
+    .from("pagamentos")
+    .select("*")
+
+  const hoje = new Date()
+
+  for (let p of pagamentos) {
+
+    if (p.status === "pago") continue
+
+    const vencimento = new Date(p.ano, p.mes - 1, p.dia_vencimento)
+
+    const diasAtraso = Math.floor((hoje - vencimento) / (1000 * 60 * 60 * 24))
+
+    if (diasAtraso > 5) {
+
+      await client
+        .from("pagamentos")
+        .update({ status: "atrasado" })
+        .eq("id", p.id)
+    }
+  }
+
+  alert("Atrasos atualizados!")
 }
   function simularInquilino(aluguel,agua,vencimento){
 
