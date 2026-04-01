@@ -1435,17 +1435,8 @@ async function listarPagamentos(filtro = null, busca = "") {
     if (pagamento.status === "atrasado") cor = "red"
 
     // 🟡 CARD
-    const div = document.createElement("div")
-
-    div.innerHTML = `
-      <div style="border:1px solid ${cor}; padding:10px; margin:10px; border-radius:8px;">
-        <b>${pagamento.nome || "Inquilino"}</b><br>
-        Mês ${pagamento.mes} - R$ ${total.toFixed(2)}<br>
-        Status: ${pagamento.status}
-      </div>
-    `
-
-    lista.appendChild(div)
+   
+  criarCard(pagamento, total)
 
   })
 }
