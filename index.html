@@ -1219,25 +1219,41 @@ window.idEditando = id
 }
 async function verHistoricoInquilino(id){
 
-const { data } = await client
-.from("pagamentos")
-.select("*")
-.eq("inquilino_id", id)
+  const { data: contratos } = await client
+    .from("contratos")
+    .select("*")
+    .eq("inquilino_id", id)
 
-let html=""
+  if(!contratos || contratos.length === 0){
+    document.getElementById("historicoInquilino").innerHTML = "Sem contrato"
+    return
+  }
 
-data.forEach(p=>{
-html += `
-<p>
-Mês ${p.mes} - R$ ${p.valor} - ${p.status}
-</p>
-`
-})
+  const contrato_id = contratos[0].id
 
-document.getElementById("historicoInquilino").innerHTML = html
+  const { data: pagamentos } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("contrato_id", contrato_id)
+
+  if(!pagamentos || pagamentos.length === 0){
+    document.getElementById("historicoInquilino").innerHTML = "Sem pagamentos ainda"
+    return
+  }
+
+  let html=""
+
+  pagamentos.forEach(p=>{
+    html += `
+    <p>
+    Mês ${p.mes} - R$ ${p.valor} - ${p.status}
+    </p>
+    `
+  })
+
+  document.getElementById("historicoInquilino").innerHTML = html
 
 }
-
 async function salvarContrato(){
 
 const inquilino_id = document.getElementById("inquilinoSelect").value
