@@ -1475,7 +1475,7 @@ async function listarPagamentos(filtro = null, busca = "") {
 
   listarPagamentos()
 }
-  function criarCard(pagamento, total) {
+ function criarCard(pagamento, total) {
   const lista = document.getElementById("listaPagamentos")
 
   const div = document.createElement("div")
@@ -1485,31 +1485,30 @@ async function listarPagamentos(filtro = null, busca = "") {
   if (pagamento.status === "pendente") cor = "orange"
   if (pagamento.status === "atrasado") cor = "red"
 
-div.innerHTML = `
-  <div style="border:1px solid ${cor}; padding:10px; margin:10px; border-radius:8px;">
-    
-    <b>${pagamento.nome || "Inquilino"}</b><br>
-    Mês ${pagamento.mes} - R$ ${total.toFixed(2)}<br>
-    Status: ${pagamento.status}<br><br>
+  div.innerHTML = `
+    <div style="border:1px solid ${cor}; padding:10px; margin:10px; border-radius:8px;">
+      
+      <b>${pagamento.nome || "Inquilino"}</b><br>
+      Mês ${pagamento.mes} - R$ ${total.toFixed(2)}<br>
+      Status: ${pagamento.status}<br><br>
 
-    ${
-      pagamento.status !== "pago"
+      ${
+        pagamento.status !== "pago"
         ? `
-        <button onclick="receberPagamento(${pagamento.id}, ${total})"
-          style="background:green;color:white;padding:5px 10px;border:none;border-radius:5px;">
+        <button onclick="receberPagamento(${pagamento.id}, ${total})">
           Receber
         </button>
 
-      <button onclick="gerarRecibo('${pagamento.nome}', ${total})">
-          style="background:blue;color:white;padding:5px 10px;border:none;border-radius:5px;margin-left:5px;">
+        <button onclick="gerarRecibo('${pagamento.nome || "Inquilino"}', ${total})">
           Recibo
         </button>
         `
         : `<span style="color:green">✔ Pago</span>`
-    }
+      }
 
-  </div>
-`
+    </div>
+  `
+
   lista.appendChild(div)
 }
   async function buscarPagamentos(texto){
