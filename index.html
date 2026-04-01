@@ -1552,17 +1552,7 @@ pagamentos.forEach(pagamento => {
             </button>
 
             <button onclick="gerarReciboCompleto(${pagamento.id})">
-  nome: '${nome}',
-  endereco: '${enderecoCompleto}',
-  unidade: '${numeroUnidade}',
-  mes: ${pagamento.mes},
-  aluguel: ${aluguel},
-  agua: ${agua},
-  juros: ${juros},
-  total: ${total},
-  forma: '${pagamento.forma_pagamento || ""}'
-})">
-              📄 Recibo
+            📄 Recibo
             </button>
 
           </div>
