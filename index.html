@@ -1495,14 +1495,15 @@ async function listarPagamentos(filtro = null, busca = "") {
             📲 WhatsApp
           </button>
 
-          <button onclick="gerarReciboPremium(
-            '${nome}',
-            ${total},
-            ${pagamento.mes},
-            '',
-            ${aluguel},
-            ${agua}
-          )">
+          <button onclick="gerarRecibo({
+  nome: '${nome}',
+  mes: ${pagamento.mes},
+  aluguel: ${aluguel},
+  agua: ${agua},
+ juros: ${juros},
+  total: ${total.toFixed(2)},
+  forma: '${pagamento.forma_pagamento || ""}'
+})">
             📄 Recibo
           </button>
           `
@@ -1533,7 +1534,7 @@ function criarCard(pagamento, total) {
   const juros = total - aluguel - agua
 
   // ✅ NOME CORRETO DO INQUILINO
-  const nome = pagamento.contratos?.inquilinos?.nome || "Inquilino"
+ const nome = pagamento.nome || "Inquilino"
 
   div.innerHTML = `
     <div style="border:1px solid ${cor}; padding:15px; margin:10px; border-radius:10px; background:white;">
@@ -1569,14 +1570,15 @@ function criarCard(pagamento, total) {
           📲 WhatsApp
         </button>
          
-        <button onclick="gerarReciboPremium(
-          '${nome}',
-          ${total},
-          ${pagamento.mes},
-          '${pagamento.forma_pagamento || ""}',
-          ${aluguel},
-          ${agua}
-        )">
+        <button onclick="gerarRecibo({
+  nome: '${nome}',
+  mes: ${pagamento.mes},
+  aluguel: ${aluguel},
+  agua: ${agua},
+  juros: ${juros},
+  total: ${total.toFixed(2)},
+  forma: '${pagamento.forma_pagamento || ""}'
+})">
           📄 Recibo
         </button>
         `
@@ -1694,7 +1696,7 @@ async function confirmarPagamento(id, forma){
 
   const nome = inquilino?.nome || "Inquilino"
 
-  gerarReciboPremium(
+  gerarRecibo(
     nome,
     pagamento.valor,
     pagamento.mes,
@@ -2467,72 +2469,68 @@ TOTAL: ${total.toFixed(2)}`
 )
 
 }
-function gerarReciboPremium(nome, total, mes, forma, aluguel, agua) {
+function gerarRecibo(dados) {
 
   const data = new Date().toLocaleDateString()
 
-  const reciboHTML = `
-  <div id="reciboPrint" style="
-    width: 700px;
-    margin: auto;
-    padding: 30px;
-    font-family: Arial;
-    background: white;
-    border: 2px solid #ddd;
-  ">
+  const html = `
+    <div style="
+      width:700px;
+      margin:auto;
+      padding:30px;
+      font-family:Arial;
+      background:#fff;
+      border:2px solid #ddd;
+    ">
 
-    <h2 style="text-align:center; color:#2563eb;">
-      🧾 RECIBO DE PAGAMENTO
-    </h2>
+      <h2 style="text-align:center; color:#2563eb;">
+        🧾 RECIBO DE PAGAMENTO
+      </h2>
 
-    <hr>
+      <hr>
 
-    <p><b>Recebemos de:</b> ${nome}</p>
-    <p><b>Referente ao mês:</b> ${mes}</p>
+      <p><b>Inquilino:</b> ${dados.nome}</p>
+      <p><b>Mês:</b> ${dados.mes}</p>
 
-    <hr>
+      <hr>
 
-    <p>🏠 Aluguel: <b>R$ ${aluguel.toFixed(2)}</b></p>
-    <p>🚿 Água: <b>R$ ${agua.toFixed(2)}</b></p>
+      <p>🏠 Aluguel: <b>R$ ${dados.aluguel}</b></p>
+      <p>🚿 Água: <b>R$ ${dados.agua}</b></p>
+      <p>💸 Juros: <b>R$ ${dados.juros}</b></p>
 
-    <hr>
+      <hr>
 
-    <h3 style="color:#16a34a;">
-      💰 Total Pago: R$ ${total.toFixed(2)}
-    </h3>
+      <h3 style="color:#16a34a;">
+        💰 Total: R$ ${dados.total}
+      </h3>
 
-    <p><b>Forma de pagamento:</b> ${forma || "-"}</p>
-    <p><b>Data:</b> ${data}</p>
+      <p><b>Forma de pagamento:</b> ${dados.forma || "-"}</p>
+      <p><b>Data:</b> ${data}</p>
 
-    <br><br>
+      <br><br>
 
-    <div style="margin-top:40px;">
-      _______________________________<br>
-      Assinatura
+      <div>
+        _______________________________<br>
+        Assinatura
+      </div>
+
     </div>
-
-  </div>
   `
 
-  const janela = window.open("", "", "width=800,height=600")
+  const win = window.open("", "", "width=800,height=600")
 
-  janela.document.write(`
+  win.document.write(`
     <html>
-      <head>
-        <title>Recibo</title>
-      </head>
       <body>
-        ${reciboHTML}
+        ${html}
         <script>
-          window.onload = function(){
-            window.print();
-          }
+          window.onload = () => window.print();
         <\/script>
       </body>
     </html>
   `)
 
-  janela.document.close()
+  win.document.close()
 }
 async function login(){
 
