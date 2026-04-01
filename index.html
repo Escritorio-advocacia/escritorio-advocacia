@@ -1014,7 +1014,13 @@ async function salvarInquilino() {
   const data_fim = document.getElementById("dataFimContrato").value || null
   const status = document.getElementById("statusInquilino").value
 
-  const arquivo = document.getElementById("contratoPDF").files[0]
+  const input = document.getElementById("contratoInquilino")
+
+let arquivo = null
+
+if(input && input.files.length > 0){
+  arquivo = input.files[0]
+}
 
   let contrato_url = null
 
