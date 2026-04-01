@@ -1696,15 +1696,15 @@ async function confirmarPagamento(id, forma){
 
   const nome = inquilino?.nome || "Inquilino"
 
-  gerarRecibo(
-    nome,
-    pagamento.valor,
-    pagamento.mes,
-    forma,
-    pagamento.valor,
-    pagamento.valor_agua || 0
-  )
-}
+  gerarRecibo({
+  nome: nome,
+  mes: pagamento.mes,
+  aluguel: pagamento.valor || 0,
+  agua: pagamento.valor_agua || 0,
+  juros: 0,
+  total: (pagamento.valor || 0) + (pagamento.valor_agua || 0),
+  forma: forma
+})
 async function calcularInadimplentes(){
 
 const { data } = await client
