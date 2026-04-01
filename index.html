@@ -1447,48 +1447,7 @@ if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
 
   })
 }
- function gerarRecibo(nome, total, mes, forma, aluguel, agua) {
 
-  const { jsPDF } = window.jspdf
-  const doc = new jsPDF()
-
-  const data = new Date().toLocaleDateString()
-
-  // 🔥 TOPO
-  doc.setFontSize(18)
-  doc.text("RECIBO DE PAGAMENTO", 105, 20, null, null, "center")
-
-  doc.setFontSize(10)
-  doc.text("Sua Imobiliária LTDA", 105, 28, null, null, "center")
-  doc.text("CNPJ: 00.000.000/0001-00", 105, 34, null, null, "center")
-  doc.text("Endereço: Rua Exemplo, 123 - Centro", 105, 40, null, null, "center")
-
-  // LINHA
-  doc.line(20, 45, 190, 45)
-
-  // 🔥 DADOS
-  doc.setFontSize(12)
-
-  doc.text(`Recebemos de: ${nome}`, 20, 60)
-  doc.text(`Referente ao mês: ${mes}`, 20, 70)
-
-  doc.text(`Aluguel: R$ ${aluguel.toFixed(2)}`, 20, 85)
-  doc.text(`Água: R$ ${agua.toFixed(2)}`, 20, 95)
-
-  doc.setFontSize(14)
-  doc.text(`TOTAL: R$ ${total.toFixed(2)}`, 20, 110)
-
-  doc.setFontSize(12)
-  doc.text(`Forma de pagamento: ${forma || "-"}`, 20, 125)
-
-  doc.text(`Data: ${data}`, 20, 140)
-
-  // 🔥 ASSINATURA
-  doc.line(60, 170, 150, 170)
-  doc.text("Assinatura", 95, 178, null, null, "center")
-
-  doc.save(`recibo-${nome}.pdf`)
-}
   async function receberPagamento(id, total) {
 
   const confirmar = confirm("Confirmar pagamento de R$ " + total.toFixed(2) + "?")
@@ -1551,7 +1510,7 @@ const juros = total - aluguel - agua
         </button>
         
           <button onclick="enviarWhatsApp(
-          '${pagamento.nome || "Inquilino"}',
+          '${pagamento.contratos?.inquilinos?.nome || "Inquilino"}',
           '${pagamento.telefone || ""}',
             ${total},
            ${pagamento.mes}
@@ -1559,8 +1518,8 @@ const juros = total - aluguel - agua
           📲 WhatsApp
          </button>
          
-        <button onclick="gerarRecibo(
-          '${pagamento.nome || "Inquilino"}',
+          <button onclick="gerarRecibo(
+         '${pagamento.contratos?.inquilinos?.nome || "Inquilino"}',
           ${total},
           ${pagamento.mes},
           '${pagamento.forma_pagamento || ""}',
