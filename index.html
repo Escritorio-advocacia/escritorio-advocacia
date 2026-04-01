@@ -1382,7 +1382,10 @@ async function listarPagamentos(filtro = null, busca = "") {
     .from("pagamentos")
   .select("*, contratos(dia_vencimento)")
 
-  pagamentos.forEach(pagamento => {
+ pagamentos.forEach(pagamento => {
+  const mesAtual = new Date().getMonth() + 1
+  if (pagamento.mes > mesAtual) return
+   
 const hoje = new Date()
 const diaVencimento = pagamento.contratos?.dia_vencimento || 5
 
