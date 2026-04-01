@@ -1099,13 +1099,14 @@ if (erroContrato || !contratoCriado) {
 
   for(let mes = 1; mes <= 12; mes++){
 
-    await client.from("pagamentos").insert({
-      contrato_id: contratoCriado.id,
-      mes,
-      ano,
-      valor: valor_aluguel,
-      status: "pendente"
-    })
+  await client.from("pagamentos").insert({
+  contrato_id: contratoCriado.id,
+  mes,
+  ano,
+  valor: valor_aluguel,
+  valor_agua: valor_agua, // 🔥 AQUI
+  status: "pendente"
+})
 
   }
 
@@ -1442,17 +1443,32 @@ if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
 
   })
 }
-  function gerarRecibo(nome, valor) {
+ function gerarRecibo(nome, valor, mes, forma, aluguel, agua) {
 
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
 
   const data = new Date().toLocaleDateString()
 
+  doc.setFontSize(18)
   doc.text("RECIBO DE PAGAMENTO", 20, 20)
-  doc.text(`Recebi de: ${nome}`, 20, 40)
-  doc.text(`Valor: R$ ${valor.toFixed(2)}`, 20, 50)
-  doc.text(`Data: ${data}`, 20, 60)
+
+  doc.setFontSize(12)
+
+  doc.text(`Recebido de: ${nome}`, 20, 40)
+  doc.text(`Mês referente: ${mes}`, 20, 50)
+
+  doc.text(`Aluguel: R$ ${aluguel.toFixed(2)}`, 20, 65)
+  doc.text(`Água: R$ ${agua.toFixed(2)}`, 20, 75)
+
+  doc.text(`TOTAL: R$ ${valor.toFixed(2)}`, 20, 90)
+
+  doc.text(`Forma de pagamento: ${forma || "-"}`, 20, 110)
+
+  doc.text(`Data: ${data}`, 20, 120)
+
+  doc.text("__________________________________", 20, 150)
+  doc.text("Assinatura", 20, 160)
 
   doc.save("recibo.pdf")
 }
@@ -1478,6 +1494,7 @@ if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
   listarPagamentos()
 }
 function criarCard(pagamento, total) {
+
   const lista = document.getElementById("listaPagamentos")
 
   const div = document.createElement("div")
@@ -1487,12 +1504,26 @@ function criarCard(pagamento, total) {
   if (pagamento.status === "pendente") cor = "orange"
   if (pagamento.status === "atrasado") cor = "red"
 
+  const aluguel = pagamento.valor || 0
+  const agua = pagamento.valor_agua || 0
+
   div.innerHTML = `
-    <div style="border:1px solid ${cor}; padding:10px; margin:10px; border-radius:8px;">
+    <div style="border:1px solid ${cor}; padding:15px; margin:10px; border-radius:10px; background:white;">
       
-      <b>${pagamento.contratos?.inquilinos?.nome || "Inquilino"}</b><br>
-      Mês ${pagamento.mes} - R$ ${total.toFixed(2)}<br>
-      Status: ${pagamento.status}<br><br>
+      <b style="font-size:16px;">${pagamento.nome || "Inquilino"}</b><br><br>
+
+      📅 Mês: ${pagamento.mes}<br>
+      🏠 Aluguel: R$ ${aluguel.toFixed(2)}<br>
+      🚿 Água: R$ ${agua.toFixed(2)}<br>
+
+      <br>
+      <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
+
+      <span style="color:${cor}; font-weight:bold;">
+        Status: ${pagamento.status}
+      </span>
+
+      <br><br>
 
       ${
         pagamento.status !== "pago"
@@ -1501,11 +1532,18 @@ function criarCard(pagamento, total) {
           💳 Receber
         </button>
 
-        <button onclick="gerarRecibo('${pagamento.nome || "Inquilino"}', ${total})">
+        <button onclick="gerarRecibo(
+          '${pagamento.nome || "Inquilino"}',
+          ${total},
+          ${pagamento.mes},
+          '${pagamento.forma_pagamento || ""}',
+          ${aluguel},
+          ${agua}
+        )">
           📄 Recibo
         </button>
         `
-        : `<span style="color:green">✔ Pago</span>`
+        : `<span style="color:green; font-weight:bold;">✔ Pago</span>`
       }
 
     </div>
