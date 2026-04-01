@@ -1627,7 +1627,14 @@ fecharModal()
 listarPagamentos()
 
 mostrarAlerta("Pagamento registrado com sucesso!")
-
+gerarReciboPremium(
+  pagamento.contratos?.inquilinos?.nome || "Inquilino",
+  pagamento.valor,
+  pagamento.mes,
+  forma,
+  pagamento.valor,
+  pagamento.valor_agua || 0
+)
 }
 async function calcularInadimplentes(){
 
@@ -2468,10 +2475,9 @@ function gerarReciboPremium(nome, total, mes, forma, aluguel, agua) {
   doc.text("RECIBO NOVO", 20, 20)
 
   doc.text(`Nome: ${nome}`, 20, 40)
-  doc.text(`Total: ${total}`, 20, 50)
+  doc.text(`Total: R$ ${total.toFixed(2)}`, 20, 50)
 
-  doc.save("teste.pdf")
-}
+  doc.save("recibo.pdf")
 }
 async function login(){
 
