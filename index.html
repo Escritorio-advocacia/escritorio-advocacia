@@ -1455,45 +1455,54 @@ async function listarPagamentos(filtro = null, busca = "") {
   const hoje = new Date()
   const mesAtual = hoje.getMonth() + 1
 
-  pagamentos.forEach(pagamento => {
+const { data: unidades } = await client.from("unidades").select("*")
+const { data: predios } = await client.from("predios").select("*")
 
-    if (pagamento.mes > mesAtual) return
-const unidade = unidades.find(u => u.id == contrato?.unidade_id)
-const predio = predios.find(p => p.id == unidade?.predio_id)
+pagamentos.forEach(pagamento => {
 
-const enderecoCompleto = predio?.nome || "Não informado"
-const numeroUnidade = unidade?.numero || "-"
-    const contrato = contratos.find(c => c.id == pagamento.contrato_id)
-    const inquilino = inquilinos.find(i => i.id == contrato?.inquilino_id)
+  if (pagamento.mes > mesAtual) return
 
-    const nome = inquilino?.nome || "Inquilino"
-    const telefone = inquilino?.whatsapp || ""
-    const diaVencimento = contrato?.dia_vencimento || 5
+  // 🔥 PRIMEIRO pega contrato
+  const contrato = contratos.find(c => c.id == pagamento.contrato_id)
 
-    const vencimento = new Date(
-      pagamento.ano,
-      pagamento.mes - 1,
-      diaVencimento
-    )
+  // 🔥 DEPOIS inquilino
+  const inquilino = inquilinos.find(i => i.id == contrato?.inquilino_id)
 
-    const diasAtraso = Math.floor(
-      (hoje - vencimento) / (1000 * 60 * 60 * 24)
-    )
+  const nome = inquilino?.nome || "Inquilino"
+  const telefone = inquilino?.whatsapp || ""
 
-    let aluguel = pagamento.valor || 0
-    let agua = pagamento.valor_agua || 0
-    let juros = 0
+  // 🔥 AGORA unidade e prédio (ordem correta)
+  const unidade = unidades.find(u => u.id == contrato?.unidade_id)
+  const predio = predios.find(p => p.id == unidade?.predio_id)
 
-    const status = (pagamento.status || "").toLowerCase().trim()
-    
+  const enderecoCompleto = predio?.nome || "Não informado"
+  const numeroUnidade = unidade?.numero || "-"
 
-    if (diasAtraso > 5 && status !== "pago") {
-  juros = aluguel * 0.005 * diasAtraso
-  agua += agua * 0.10
-  status = "atrasado"
-}
+  const diaVencimento = contrato?.dia_vencimento || 5
 
-    let total = aluguel + agua + juros
+  const vencimento = new Date(
+    pagamento.ano,
+    pagamento.mes - 1,
+    diaVencimento
+  )
+
+  const diasAtraso = Math.floor(
+    (new Date() - vencimento) / (1000 * 60 * 60 * 24)
+  )
+
+  let aluguel = pagamento.valor || 0
+  let agua = pagamento.valor_agua || 0
+  let juros = 0
+
+  let status = (pagamento.status || "").toLowerCase().trim()
+
+  if (diasAtraso > 5 && status !== "pago") {
+    juros = aluguel * 0.005 * diasAtraso
+    agua += agua * 0.10
+    status = "atrasado"
+  }
+
+  let total = aluguel + agua + juros
 
     if (filtro && pagamento.status !== filtro) return
     if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
@@ -1519,7 +1528,7 @@ const numeroUnidade = unidade?.numero || "-"
         <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
 
         <span style="color:${cor}; font-weight:bold;">
-          const status = (pagamento.status || "").toLowerCase().trim()
+          let status = (pagamento.status || "").toLowerCase().trim()
         </span>
 
         <br><br>
@@ -1600,8 +1609,8 @@ function criarCard(pagamento, total) {
       <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
 
       <span style="color:${cor}; font-weight:bold;">
-        const status = (pagamento.status || "").toLowerCase().trim()
-      </span>
+  ${status.toUpperCase()}
+</span>
 
       <br><br>
 
