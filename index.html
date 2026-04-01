@@ -1670,17 +1670,10 @@ document.querySelector(".modalPagamento").remove()
 
 async function confirmarPagamento(id, forma){
 
-  // 🔥 busca pagamento com contrato + inquilino
+  // 🔥 BUSCA SIMPLES (SEM RELAÇÃO)
   const { data: pagamento, error } = await client
     .from("pagamentos")
-    .select(`
-      *,
-      contratos!pagamentos_contrato_fk (
-        inquilinos!contratos_inquilino_fk (
-          nome
-        )
-      )
-    `)
+    .select("*")
     .eq("id", id)
     .single()
 
@@ -1695,6 +1688,28 @@ async function confirmarPagamento(id, forma){
     alert("Esse pagamento já foi realizado!")
     fecharModal()
     return
+  }
+
+  // 🔥 BUSCAR CONTRATO
+  const { data: contrato } = await client
+    .from("contratos")
+    .select("*")
+    .eq("id", pagamento.contrato_id)
+    .single()
+
+  // 🔥 BUSCAR INQUILINO
+  let nome = "Inquilino"
+
+  if(contrato){
+    const { data: inquilino } = await client
+      .from("inquilinos")
+      .select("*")
+      .eq("id", contrato.inquilino_id)
+      .single()
+
+    if(inquilino){
+      nome = inquilino.nome
+    }
   }
 
   const hoje = new Date()
@@ -1712,9 +1727,6 @@ async function confirmarPagamento(id, forma){
   listarPagamentos()
 
   mostrarAlerta("Pagamento registrado com sucesso!")
-
-  // 🔥 nome seguro (não quebra mais)
-  const nome = pagamento.contratos?.inquilinos?.nome || "Inquilino"
 
   gerarReciboPremium(
     nome,
