@@ -1013,7 +1013,8 @@ async function salvarInquilino() {
   const data_inicio = document.getElementById("dataInicioContrato").value || null
   const data_fim = document.getElementById("dataFimContrato").value || null
   const status = document.getElementById("statusInquilino").value
-  const arquivo = document.getElementById("contratoInquilino").files[0]
+
+  const arquivo = document.getElementById("contratoPDF").files[0]
 
   let contrato_url = null
 
@@ -1030,43 +1031,76 @@ async function salvarInquilino() {
     }
   }
 
-  const { error } = await client
+  // 🔥 SALVA INQUILINO
+  const { data: inquilinoCriado, error } = await client
     .from("inquilinos")
-    .insert([
-      {
-        nome,
-        cpf,
-        rg,
-        whatsapp,
-        email,
-
-        nome_responsavel,
-        cpf_responsavel,
-        rg_responsavel,
-        whatsapp_responsavel,
-
-        unidade_id,
-        valor_aluguel,
-        valor_agua,
-        dia_vencimento,
-        status,
-
-        data_inicio,
-        data_fim,
-
-        contrato_url
-      }
-    ])
+    .insert([{
+      nome,
+      cpf,
+      rg,
+      whatsapp,
+      email,
+      nome_responsavel,
+      cpf_responsavel,
+      rg_responsavel,
+      whatsapp_responsavel,
+      unidade_id,
+      valor_aluguel,
+      valor_agua,
+      dia_vencimento,
+      status,
+      data_inicio,
+      data_fim,
+      contrato_url
+    }])
+    .select()
+    .single()
 
   if(error){
+    alert("Erro ao salvar inquilino")
     console.log(error)
-    alert("Erro: " + error.message)
     return
   }
 
-  alert("Inquilino salvo com contrato!")
+  // 🔥 CRIA CONTRATO AUTOMÁTICO
+  const { data: contratoCriado } = await client
+    .from("contratos")
+    .insert({
+      inquilino_id: inquilinoCriado.id,
+      unidade_id,
+      valor_aluguel,
+      dia_vencimento,
+      arquivo_contrato: contrato_url,
+      status: "ativo"
+    })
+    .select()
+    .single()
+
+  // 🔥 MARCA UNIDADE COMO OCUPADA
+  await client
+    .from("unidades")
+    .update({ status: "ocupada" })
+    .eq("id", unidade_id)
+
+  // 🔥 GERA 12 PAGAMENTOS
+  const ano = new Date().getFullYear()
+
+  for(let mes = 1; mes <= 12; mes++){
+
+    await client.from("pagamentos").insert({
+      contrato_id: contratoCriado.id,
+      mes,
+      ano,
+      valor: valor_aluguel,
+      status: "pendente"
+    })
+
+  }
+
+  alert("🔥 Inquilino + contrato + pagamentos criados!")
 
   listarInquilinos()
+  listarPagamentos()
 }
 async function excluirInquilino(id){
 
