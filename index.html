@@ -1494,28 +1494,31 @@ async function listarPagamentos(filtro = null, busca = "") {
   if (pagamento.status === "pendente") cor = "orange"
   if (pagamento.status === "atrasado") cor = "red"
 
- div.innerHTML = `
+div.innerHTML = `
   <div style="border:1px solid ${cor}; padding:10px; margin:10px; border-radius:8px;">
+    
     <b>${pagamento.nome || "Inquilino"}</b><br>
     Mês ${pagamento.mes} - R$ ${total.toFixed(2)}<br>
     Status: ${pagamento.status}<br><br>
 
-   ${
-  pagamento.status !== "pago"
-    ? `<button onclick="receberPagamento(${pagamento.id}, ${total})"
-        style="background:green;color:white;padding:5px 10px;border:none;border-radius:5px;">
-        Receber
-      </button>
+    ${
+      pagamento.status !== "pago"
+        ? `
+        <button onclick="receberPagamento(${pagamento.id}, ${total})"
+          style="background:green;color:white;padding:5px 10px;border:none;border-radius:5px;">
+          Receber
+        </button>
 
-      <button onclick="gerarRecibo('${pagamento.nome}', ${total})"
-        style="background:blue;color:white;padding:5px 10px;border:none;border-radius:5px;">
-        Recibo
-      </button>`
-    : `<span style="color:green">✔ Pago</span>`
-}
+       <button onclick="gerarRecibo(${pagamento.id})"
+          style="background:blue;color:white;padding:5px 10px;border:none;border-radius:5px;margin-left:5px;">
+          Recibo
+        </button>
+        `
+        : `<span style="color:green">✔ Pago</span>`
+    }
+
   </div>
 `
-
   lista.appendChild(div)
 }
   async function buscarPagamentos(texto){
