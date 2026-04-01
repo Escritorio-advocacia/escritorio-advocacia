@@ -2669,10 +2669,14 @@ await client
 }
 
 }
-  function filtrarPagamentos(statusFiltro) {
-  console.log("Filtrando:", statusFiltro)
+function filtrarPagamentos(status) {
 
-  listarPagamentos(statusFiltro)
+  if (!status || status === "todos") {
+    listarPagamentos()
+    return
+  }
+
+  listarPagamentos(status)
 }
 function mostrarAlerta(msg, tipo="sucesso"){
 
@@ -2715,21 +2719,6 @@ html += `<option value="${u.id}">${u.numero}</option>`
 
 document.getElementById("unidadeSelect").innerHTML = html
 
-}
-  function filtrarPagamentos(tipo) {
-  console.log("Filtro:", tipo)
-
-  if (tipo === "todos") {
-    listarPagamentos()
-  }
-
-  if (tipo === "pagos") {
-    listarPagamentos("pago")
-  }
-
-  if (tipo === "atrasado") {
-    listarPagamentos("atrasado")
-  }
 }
 function controlarPermissoes(){
 
