@@ -1665,9 +1665,11 @@ document.body.appendChild(modal)
 
 }
 function fecharModal(){
-document.querySelector(".modalPagamento").remove()
+  const modal = document.querySelector(".modalPagamento")
+  if(modal){
+    modal.remove()
+  }
 }
-
 async function confirmarPagamento(id, forma){
 
   const { data: pagamento, error } = await client
