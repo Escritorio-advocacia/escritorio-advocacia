@@ -1551,7 +1551,7 @@ pagamentos.forEach(pagamento => {
               📲 WhatsApp
             </button>
 
-            <button onclick="gerarRecibo({
+            <button onclick="gerarReciboCompleto(${pagamento.id})"
   nome: '${nome}',
   endereco: '${enderecoCompleto}',
   unidade: '${numeroUnidade}',
@@ -1774,6 +1774,61 @@ gerarRecibo({
   total: total,
   forma: forma
 })
+
+}
+async function gerarReciboCompleto(pagamento_id){
+
+  // 🔥 buscar pagamento
+  const { data: pagamento } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("id", pagamento_id)
+    .single()
+
+  // 🔥 contrato
+  const { data: contrato } = await client
+    .from("contratos")
+    .select("*")
+    .eq("id", pagamento.contrato_id)
+    .single()
+
+  // 🔥 inquilino
+  const { data: inquilino } = await client
+    .from("inquilinos")
+    .select("*")
+    .eq("id", contrato.inquilino_id)
+    .single()
+
+  // 🔥 unidade
+  const { data: unidade } = await client
+    .from("unidades")
+    .select("*")
+    .eq("id", contrato.unidade_id)
+    .single()
+
+  // 🔥 prédio
+  const { data: predio } = await client
+    .from("predios")
+    .select("*")
+    .eq("id", unidade.predio_id)
+    .single()
+
+  const aluguel = pagamento.valor || 0
+  const agua = pagamento.valor_agua || 0
+  const juros = 0
+  const total = aluguel + agua + juros
+
+  gerarRecibo({
+    nome: inquilino?.nome || "-",
+    endereco: predio?.nome || "-",
+    unidade: unidade?.numero || "-",
+    mes: pagamento.mes,
+    aluguel,
+    agua,
+    juros,
+    total,
+    forma: pagamento.forma_pagamento || "-"
+  })
 
 }
 async function calcularInadimplentes(){
