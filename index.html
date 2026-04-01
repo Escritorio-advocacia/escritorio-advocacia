@@ -1458,7 +1458,11 @@ async function listarPagamentos(filtro = null, busca = "") {
   pagamentos.forEach(pagamento => {
 
     if (pagamento.mes > mesAtual) return
+const unidade = unidades.find(u => u.id == contrato?.unidade_id)
+const predio = predios.find(p => p.id == unidade?.predio_id)
 
+const enderecoCompleto = predio?.nome || "Não informado"
+const numeroUnidade = unidade?.numero || "-"
     const contrato = contratos.find(c => c.id == pagamento.contrato_id)
     const inquilino = inquilinos.find(i => i.id == contrato?.inquilino_id)
 
@@ -1540,8 +1544,8 @@ async function listarPagamentos(filtro = null, busca = "") {
 
             <button onclick="gerarRecibo({
   nome: '${nome}',
-  endereco: 'Endereço não definido',
-  unidade: '',
+  endereco: '${enderecoCompleto}',
+  unidade: '${numeroUnidade}',
   mes: ${pagamento.mes},
   aluguel: ${aluguel},
   agua: ${agua},
@@ -1619,8 +1623,8 @@ function criarCard(pagamento, total) {
          
         <button onclick="gerarRecibo({
   nome: '${nome}',
-  endereco: 'Endereço não definido',
-  unidade: '',
+  endereco: '${enderecoCompleto}',
+  unidade: '${numeroUnidade}',
   mes: ${pagamento.mes},
   aluguel: ${aluguel},
   agua: ${agua},
@@ -1746,15 +1750,15 @@ async function confirmarPagamento(id, forma){
   const nome = inquilino?.nome || "Inquilino"
 
  gerarRecibo({
-  nome: nome,
-  endereco: contrato?.endereco || "Não informado",
-  unidade: contrato?.unidade || "",
-  mes: pagamento.mes,
-  aluguel: pagamento.valor || 0,
-  agua: pagamento.valor_agua || 0,
-  juros: 0,
-  total: (pagamento.valor || 0) + (pagamento.valor_agua || 0),
-  forma: forma
+  nome: '${nome}',
+  endereco: '${enderecoCompleto}',
+  unidade: '${numeroUnidade}',
+  mes: ${pagamento.mes},
+  aluguel: ${aluguel},
+  agua: ${agua},
+  juros: ${juros},
+  total: ${total},
+  forma: '${pagamento.forma_pagamento || ""}'
 })
 
 }
