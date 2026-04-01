@@ -1383,17 +1383,15 @@ async function listarPagamentos(filtro = null, busca = "") {
 
   const { data: pagamentos, error } = await client
     .from("pagamentos")
-    .select(`
-      *,
-      contratos (
-        dia_vencimento,
-        inquilinos (
-          nome,
-          whatsapp
-        )
-      )
-    `)
-
+   .select(`
+  *,
+  contratos:contrato_id (
+    dia_vencimento,
+    inquilinos (
+      nome
+    )
+  )
+`)
   // 🔒 proteção contra erro
   if (error || !pagamentos) {
     console.log("Erro ao carregar pagamentos", error)
