@@ -1406,7 +1406,11 @@ async function listarPagamentos(filtro = null, busca = "") {
 
     let total = pagamento.valor
     let agua = pagamento.valor_agua || 0
+    let juros = 0
 
+    if (diasAtraso > 5 && pagamento.status !== "pago") {
+    juros = pagamento.valor * 0.005 * diasAtraso
+    }
     // 🔥 APLICA JUROS E MULTA
     if (diasAtraso > 5 && pagamento.status !== "pago") {
 
@@ -1443,34 +1447,47 @@ if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
 
   })
 }
- function gerarRecibo(nome, valor, mes, forma, aluguel, agua) {
+ function gerarRecibo(nome, total, mes, forma, aluguel, agua) {
 
   const { jsPDF } = window.jspdf
   const doc = new jsPDF()
 
   const data = new Date().toLocaleDateString()
 
+  // 🔥 TOPO
   doc.setFontSize(18)
-  doc.text("RECIBO DE PAGAMENTO", 20, 20)
+  doc.text("RECIBO DE PAGAMENTO", 105, 20, null, null, "center")
 
+  doc.setFontSize(10)
+  doc.text("Sua Imobiliária LTDA", 105, 28, null, null, "center")
+  doc.text("CNPJ: 00.000.000/0001-00", 105, 34, null, null, "center")
+  doc.text("Endereço: Rua Exemplo, 123 - Centro", 105, 40, null, null, "center")
+
+  // LINHA
+  doc.line(20, 45, 190, 45)
+
+  // 🔥 DADOS
   doc.setFontSize(12)
 
-  doc.text(`Recebido de: ${nome}`, 20, 40)
-  doc.text(`Mês referente: ${mes}`, 20, 50)
+  doc.text(`Recebemos de: ${nome}`, 20, 60)
+  doc.text(`Referente ao mês: ${mes}`, 20, 70)
 
-  doc.text(`Aluguel: R$ ${aluguel.toFixed(2)}`, 20, 65)
-  doc.text(`Água: R$ ${agua.toFixed(2)}`, 20, 75)
+  doc.text(`Aluguel: R$ ${aluguel.toFixed(2)}`, 20, 85)
+  doc.text(`Água: R$ ${agua.toFixed(2)}`, 20, 95)
 
-  doc.text(`TOTAL: R$ ${valor.toFixed(2)}`, 20, 90)
+  doc.setFontSize(14)
+  doc.text(`TOTAL: R$ ${total.toFixed(2)}`, 20, 110)
 
-  doc.text(`Forma de pagamento: ${forma || "-"}`, 20, 110)
+  doc.setFontSize(12)
+  doc.text(`Forma de pagamento: ${forma || "-"}`, 20, 125)
 
-  doc.text(`Data: ${data}`, 20, 120)
+  doc.text(`Data: ${data}`, 20, 140)
 
-  doc.text("__________________________________", 20, 150)
-  doc.text("Assinatura", 20, 160)
+  // 🔥 ASSINATURA
+  doc.line(60, 170, 150, 170)
+  doc.text("Assinatura", 95, 178, null, null, "center")
 
-  doc.save("recibo.pdf")
+  doc.save(`recibo-${nome}.pdf`)
 }
   async function receberPagamento(id, total) {
 
@@ -1504,8 +1521,9 @@ function criarCard(pagamento, total) {
   if (pagamento.status === "pendente") cor = "orange"
   if (pagamento.status === "atrasado") cor = "red"
 
-  const aluguel = pagamento.valor || 0
-  const agua = pagamento.valor_agua || 0
+ const aluguel = pagamento.valor || 0
+const agua = pagamento.valor_agua || 0
+const juros = total - aluguel - agua
 
   div.innerHTML = `
     <div style="border:1px solid ${cor}; padding:15px; margin:10px; border-radius:10px; background:white;">
@@ -1531,7 +1549,16 @@ function criarCard(pagamento, total) {
         <button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
           💳 Receber
         </button>
-
+        
+          <button onclick="enviarWhatsApp(
+          '${pagamento.nome || "Inquilino"}',
+          '${pagamento.telefone || ""}',
+            ${total},
+           ${pagamento.mes}
+           )">
+          📲 WhatsApp
+         </button>
+         
         <button onclick="gerarRecibo(
           '${pagamento.nome || "Inquilino"}',
           ${total},
@@ -2157,6 +2184,23 @@ cobrarWhatsapp(
 
 document.getElementById("listaInquilinos").innerHTML = html
 
+}
+function enviarWhatsApp(nome, telefone, total, mes) {
+
+  let mensagem = `Olá ${nome} 👋
+
+Seu pagamento foi registrado com sucesso.
+
+📅 Mês: ${mes}
+💰 Valor: R$ ${total.toFixed(2)}
+
+Obrigado!`
+
+  telefone = telefone.replace(/\D/g, "")
+
+  const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`
+
+  window.open(url, "_blank")
 }
 async function vencimentosHoje(){
 
