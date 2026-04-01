@@ -1807,67 +1807,50 @@ document.getElementById("relatorio").innerHTML = html
 
 }
 async function pagar(id, forma){
-alert("CONFIRMAR PAGAMENTO")
-  
-const { data: pagamento } = await client
-.from("pagamentos")
-.select("*")
-.eq("id", id)
-.single()
 
-const { data: contrato } = await client
-.from("contratos")
-.select("*")
-.eq("id", pagamento.contrato_id)
-.single()
+  const { data: pagamento } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("id", id)
+    .single()
 
-const { data: inquilino } = await client
-.from("inquilinos")
-.select("*")
-.eq("id", contrato.inquilino_id)
-.single()
+  const { data: contrato } = await client
+    .from("contratos")
+    .select("*")
+    .eq("id", pagamento.contrato_id)
+    .single()
 
-const hoje = new Date()
-const diaHoje = hoje.getDate()
+  const { data: inquilino } = await client
+    .from("inquilinos")
+    .select("*")
+    .eq("id", contrato.inquilino_id)
+    .single()
 
-let atraso = diaHoje - inquilino.dia_vencimento
+  const hoje = new Date().toISOString()
 
-if(atraso < 0){
-atraso = 0
+  await client
+    .from("pagamentos")
+    .update({
+      status:"pago",
+      forma_pagamento: forma,
+      data_pagamento: hoje
+    })
+    .eq("id", id)
+
+  alert("Pagamento registrado!")
+
+  listarPagamentos()
+
+  // 🔥 AGORA USA O RECIBO NOVO
+  gerarReciboPremium(
+    inquilino?.nome || "Inquilino",
+    pagamento.valor,
+    pagamento.mes,
+    forma,
+    pagamento.valor,
+    pagamento.valor_agua || 0
+  )
 }
-
-let juros = 0
-let multaAgua = 0
-
-if(atraso > 5){
-juros = inquilino.valor_aluguel * (0.005 * atraso)
-multaAgua = inquilino.valor_agua * 0.10
-}
-
-const total = Number(pagamento.valor) + juros + multaAgua
-
-await client
-.from("pagamentos")
-.update({
-status:"pago",
-valor_pago: total,
-forma_pagamento: forma,
-data_pagamento: new Date().toISOString()
-})
-.eq("id", id)
-
-alert("Pagamento registrado!")
-
-listarPagamentos()
-
-gerarReciboPremium(
-  inquilino.nome,
-  total,
-  pagamento.mes,
-  pagamento.forma_pagamento || "",
-  pagamento.valor,
-  pagamento.valor_agua || 0
-)
 listarPagamentos()
 
 }
