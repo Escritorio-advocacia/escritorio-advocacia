@@ -1502,7 +1502,7 @@ async function listarPagamentos(filtro = null, busca = "") {
 
     ${
       pagamento.status !== "pago"
-        ? `<button onclick="receberPagamento(${pagamento.id}, ${total})" style="background:green;color:white;padding:5px 10px;border:none;border-radius:5px;">
+        ? `<button onclick="receberPagamento(${pagamento.id}, ${total})"> style="background:green;color:white;padding:5px 10px;border:none;border-radius:5px;">
             Receber
           </button>`
       <button onclick="gerarRecibo('${pagamento.nome}', ${total})"
