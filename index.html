@@ -1480,7 +1480,7 @@ async function listarPagamentos(filtro = null, busca = "") {
     let agua = pagamento.valor_agua || 0
     let juros = 0
 
-    // 🔥 CORREÇÃO STATUS
+    const status = (pagamento.status || "").toLowerCase().trim()
     
 
     if (diasAtraso > 5 && status !== "pago") {
