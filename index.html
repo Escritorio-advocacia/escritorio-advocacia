@@ -1381,7 +1381,7 @@ async function listarPagamentos(filtro = null, busca = "") {
 
   const { data: pagamentos } = await client
     .from("pagamentos")
-    .select("*, contratos(dia_vencimento)")
+    .select("*, contratos(dia_vencimento, inquilinos(nome))")
 
   const hoje = new Date()
   const mesAtual = hoje.getMonth() + 1
@@ -1426,7 +1426,9 @@ async function listarPagamentos(filtro = null, busca = "") {
     if (filtro && pagamento.status.toLowerCase() !== filtro) return
 
     // 🔍 FILTRO POR BUSCA
-    if (busca && !(pagamento.nome || "").toLowerCase().includes(busca.toLowerCase())) return
+  const nome = pagamento.contratos?.inquilinos?.nome || ""
+
+if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
 
     // 🎨 COR
     let cor = "#ccc"
@@ -1488,7 +1490,7 @@ function criarCard(pagamento, total) {
   div.innerHTML = `
     <div style="border:1px solid ${cor}; padding:10px; margin:10px; border-radius:8px;">
       
-      <b>${pagamento.nome || "Inquilino"}</b><br>
+      <b>${pagamento.contratos?.inquilinos?.nome || "Inquilino"}</b><br>
       Mês ${pagamento.mes} - R$ ${total.toFixed(2)}<br>
       Status: ${pagamento.status}<br><br>
 
@@ -1515,7 +1517,7 @@ function criarCard(pagamento, total) {
 
 const { data } = await client
 .from("pagamentos")
-.select("*")
+.select("*, contratos(dia_vencimento, inquilinos(nome))")
 
 let filtrados = data.filter(p => 
 String(p.mes).includes(texto) ||
