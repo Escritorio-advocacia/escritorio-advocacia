@@ -1449,6 +1449,41 @@ async function listarPagamentos(filtro = null, busca = "") {
 
   })
 }
+  function gerarRecibo(nome, valor) {
+
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF()
+
+  const data = new Date().toLocaleDateString()
+
+  doc.text("RECIBO DE PAGAMENTO", 20, 20)
+  doc.text(`Recebi de: ${nome}`, 20, 40)
+  doc.text(`Valor: R$ ${valor.toFixed(2)}`, 20, 50)
+  doc.text(`Data: ${data}`, 20, 60)
+
+  doc.save("recibo.pdf")
+}
+  async function receberPagamento(id, total) {
+
+  const confirmar = confirm("Confirmar pagamento de R$ " + total.toFixed(2) + "?")
+
+  if (!confirmar) return
+
+  const hoje = new Date().toISOString().split("T")[0]
+
+  await client
+    .from("pagamentos")
+    .update({
+      status: "pago",
+      valor_pago: total,
+      data_pagamento: hoje
+    })
+    .eq("id", id)
+
+  alert("Pagamento registrado!")
+
+  listarPagamentos()
+}
   function criarCard(pagamento, total) {
   const lista = document.getElementById("listaPagamentos")
 
@@ -1459,13 +1494,25 @@ async function listarPagamentos(filtro = null, busca = "") {
   if (pagamento.status === "pendente") cor = "orange"
   if (pagamento.status === "atrasado") cor = "red"
 
-  div.innerHTML = `
-    <div style="border:1px solid ${cor}; padding:10px; margin:10px; border-radius:8px;">
-      <b>${pagamento.nome || "Inquilino"}</b><br>
-      Mês ${pagamento.mes} - R$ ${total.toFixed(2)}<br>
-      Status: ${pagamento.status}
-    </div>
-  `
+ div.innerHTML = `
+  <div style="border:1px solid ${cor}; padding:10px; margin:10px; border-radius:8px;">
+    <b>${pagamento.nome || "Inquilino"}</b><br>
+    Mês ${pagamento.mes} - R$ ${total.toFixed(2)}<br>
+    Status: ${pagamento.status}<br><br>
+
+    ${
+      pagamento.status !== "pago"
+        ? `<button onclick="receberPagamento(${pagamento.id}, ${total})" style="background:green;color:white;padding:5px 10px;border:none;border-radius:5px;">
+            Receber
+          </button>`
+      <button onclick="gerarRecibo('${pagamento.nome}', ${total})"
+style="background:blue;color:white;padding:5px 10px;border:none;border-radius:5px;">
+Recibo
+</button>
+        : `<span style="color:green">✔ Pago</span>`
+    }
+  </div>
+`
 
   lista.appendChild(div)
 }
