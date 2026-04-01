@@ -1548,14 +1548,17 @@ function criarCard(pagamento, total) {
   if (pagamento.status === "pendente") cor = "orange"
   if (pagamento.status === "atrasado") cor = "red"
 
- const aluguel = pagamento.valor || 0
-const agua = pagamento.valor_agua || 0
-const juros = total - aluguel - agua
+  const aluguel = pagamento.valor || 0
+  const agua = pagamento.valor_agua || 0
+  const juros = total - aluguel - agua
+
+  // ✅ NOME CORRETO DO INQUILINO
+  const nome = pagamento.contratos?.inquilinos?.nome || "Inquilino"
 
   div.innerHTML = `
     <div style="border:1px solid ${cor}; padding:15px; margin:10px; border-radius:10px; background:white;">
       
-      <b style="font-size:16px;">${pagamento.nome || "Inquilino"}</b><br><br>
+      <b style="font-size:16px;">${nome}</b><br><br>
 
       📅 Mês: ${pagamento.mes}<br>
       🏠 Aluguel: R$ ${aluguel.toFixed(2)}<br>
@@ -1577,17 +1580,17 @@ const juros = total - aluguel - agua
           💳 Receber
         </button>
         
-          <button onclick="enviarWhatsApp(
-          '${pagamento.contratos?.inquilinos?.nome || "Inquilino"}',
+        <button onclick="enviarWhatsApp(
+          '${nome}',
           '${pagamento.telefone || ""}',
-            ${total},
-           ${pagamento.mes}
-           )">
+          ${total},
+          ${pagamento.mes}
+        )">
           📲 WhatsApp
-         </button>
+        </button>
          
-          <button onclick="gerarReciboPremium(
-         '${pagamento.contratos?.inquilinos?.nome || "Inquilino"}',
+        <button onclick="gerarReciboPremium(
+          '${nome}',
           ${total},
           ${pagamento.mes},
           '${pagamento.forma_pagamento || ""}',
