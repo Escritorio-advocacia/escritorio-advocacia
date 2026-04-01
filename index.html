@@ -1381,17 +1381,19 @@ async function listarPagamentos(filtro = null, busca = "") {
   const lista = document.getElementById("listaPagamentos")
   lista.innerHTML = ""
 
- const { data: pagamentos, error } = await client
-  .from("pagamentos")
-  .select(`
-  *,
-  contratos (
-    dia_vencimento,
-    inquilinos (
-      nome
-    )
-  )
-`)
+  const { data: pagamentos, error } = await client
+    .from("pagamentos")
+    .select(`
+      *,
+      contratos!pagamentos_contrato_id_fkey (
+        dia_vencimento,
+        inquilinos (
+          nome,
+          whatsapp
+        )
+      )
+    `)
+
   // 🔒 proteção contra erro
   if (error || !pagamentos) {
     console.log("Erro ao carregar pagamentos", error)
@@ -1412,7 +1414,7 @@ async function listarPagamentos(filtro = null, busca = "") {
     // ❌ NÃO MOSTRAR MESES FUTUROS
     if (pagamento.mes > mesAtual) return
 
-    // 🔥 dados do contrato
+    // 🔥 dados do contrato + inquilino
     const nome = pagamento.contratos?.inquilinos?.nome || "Inquilino"
     const telefone = pagamento.contratos?.inquilinos?.whatsapp || ""
     const diaVencimento = pagamento.contratos?.dia_vencimento || 5
@@ -1431,7 +1433,7 @@ async function listarPagamentos(filtro = null, busca = "") {
     let agua = pagamento.valor_agua || 0
     let juros = 0
 
-    // 🔥 JUROS + MULTA (CORRIGIDO)
+    // 🔥 JUROS + MULTA
     if (diasAtraso > 5 && pagamento.status !== "pago") {
       juros = aluguel * 0.005 * diasAtraso
 
@@ -1513,7 +1515,6 @@ async function listarPagamentos(filtro = null, busca = "") {
 
   })
 }
-
   async function receberPagamento(id, total) {
 
   const confirmar = confirm("Confirmar pagamento de R$ " + total.toFixed(2) + "?")
