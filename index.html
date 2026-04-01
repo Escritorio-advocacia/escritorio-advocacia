@@ -703,7 +703,7 @@ transition: all 0.2s ease;
 <button onclick="listarPagamentos()">Todos</button>
 <button onclick="filtrarPagamentos('pago')">Pagos</button>
 <button onclick="filtrarPagamentos('pendente')">Pendentes</button>
-<button onclick="filtrarPagamentos('ATRASADO')">Atrasados</button>
+<button onclick="filtrarPagamentos('atrasado')">Atrasados</button>
 
 </div>
 
@@ -1374,7 +1374,7 @@ document.getElementById("listaContratos").innerHTML = html
 
 }
 
-async function listarPagamentos(){
+function listarPagamentos(filtro = null) {
 
 const { data: pagamentos } = await client
 .from("pagamentos")
@@ -1400,6 +1400,8 @@ const mesAtual = hoje.getMonth() + 1
 
 pagamentos.forEach(p => {
 
+if (filtro && pagamento.status !== filtro) return;
+  
 const contrato = contratos.find(c => c.id == p.contrato_id)
 if(!contrato) return
 
@@ -2590,6 +2592,11 @@ await client
 }
 
 }
+  function filtrarPagamentos(statusFiltro) {
+  console.log("Filtrando:", statusFiltro)
+
+  listarPagamentos(statusFiltro)
+}
 function mostrarAlerta(msg, tipo="sucesso"){
 
 const div = document.createElement("div")
@@ -2631,6 +2638,21 @@ html += `<option value="${u.id}">${u.numero}</option>`
 
 document.getElementById("unidadeSelect").innerHTML = html
 
+}
+  function filtrarPagamentos(tipo) {
+  console.log("Filtro:", tipo)
+
+  if (tipo === "todos") {
+    listarPagamentos()
+  }
+
+  if (tipo === "pagos") {
+    listarPagamentos("pago")
+  }
+
+  if (tipo === "atrasado") {
+    listarPagamentos("atrasado")
+  }
 }
 function controlarPermissoes(){
 
