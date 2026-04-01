@@ -1501,7 +1501,7 @@ async function listarPagamentos(filtro = null, busca = "") {
   aluguel: ${aluguel},
   agua: ${agua},
  juros: ${juros},
-  total: ${total.toFixed(2)},
+  total: ${total},
   forma: '${pagamento.forma_pagamento || ""}'
 })">
             📄 Recibo
@@ -1576,7 +1576,7 @@ function criarCard(pagamento, total) {
   aluguel: ${aluguel},
   agua: ${agua},
   juros: ${juros},
-  total: ${total.toFixed(2)},
+  total: ${total},
   forma: '${pagamento.forma_pagamento || ""}'
 })">
           📄 Recibo
@@ -2494,14 +2494,15 @@ function gerarRecibo(dados) {
 
       <hr>
 
-      <p>🏠 Aluguel: <b>R$ ${dados.aluguel}</b></p>
-      <p>🚿 Água: <b>R$ ${dados.agua}</b></p>
-      <p>💸 Juros: <b>R$ ${dados.juros}</b></p>
+      🏠 Aluguel: <b>R$ ${Number(dados.aluguel).toFixed(2)}</b>
+      🚿 Água: <b>R$ ${Number(dados.agua).toFixed(2)}</b>
+      💸 Juros: <b>R$ ${Number(dados.juros).toFixed(2)}</b>
+     💰 Total: <b>R$ ${Number(dados.total).toFixed(2)}</b>
 
       <hr>
 
       <h3 style="color:#16a34a;">
-        💰 Total: R$ ${dados.total}
+        💰 Total: R$ ${Number(dados.total).toFixed(2)}
       </h3>
 
       <p><b>Forma de pagamento:</b> ${dados.forma || "-"}</p>
