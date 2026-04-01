@@ -1539,14 +1539,16 @@ async function listarPagamentos(filtro = null, busca = "") {
             </button>
 
             <button onclick="gerarRecibo({
-              nome: '${nome}',
-              mes: ${pagamento.mes},
-              aluguel: ${aluguel},
-              agua: ${agua},
-              juros: ${juros},
-              total: ${total.toFixed(2)},
-              forma: '${pagamento.forma_pagamento || ""}'
-            })">
+  nome: '${nome}',
+  endereco: 'Endereço não definido',
+  unidade: '',
+  mes: ${pagamento.mes},
+  aluguel: ${aluguel},
+  agua: ${agua},
+  juros: ${juros},
+  total: ${total},
+  forma: '${pagamento.forma_pagamento || ""}'
+})">
               📄 Recibo
             </button>
 
@@ -1617,6 +1619,8 @@ function criarCard(pagamento, total) {
          
         <button onclick="gerarRecibo({
   nome: '${nome}',
+  endereco: 'Endereço não definido',
+  unidade: '',
   mes: ${pagamento.mes},
   aluguel: ${aluguel},
   agua: ${agua},
@@ -1741,8 +1745,10 @@ async function confirmarPagamento(id, forma){
 
   const nome = inquilino?.nome || "Inquilino"
 
-  gerarRecibo({
+ gerarRecibo({
   nome: nome,
+  endereco: contrato?.endereco || "Não informado",
+  unidade: contrato?.unidade || "",
   mes: pagamento.mes,
   aluguel: pagamento.valor || 0,
   agua: pagamento.valor_agua || 0,
@@ -2537,6 +2543,8 @@ function gerarRecibo(dados) {
       <hr>
 
       <p><b>Inquilino:</b> ${dados.nome}</p>
+      <p><b>Endereço:</b> ${dados.endereco || "-"}</p>
+      <p><b>Unidade:</b> ${dados.unidade || "-"}</p>
       <p><b>Mês:</b> ${dados.mes}</p>
 
       <hr>
