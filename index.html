@@ -2638,7 +2638,6 @@ TOTAL: ${total.toFixed(2)}`
 }
 async function montarDadosRecibo(pagamento_id){
 
-  
   const { data: pagamento } = await client
     .from("pagamentos")
     .select("*")
@@ -2669,53 +2668,40 @@ async function montarDadosRecibo(pagamento_id){
     .eq("id", unidade.predio_id)
     .single()
 
-
   const aluguel = pagamento.valor || 0
   const agua = pagamento.valor_agua || 0
   const juros = 0
   const total = aluguel + agua + juros
 
-  return {
-  nome: inquilino?.nome || "-",
-
-  rua: predio?.rua || predio?.nome || "-", // 👈 AQUI
-  numero: predio?.numero || "",
-  bairro: predio?.bairro || "-",
-  cidade: predio?.cidade || "Fortaleza - CE",
-  cep: predio?.cep || "-",
-  vencimento: vencimentoFormatado,
-  unidade: unidade?.numero || "-",
-  mes: pagamento.mes,
-
+  // ✅ AQUI AGORA CERTO
   const dia = contrato?.dia_vencimento || 5
 
-const vencimentoFormatado = new Date(
-  pagamento.ano,
-  pagamento.mes - 1,
-  dia
-).toLocaleDateString()
+  const vencimentoFormatado = new Date(
+    pagamento.ano,
+    pagamento.mes - 1,
+    dia
+  ).toLocaleDateString()
 
-return {
-  nome: inquilino?.nome || "-",
+  return {
+    nome: inquilino?.nome || "-",
 
-  rua: predio?.rua || predio?.nome || "-",
-  numero: predio?.numero || "",
-  bairro: predio?.bairro || "-",
-  cidade: predio?.cidade || "Fortaleza - CE",
-  cep: predio?.cep || "-",
+    rua: predio?.rua || predio?.nome || "-",
+    numero: predio?.numero || "",
+    bairro: predio?.bairro || "-",
+    cidade: predio?.cidade || "Fortaleza - CE",
+    cep: predio?.cep || "-",
 
-  vencimento: vencimentoFormatado, // ✅ agora existe
+    vencimento: vencimentoFormatado, // ✅ AGORA FUNCIONA
 
-  unidade: unidade?.numero || "-",
-  mes: pagamento.mes,
+    unidade: unidade?.numero || "-",
+    mes: pagamento.mes,
 
-  aluguel,
-  agua,
-  juros,
-  total,
-
-  forma: pagamento.forma_pagamento || "PENDENTE"
-}
+    aluguel,
+    agua,
+    juros,
+    total,
+    forma: pagamento.forma_pagamento || "PENDENTE"
+  }
 }
 function gerarRecibo(dados) {
 
