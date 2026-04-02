@@ -987,19 +987,18 @@ document.getElementById("listaPredios").innerHTML = html
 
 async function editarPredio(id){
 
-if(window.nivelUsuario === "funcionario" && window.idEditando){
-alert("Funcionário não pode editar")
-return
-}
-
 const { data } = await client
 .from("predios")
 .select("*")
 .eq("id", id)
 .single()
 
-document.getElementById("nomePredio").value = data.nome
+// ✅ preenche os campos corretos
+document.getElementById("ruaPredio").value = data.rua || ""
+document.getElementById("numeroPredio").value = data.numero || ""
 document.getElementById("bairroPredio").value = data.bairro || ""
+document.getElementById("cidadePredio").value = data.cidade || ""
+document.getElementById("cepPredio").value = data.cep || ""
 
 window.predioEditando = id
 
