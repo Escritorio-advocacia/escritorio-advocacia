@@ -813,6 +813,9 @@ const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 const { createClient } = supabase
 const client = createClient(supabaseUrl, supabaseKey)
   
+console.log("SUPABASE:", supabase)
+console.log("CLIENT:", client)
+  
 async function salvarPredio(){
 
   const rua = document.getElementById("ruaPredio").value
