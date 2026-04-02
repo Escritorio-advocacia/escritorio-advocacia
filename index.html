@@ -949,7 +949,7 @@ const porcentagem = total > 0 ? Math.round((ocupadas/total)*100) : 0
 html += `
 <p>
 
-🏢 <b>${predio.nome}</b><br>
+🏢 <b>${predio.rua} Nº ${predio.numero}</b><br>
 
 🟢 Ocupadas: ${ocupadas}<br>
 
@@ -983,7 +983,10 @@ const predio = predios.find(p => p.id == u.predio_id)
 
 htmlUnidades += `
 <option value="${u.id}">
-${predio ? predio.nome : "Sem prédio"} - ${u.numero}
+${predio 
+  ? `${predio.rua}, Nº ${predio.numero} - ${predio.bairro || ""}` 
+  : "Sem prédio"
+} - ${u.numero}
 </option>
 `
 
@@ -1921,34 +1924,41 @@ async function gerarReciboCompleto(pagamento_id){
   }
 
 }
-  async function buscarCEP(){
+ let timeoutCEP
 
-  const cep = document.getElementById("cepPredio").value.replace(/\D/g, "")
+async function buscarCEP(){
 
-  if(cep.length !== 8){
-    alert("CEP inválido")
-    return
-  }
+  clearTimeout(timeoutCEP)
 
-  try{
+  timeoutCEP = setTimeout(async () => {
 
-    const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
-    const data = await resposta.json()
+    const cep = document.getElementById("cepPredio").value.replace(/\D/g, "")
 
-    if(data.erro){
-      alert("CEP não encontrado")
-      return
+    if(cep.length !== 8){
+      return // 🔥 NÃO MOSTRA ALERTA
     }
 
-    document.getElementById("ruaPredio").value = data.logradouro || ""
-    document.getElementById("bairroPredio").value = data.bairro || ""
-    document.getElementById("cidadePredio").value = data.localidade || ""
+    try{
 
-  }catch(e){
-    console.log(e)
-    alert("Erro ao buscar CEP")
-  }
+      const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      const data = await resposta.json()
 
+      if(data.erro){
+        alert("CEP não encontrado")
+        return
+      }
+
+      document.getElementById("ruaPredio").value = data.logradouro || ""
+      document.getElementById("bairroPredio").value = data.bairro || ""
+      document.getElementById("cidadePredio").value = data.localidade || ""
+      document.getElementById("estadoPredio").value = data.uf || ""
+
+    }catch(e){
+      console.log(e)
+      alert("Erro ao buscar CEP")
+    }
+
+  }, 500) // espera digitar
 }
 async function calcularInadimplentes(){
 
