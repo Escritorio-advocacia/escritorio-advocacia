@@ -652,8 +652,6 @@ transition: all 0.2s ease;
   
 <button onclick="salvarPredio()">Salvar</button>
 <div id="listaPredios"></div>
-
-<input id="bairroPredio" placeholder="Bairro">
   
 <h3>Unidades</h3>
 
@@ -1008,21 +1006,31 @@ async function salvarUnidade(){
 const predio_id = document.getElementById("predioSelect").value
 const numero = document.getElementById("numeroUnidade").value
 
-await client.from("unidades").insert({
-  nome,
-  rua,
+if(window.unidadeEditando){
+
+await client.from("unidades")
+.update({
   numero,
-  bairro,
-  cidade,
-  cep
+  predio_id
 })
+.eq("id", window.unidadeEditando)
+
+window.unidadeEditando = null
+
+}else{
+
+await client.from("unidades").insert({
+  numero,
+  predio_id
+})
+
+}
 
 listarUnidades()
 mapaOcupacao()
 await carregarSelects()
 
 }
-
 async function listarUnidades(){
 
 const predio_id = document.getElementById("predioSelect").value
