@@ -643,7 +643,7 @@ transition: all 0.2s ease;
  <div id="predios" class="tela">
 
 <h3>Prédios</h3>
-
+<input id="nome" placeholder="Nome do prédio">
 <input id="ruaPredio" placeholder="Rua">
 <input id="numeroPredio" placeholder="Número">
 <input id="bairroPredio" placeholder="Bairro">
@@ -817,30 +817,27 @@ const client = createClient(supabaseUrl, supabaseKey)
 async function salvarPredio(){
 
   const nome = document.getElementById("nome").value
-  const rua = document.getElementById("rua").value
-  const numero = document.getElementById("numero").value
-  const bairro = document.getElementById("bairro").value
-  const cidade = document.getElementById("cidade").value
-  const cep = document.getElementById("cep").value // 👈 AQUI
+  const rua = document.getElementById("ruaPredio").value
+  const numero = document.getElementById("numeroPredio").value
+  const bairro = document.getElementById("bairroPredio").value
+  const cidade = document.getElementById("cidadePredio").value
+  const cep = document.getElementById("cepPredio").value
 
   if(window.predioEditando){
 
-    // EDITAR
     await client
       .from("predios")
-      .update({ nome, rua, numero, bairro, cidade, cep }) // 👈 AQUI
+      .update({ nome, rua, numero, bairro, cidade, cep })
       .eq("id", window.predioEditando)
 
     alert("Prédio atualizado!")
-
     window.predioEditando = null
 
   } else {
 
-    // NOVO
     await client
       .from("predios")
-      .insert([{ nome, rua, numero, bairro, cidade, cep }]) // 👈 AQUI
+      .insert([{ nome, rua, numero, bairro, cidade, cep }])
 
     alert("Prédio cadastrado!")
   }
@@ -1039,15 +1036,14 @@ async function editarPredio(id){
     return
   }
 
-  // Preenche os campos
+  // ✅ IDs CORRETOS
   document.getElementById("nome").value = data.nome || ""
-  document.getElementById("rua").value = data.rua || ""
-  document.getElementById("numero").value = data.numero || ""
-  document.getElementById("bairro").value = data.bairro || ""
-  document.getElementById("cidade").value = data.cidade || ""
-  document.getElementById("cep").value = data.cep || "" // 👈 AQUI
+  document.getElementById("ruaPredio").value = data.rua || ""
+  document.getElementById("numeroPredio").value = data.numero || ""
+  document.getElementById("bairroPredio").value = data.bairro || ""
+  document.getElementById("cidadePredio").value = data.cidade || ""
+  document.getElementById("cepPredio").value = data.cep || ""
 
-  // Guarda ID para edição
   window.predioEditando = id
 }
 async function salvarUnidade(){
