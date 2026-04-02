@@ -2173,7 +2173,7 @@ document.getElementById("dashboardDados").innerHTML = `
 }
 async function calcularOcupacao(){
 
-const predio_id = getPredioId()
+const predio_id = pegarPredioId()
 if(!predio_id) return
 
 const { data: unidades, error } = await client
