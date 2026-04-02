@@ -4,7 +4,7 @@
 
 <title>Sistema de Aluguel</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
@@ -810,9 +810,7 @@ transition: all 0.2s ease;
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
 const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 
-const { createClient } = supabase
-const client = createClient(supabaseUrl, supabaseKey)
-
+const client = supabase.createClient(supabaseUrl, supabaseKey)
   
 async function salvarPredio(){
 
