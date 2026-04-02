@@ -967,40 +967,47 @@ document.getElementById("ocupacaoPredios").innerHTML = html
 }
 async function carregarSelects(){
 
-const { data: predios, error: erroPredios } = await client.from("predios").select("*")
-const { data: unidades, error: erroUnidades } = await client.from("unidades").select("*")
+const resPredios = await client.from("predios").select("*")
+const resUnidades = await client.from("unidades").select("*")
 
-if(erroPredios || erroUnidades){
-  console.log("Erro ao carregar selects", erroPredios, erroUnidades)
+const predios = Array.isArray(resPredios.data) ? resPredios.data : []
+const unidades = Array.isArray(resUnidades.data) ? resUnidades.data : []
+
+if(resPredios.error || resUnidades.error){
+  console.log("Erro ao carregar selects", resPredios.error, resUnidades.error)
   return
 }
 
 let htmlPredios = ""
-(predios || []).forEach(p=>{
-htmlPredios += `<option value="${p.id}">
-${p.rua} Nº ${p.numero}
-</option>`
+
+predios.forEach(p=>{
+  htmlPredios += `<option value="${p.id}">
+  ${p.rua || ""} Nº ${p.numero || ""}
+  </option>`
 })
 
 let htmlUnidades = ""
 
-(unidades || []).forEach(u=>{
+unidades.forEach(u=>{
 
-const predio = (predios || []).find(p => p.id == u.predio_id)
+  const predio = predios.find(p => p.id == u.predio_id)
 
-htmlUnidades += `
-<option value="${u.id}">
-${predio 
-  ? `${predio.rua}, Nº ${predio.numero} - ${predio.bairro || ""}` 
-  : "Sem prédio"
-} - ${u.numero}
-</option>
-`
-
+  htmlUnidades += `
+  <option value="${u.id}">
+  ${predio 
+    ? `${predio.rua || ""}, Nº ${predio.numero || ""}`
+    : "Sem prédio"
+  } - ${u.numero || ""}
+  </option>
+  `
 })
 
-document.getElementById("predioSelect").innerHTML = htmlPredios
-document.getElementById("unidadeSelect").innerHTML = htmlUnidades
+const predioSelect = document.getElementById("predioSelect")
+const unidadeSelect = document.getElementById("unidadeSelect")
+
+if(predioSelect) predioSelect.innerHTML = htmlPredios
+if(unidadeSelect) unidadeSelect.innerHTML = htmlUnidades
+
 }
 async function listarPredios(){
 
