@@ -861,10 +861,23 @@ if(!confirm("Deseja excluir este prédio?")){
 return
 }
 
+// 🔥 APAGA UNIDADES PRIMEIRO
 await client
+.from("unidades")
+.delete()
+.eq("predio_id", id)
+
+// 🔥 AGORA APAGA PRÉDIO
+const { error } = await client
 .from("predios")
 .delete()
-.eq("id",id)
+.eq("id", id)
+
+if(error){
+alert("Erro ao excluir. Esse prédio pode ter contratos vinculados.")
+console.log(error)
+return
+}
 
 listarPredios()
 
@@ -970,12 +983,12 @@ async function listarPredios(){
 
     const btnEditar = document.createElement("button")
     btnEditar.innerText = "✏️ Editar"
-    btnEditar.onclick = () => editarPredio(p.id)
+    btnEditar.onclick = () => window.editarPredio(p.id)
 
     const btnExcluir = document.createElement("button")
     btnExcluir.innerText = "🗑 Excluir"
-    btnExcluir.onclick = () => excluirPredio(p.id)
-
+    bbtnExcluir.onclick = () => window.excluirPredio(p.id)
+    
     container.appendChild(btnEditar)
     container.appendChild(btnExcluir)
 
