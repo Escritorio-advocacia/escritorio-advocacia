@@ -1305,20 +1305,23 @@ async function excluirInquilino(id){
 }
 async function listarInquilinos(){
 
-const { data, error } = await client.from("inquilinos").select("*")
+  const { data, error } = await client.from("inquilinos").select("*")
 
-if(error){
-  console.log("Erro ao buscar inquilinos:", error)
-  return
-}
+  if(error){
+    console.log("Erro ao buscar inquilinos:", error)
+    return
+  }
 
-if(!data){
-  console.log("Sem inquilinos")
-  return
-}
+  if(!data){
+    console.log("Sem inquilinos")
+    return
+  }
 
-data.forEach(i => {
-    let html += "
+  let html = ""
+
+  data.forEach(i => {
+
+    html += `
     <p>
 
     <b>${i.nome}</b>
@@ -1345,30 +1348,26 @@ data.forEach(i => {
     💰 Simular
     </button>
 
-   <button onclick="verHistoricoInquilino('${i.id}')">📊 Histórico</button>
+    <button onclick="verHistoricoInquilino('${i.id}')">📊 Histórico</button>
 
-<button onclick="editarInquilino('${i.id}')">✏️ Editar</button>
+    <button onclick="editarInquilino('${i.id}')">✏️ Editar</button>
 
-<button onclick="excluirInquilino('${i.id}')">🗑 Excluir</button>
+    <button onclick="excluirInquilino('${i.id}')">🗑 Excluir</button>
 
-${i.contrato_url ? `
-  <button onclick="verContrato('${i.contrato_url}')">
-    📄 Ver contrato
-  </button>
-` : `
-  <span>Sem contrato</span>
-`}
+    ${i.contrato_url ? `
+      <button onclick="verContrato('${i.contrato_url}')">
+        📄 Ver contrato
+      </button>
+    ` : `<span>Sem contrato</span>`}
 
-<hr>
+    <hr>
 
     </p>
     `
-
   })
 
   document.getElementById("listaInquilinos").innerHTML =
-  '<div class="listaSistema">' + html + '</div>'
-
+    '<div class="listaSistema">' + html + '</div>'
 }
 function cobrarWhatsApp(nome, whatsapp1, whatsapp2, valor){
 
