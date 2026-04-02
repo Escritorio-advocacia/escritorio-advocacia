@@ -1088,11 +1088,20 @@ async function listarUnidades(){
 
 const predio_id = document.getElementById("predioSelect").value
 
-const {data} = await client
+const { data, error } = await client
 .from("unidades")
 .select("*")
-.eq("predio_id", predio_id) // 🔥 FILTRO AQUI
+.eq("predio_id", predio_id)
 
+if(error){
+  console.log("Erro ao buscar unidades:", error)
+  return
+}
+
+if(!data){
+  console.log("Sem dados")
+  return
+}
 let html=""
 
 data.forEach(u=>{
