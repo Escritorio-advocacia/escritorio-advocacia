@@ -2687,11 +2687,13 @@ async function montarDadosRecibo(pagamento_id){
   unidade: unidade?.numero || "-",
   mes: pagamento.mes,
 
-  vencimento: new Date(
-    pagamento.ano,
-    pagamento.mes - 1,
-    contrato?.dia_vencimento || 5
-  ).toLocaleDateString(),
+  const dia = contrato?.dia_vencimento || 5
+
+vencimento: new Date(
+  pagamento.ano,
+  pagamento.mes - 1,
+  dia
+).toLocaleDateString(),
 
   aluguel,
   agua,
