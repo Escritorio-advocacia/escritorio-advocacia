@@ -1668,14 +1668,19 @@ function criarCard(pagamento, total) {
          
         <button onclick="gerarRecibo({
   nome: '${nome}',
-  endereco: '${enderecoCompleto}',
+  rua: '${enderecoCompleto}',
+  numero: '',
+  bairro: '',
+  cidade: '',
+  cep: '',
   unidade: '${numeroUnidade}',
   mes: ${pagamento.mes},
   aluguel: ${aluguel},
   agua: ${agua},
   juros: ${juros},
   total: ${total},
-  forma: '${pagamento.forma_pagamento || ""}'
+  forma: '${pagamento.forma_pagamento || ""}',
+  vencimento: ''
 })">
           📄 Recibo
         </button>
@@ -2731,16 +2736,16 @@ function gerarRecibo(dados) {
 
       <p><b>Referente ao mês:</b> ${nomeMes}</p>
 
-      <p><b>Vencimento:</b> ${dados.vencimento}</p>
+      <p><b>Vencimento:</b> ${dados.vencimento || "-"}</p>
 
       <hr>
 
       <p><b>Endereço do imóvel:</b><br>
-      ${dados.rua}
-      ${dados.numero ? `, Nº ${dados.numero}` : ""}<br>
-      ${dados.bairro}<br>
-      ${dados.cidade}<br>
-      CEP: ${dados.cep}</p>
+      ${dados.rua || "-"}
+      ${dados.numero ? `, Nº ${dados.numero}` : ""}
+      ${dados.bairro || "-"}<br>
+      ${dados.cidade || "-"}<br>
+      CEP: ${dados.cep || "-"}
 
       <p><b>Unidade:</b> ${dados.unidade}</p>
 
