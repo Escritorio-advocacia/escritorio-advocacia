@@ -3267,51 +3267,48 @@ btn.style.display = "none"
 
 }
 function abrirTela(tela){
-if(tela==="predios"){
-listarPredios()
-carregarSelects()
 
-if(getPredioId()){
-  listarUnidades()
-  mapaOcupacao()
-}
-}
-document.querySelectorAll(".tela").forEach(div => {
-div.style.display = "none"
-})
+  document.querySelectorAll(".tela").forEach(div => {
+    div.style.display = "none"
+  })
 
-document.getElementById(tela).style.display = "block"
+  document.getElementById(tela).style.display = "block"
 
-if(tela === "dashboard"){
-carregarDashboard()
-listarDevedores()
-graficoFinanceiro()
-graficoMensal()
-alertaInadimplentes()
-vencimentosHoje()
-calcularInadimplentes()
-ocupacaoPorPredio()
-}
+  if(tela === "dashboard"){
+    carregarDashboard()
+    listarDevedores()
+    graficoFinanceiro()
+    graficoMensal()
+    alertaInadimplentes()
+    vencimentosHoje()
+    calcularInadimplentes()
+    ocupacaoPorPredio()
+  }
 
-if(tela==="predios"){
-listarPredios()
-listarUnidades()
-mapaOcupacao()
-}
+  if(tela === "predios"){
+    listarPredios()
+    carregarSelects()
 
-if(tela==="inquilinos"){
-  carregarSelects() // 🔥 ESSENCIAL
-  listarInquilinos()
-}
+    const predio_id = pegarPredioId()
 
-if(tela==="contratos"){
-listarContratos()
-}
+    if(predio_id){
+      listarUnidades()
+      mapaOcupacao()
+    }
+  }
 
-if(tela==="pagamentos"){
-listarPagamentos()
-}
+  if(tela === "inquilinos"){
+    carregarSelects()
+    listarInquilinos()
+  }
 
+  if(tela === "contratos"){
+    listarContratos()
+  }
+
+  if(tela === "pagamentos"){
+    listarPagamentos()
+  }
 }
 window.onload = async function() {
 
