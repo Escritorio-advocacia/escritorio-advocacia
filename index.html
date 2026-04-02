@@ -1009,7 +1009,9 @@ async function listarPredios(){
 
     const btnEditar = document.createElement("button")
     btnEditar.innerText = "✏️ Editar"
-    btnEditar.onclick = () => window.editarPredio(p.id)
+   btnEditar.onclick = function(){
+  editarPredio(p.id)
+}
 
     const btnExcluir = document.createElement("button")
     btnExcluir.innerText = "🗑 Excluir"
