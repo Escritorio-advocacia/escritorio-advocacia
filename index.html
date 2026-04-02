@@ -816,44 +816,36 @@ const client = createClient(supabaseUrl, supabaseKey)
   
 async function salvarPredio(){
 
-const rua = document.getElementById("ruaPredio").value
-const numero = document.getElementById("numeroPredio").value
-const bairro = document.getElementById("bairroPredio").value
-const cidade = document.getElementById("cidadePredio").value
-const cep = document.getElementById("cepPredio").value
+  const nome = document.getElementById("nome").value
+  const rua = document.getElementById("rua").value
+  const numero = document.getElementById("numero").value
+  const bairro = document.getElementById("bairro").value
+  const cidade = document.getElementById("cidade").value
+  const cep = document.getElementById("cep").value // 👈 AQUI
 
-const nome = `${rua}, ${numero} - ${bairro}`
+  if(window.predioEditando){
 
-if(window.predioEditando){
+    // EDITAR
+    await client
+      .from("predios")
+      .update({ nome, rua, numero, bairro, cidade, cep }) // 👈 AQUI
+      .eq("id", window.predioEditando)
 
-await client.from("predios").update({
-  nome,
-  rua,
-  numero,
-  bairro,
-  cidade,
-  cep
-})
-.eq("id",window.predioEditando)
-window.predioEditando = null
+    alert("Prédio atualizado!")
 
-}else{
+    window.predioEditando = null
 
-await client.from("predios").insert({
-  nome,
-  rua,
-  numero,
-  bairro,
-  cidade,
-  cep
-})
+  } else {
 
-}
+    // NOVO
+    await client
+      .from("predios")
+      .insert([{ nome, rua, numero, bairro, cidade, cep }]) // 👈 AQUI
 
-// 🔥 ATUALIZA AUTOMÁTICO
-listarPredios()
-await carregarSelects()
+    alert("Prédio cadastrado!")
+  }
 
+  listarPredios()
 }
 async function excluirPredio(id){
 
@@ -1033,27 +1025,29 @@ async function listarPredios(){
 
   })
 }
-window.editarPredio = async function(id){
+async function editarPredio(id){
+  console.log("Editando prédio:", id)
 
-  alert("clicou " + id)
-
-  const { data } = await client
+  const { data, error } = await client
     .from("predios")
     .select("*")
     .eq("id", id)
     .single()
 
-  if(!data){
-alert("Erro ao carregar prédio")
-return
-}
-  
-  document.getElementById("ruaPredio").value = data.rua || ""
-  document.getElementById("numeroPredio").value = data.numero || ""
-  document.getElementById("bairroPredio").value = data.bairro || ""
-  document.getElementById("cidadePredio").value = data.cidade || ""
-  document.getElementById("cepPredio").value = data.cep || ""
+  if(error){
+    alert("Erro ao carregar prédio")
+    return
+  }
 
+  // Preenche os campos
+  document.getElementById("nome").value = data.nome || ""
+  document.getElementById("rua").value = data.rua || ""
+  document.getElementById("numero").value = data.numero || ""
+  document.getElementById("bairro").value = data.bairro || ""
+  document.getElementById("cidade").value = data.cidade || ""
+  document.getElementById("cep").value = data.cep || "" // 👈 AQUI
+
+  // Guarda ID para edição
   window.predioEditando = id
 }
 async function salvarUnidade(){
