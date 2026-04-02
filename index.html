@@ -1270,18 +1270,16 @@ if (erroContrato || !contratoCriado) {
   listarPagamentos()
 }
 async function excluirInquilino(id){
+  if(!confirm("Deseja realmente excluir este inquilino?")){
+    return
+  }
 
-if(!confirm("Deseja realmente excluir este inquilino?")){
-return
-}
+  await client
+    .from("inquilinos")
+    .delete()
+    .eq("id", id)
 
-await client
-.from("inquilinos")
-.delete()
-.eq("id", id)
-
-listarInquilinos()
-
+  alert("🔥 Inquilino excluído com sucesso!")
 }
 async function listarInquilinos(){
 
