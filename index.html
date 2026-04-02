@@ -643,7 +643,6 @@ transition: all 0.2s ease;
  <div id="predios" class="tela">
 
 <h3>Prédios</h3>
-<input id="nome" placeholder="Nome do prédio">
 <input id="ruaPredio" placeholder="Rua">
 <input id="numeroPredio" placeholder="Número">
 <input id="bairroPredio" placeholder="Bairro">
@@ -816,7 +815,6 @@ const client = createClient(supabaseUrl, supabaseKey)
   
 async function salvarPredio(){
 
-  const nome = document.getElementById("nome").value
   const rua = document.getElementById("ruaPredio").value
   const numero = document.getElementById("numeroPredio").value
   const bairro = document.getElementById("bairroPredio").value
@@ -827,7 +825,7 @@ async function salvarPredio(){
 
     await client
       .from("predios")
-      .update({ nome, rua, numero, bairro, cidade, cep })
+      .update({ rua, numero, bairro, cidade, cep })
       .eq("id", window.predioEditando)
 
     alert("Prédio atualizado!")
@@ -837,7 +835,7 @@ async function salvarPredio(){
 
     await client
       .from("predios")
-      .insert([{ nome, rua, numero, bairro, cidade, cep }])
+      .insert([{ rua, numero, bairro, cidade, cep }])
 
     alert("Prédio cadastrado!")
   }
@@ -1004,7 +1002,7 @@ async function listarPredios(){
     const container = document.createElement("p")
 
     container.innerHTML = `
-      ${p.nome} - ${p.bairro || "Sem bairro"}
+     ${p.rua} Nº ${p.numero} - ${p.bairro || "Sem bairro"}
     `
 
     const btnEditar = document.createElement("button")
@@ -1038,7 +1036,6 @@ async function editarPredio(id){
     return
   }
 
-  document.getElementById("nome").value = data.nome || ""
   document.getElementById("ruaPredio").value = data.rua || ""
   document.getElementById("numeroPredio").value = data.numero || ""
   document.getElementById("bairroPredio").value = data.bairro || ""
