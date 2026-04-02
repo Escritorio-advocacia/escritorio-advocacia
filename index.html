@@ -2682,24 +2682,27 @@ async function montarDadosRecibo(pagamento_id){
 
   return {
   nome: inquilino?.nome || "-",
-  rua: predio?.rua || "-",
-  numero: predio?.numero || "-",
+
+  rua: predio?.rua || predio?.nome || "-", // 👈 AQUI
+  numero: predio?.numero || "",
   bairro: predio?.bairro || "-",
   cidade: predio?.cidade || "Fortaleza - CE",
   cep: predio?.cep || "-",
+
   unidade: unidade?.numero || "-",
   mes: pagamento.mes,
+
   vencimento: new Date(
     pagamento.ano,
     pagamento.mes - 1,
     contrato?.dia_vencimento || 5
   ).toLocaleDateString(),
+
   aluguel,
   agua,
   juros,
   total,
   forma: pagamento.forma_pagamento || "PENDENTE"
-}
 }
 function gerarRecibo(dados) {
 
@@ -2737,7 +2740,8 @@ function gerarRecibo(dados) {
       <hr>
 
       <p><b>Endereço do imóvel:</b><br>
-      ${dados.rua}, Nº ${dados.numero}<br>
+      ${dados.rua}
+      ${dados.numero ? `, Nº ${dados.numero}` : ""}<br>
       ${dados.bairro}<br>
       ${dados.cidade}<br>
       CEP: ${dados.cep}</p>
