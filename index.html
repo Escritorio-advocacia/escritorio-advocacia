@@ -965,11 +965,11 @@ async function listarPredios(){
     <p>
       ${p.nome} - ${p.bairro || "Sem bairro"}
 
-      <button onclick="editarPredio('${p.id}')">
+      <button onclick="editarPredio(${JSON.stringify(p.id)})">
         ✏️ Editar
       </button>
 
-      <button onclick="excluirPredio('${p.id}')">
+      <button onclick="excluirPredio(${JSON.stringify(p.id)})">
         🗑 Excluir
       </button>
     </p>
