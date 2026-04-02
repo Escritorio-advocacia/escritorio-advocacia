@@ -2157,7 +2157,8 @@ async function calcularOcupacao(){
 const { data: unidades, error } = await client
 .from("unidades")
 .select("*")
-.eq("predio_id", predio_id)
+const predio_id = document.getElementById("predioSelect")?.value
+if(!predio_id) return
 
 if(error || !unidades){
   console.log("Erro mapa ocupação", error)
@@ -2209,7 +2210,7 @@ html += `
 Mês ${p.mes} atrasado<br>
 Divida: R$ ${p.valor}<br>
 
-<button onclick="cobrarWhatsapp('${inquilino.whatsapp}','${inquilino.nome}','${p.valor}')">
+<button onclick="cobrarWhatsApp('${inquilino.whatsapp}','${inquilino.nome}','${p.valor}')">
 📲 Cobrar
 </button>
 
@@ -2373,7 +2374,7 @@ mes: p.mes
 })
 
 lista.forEach(i=>{
-cobrarWhatsapp(i.telefone,i.nome,i.valor)
+cobrarWhatsApp(i.telefone,i.nome,i.valor)
 })
 
 }
@@ -2504,7 +2505,7 @@ if(!inquilino) return
 html+=`
 <p>
 ${inquilino.nome} - R$${c.valor_aluguel}
-<button onclick="cobrarWhatsapp('${inquilino.whatsapp}','${inquilino.nome}',${c.valor_aluguel})">
+<button onclick="cobrarWhatsApp('${inquilino.whatsapp}','${inquilino.nome}',${c.valor_aluguel})">
 📲 Cobrar
 </button>
 </p>
@@ -3281,7 +3282,11 @@ await carregarSelects()
 document.querySelector(".conteudo").style.display = "block"
 abrirTela("dashboard")
   
-await calcularOcupacao()
+try{
+  await calcularOcupacao()
+}catch(e){
+  console.log("Erro ocupação ignorado")
+}
 await listarPredios()
 await listarUnidades()
 await listarInquilinos()
@@ -3294,7 +3299,9 @@ window.onerror = function(msg, url, line){
 
   mostrarAlerta("Erro no sistema. Tente novamente.", "erro")
 }
-setInterval(async () => {
+}catch(e){
+  console.error("Erro no auto refresh:", e)
+}
   try{
     await listarPagamentos()
     await listarInquilinos()
