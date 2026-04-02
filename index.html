@@ -975,13 +975,8 @@ if(erroPredios || erroUnidades){
   return
 }
 
-if(!predios || !unidades){
-  console.log("Sem dados nos selects")
-  return
-}
-
 let htmlPredios = ""
-predios.forEach(p=>{
+(predios || []).forEach(p=>{
 htmlPredios += `<option value="${p.id}">
 ${p.rua} Nº ${p.numero}
 </option>`
@@ -989,9 +984,9 @@ ${p.rua} Nº ${p.numero}
 
 let htmlUnidades = ""
 
-unidades.forEach(u=>{
+(unidades || []).forEach(u=>{
 
-const predio = predios.find(p => p.id == u.predio_id)
+const predio = (predios || []).find(p => p.id == u.predio_id)
 
 htmlUnidades += `
 <option value="${u.id}">
@@ -1019,7 +1014,7 @@ async function listarPredios(){
   return
  }
 
- data.forEach(p => {
+ (data || []).forEach(p => {
 
     const container = document.createElement("p")
 
@@ -1113,13 +1108,9 @@ if(error){
   return
 }
 
-if(!data){
-  console.log("Sem dados")
-  return
-}
 let html=""
 
-data.forEach(u=>{
+(data || []).forEach(u=>{
 
 html += `
 <p>
@@ -1312,14 +1303,9 @@ async function listarInquilinos(){
     return
   }
 
-  if(!data){
-    console.log("Sem inquilinos")
-    return
-  }
-
   let html = ""
 
-  data.forEach(i => {
+  (data || []).forEach(i => {
 
     html += `
     <p>
@@ -2372,25 +2358,20 @@ const predio_id = document.getElementById("predioSelect").value
 const { data: unidades } = await client
 .from("unidades")
 .select("*")
-.eq("predio_id", predio_id) // 🔥 FILTRO
+.eq("predio_id", predio_id)
 
-const { data: contratos } = await client
-.from("contratos")
-.select("*")
-
-const { data: inquilinos } = await client
-.from("inquilinos")
-.select("*")
+const { data: contratos } = await client.from("contratos").select("*")
+const { data: inquilinos } = await client.from("inquilinos").select("*")
 
 let html = ""
 
-unidades.forEach(u => {
+(unidades || []).forEach(u => {
 
-const contrato = contratos.find(c => c.unidade_id == u.id)
+const contrato = (contratos || []).find(c => c.unidade_id == u.id)
 
 if(contrato){
 
-const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
+const inquilino = (inquilinos || []).find(i => i.id == contrato.inquilino_id)
 
 html += `
 <p style="color:green">
