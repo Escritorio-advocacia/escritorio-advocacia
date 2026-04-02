@@ -2622,6 +2622,10 @@ async function montarDadosRecibo(pagamento_id){
     .eq("id", unidade.predio_id)
     .single()
 
+alert(
+  "Unidade: " + (unidade?.numero || "NULL") +
+  "\nPredio: " + (predio?.nome || "NULL")
+)
   const aluguel = pagamento.valor || 0
   const agua = pagamento.valor_agua || 0
   const juros = 0
