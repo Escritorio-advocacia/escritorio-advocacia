@@ -2638,11 +2638,6 @@ TOTAL: ${total.toFixed(2)}`
 }
 async function montarDadosRecibo(pagamento_id){
 
-  const vencimento = new Date(
-  pagamento.ano,
-  pagamento.mes - 1,
-  contrato.dia_vencimento || 5
-  ).toLocaleDateString()
 
   const { data: pagamento } = await client
     .from("pagamentos")
@@ -2703,6 +2698,7 @@ async function montarDadosRecibo(pagamento_id){
   juros,
   total,
   forma: pagamento.forma_pagamento || "PENDENTE"
+}
 }
 function gerarRecibo(dados) {
 
