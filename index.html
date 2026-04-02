@@ -1809,57 +1809,8 @@ gerarRecibo(dados)
 }
 async function gerarReciboCompleto(pagamento_id){
 
-  // 🔥 buscar pagamento
-  const { data: pagamento } = await client
-    .from("pagamentos")
-    .select("*")
-    .eq("id", pagamento_id)
-    .single()
-
-  // 🔥 contrato
-  const { data: contrato } = await client
-    .from("contratos")
-    .select("*")
-    .eq("id", pagamento.contrato_id)
-    .single()
-
-  // 🔥 inquilino
-  const { data: inquilino } = await client
-    .from("inquilinos")
-    .select("*")
-    .eq("id", contrato.inquilino_id)
-    .single()
-
-  // 🔥 unidade
-  const { data: unidade } = await client
-    .from("unidades")
-    .select("*")
-    .eq("id", String(contrato.unidade_id))
-    .single()
-
-  // 🔥 prédio
-  const { data: predio } = await client
-    .from("predios")
-    .select("*")
-    .eq("id", unidade.predio_id)
-    .single()
-
-  const aluguel = pagamento.valor || 0
-  const agua = pagamento.valor_agua || 0
-  const juros = 0
-  const total = aluguel + agua + juros
-
-  gerarRecibo({
-    nome: inquilino?.nome || "-",
-    endereco: predio?.nome || "-",
-    unidade: unidade?.numero || "-",
-    mes: pagamento.mes,
-    aluguel,
-    agua,
-    juros,
-    total,
-    forma: pagamento.forma_pagamento || "-"
-  })
+  const dados = await montarDadosRecibo(pagamento_id)
+  gerarRecibo(dados)
 
 }
 async function calcularInadimplentes(){
@@ -2628,7 +2579,6 @@ TOTAL: ${total.toFixed(2)}`
 }
 async function montarDadosRecibo(pagamento_id){
 
-
   const { data: pagamento } = await client
     .from("pagamentos")
     .select("*")
@@ -2653,45 +2603,17 @@ async function montarDadosRecibo(pagamento_id){
     .eq("id", contrato.unidade_id)
     .single()
 
-  const { data: predio } = await client
-    .from("predios")
-    .select("*")
-    .eq("id", unidade.predio_id)
-    .single()
-
-
-  const aluguel = pagamento.valor || 0
-  const agua = pagamento.valor_agua || 0
-  const juros = 0
-  const total = aluguel + agua + juros
-
   return {
-  nome: inquilino?.nome || "-",
-
-  rua: predio?.rua || predio?.nome || "-",
-  numero: predio?.numero || "",
-  bairro: predio?.bairro || "-",
-  cidade: predio?.cidade || "-",
-  cep: predio?.cep || "-",
-
-  unidade: unidade?.numero || "-",
-  mes: pagamento?.mes || "-",
-
-  vencimento: contrato?.dia_vencimento
-    ? new Date(
-        pagamento.ano,
-        pagamento.mes - 1,
-        contrato.dia_vencimento
-      ).toLocaleDateString()
-    : "-",
-
-  aluguel: pagamento?.valor || 0,
-  agua: pagamento?.valor_agua || 0,
-  juros: 0,
-  total: (pagamento?.valor || 0) + (pagamento?.valor_agua || 0),
-
-  forma: pagamento?.forma_pagamento || "PENDENTE"
-}
+    nome: inquilino?.nome || "-",
+    unidade: unidade?.numero || "-",
+    mes: pagamento?.mes || "-",
+    aluguel: pagamento?.valor || 0,
+    agua: pagamento?.valor_agua || 0,
+    juros: 0,
+    total: (pagamento?.valor || 0) + (pagamento?.valor_agua || 0),
+    forma: pagamento?.forma_pagamento || "-",
+    vencimento: "-"
+  }
 }
 function gerarRecibo(dados){
 
