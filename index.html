@@ -818,7 +818,7 @@ const bairro = document.getElementById("bairroPredio").value
 
 if(window.predioEditando){
 
-await client.from("predios").update({nome}).eq("id",window.predioEditando)
+await client.from("predios").update({nome, bairro}).eq("id",window.predioEditando)
 window.predioEditando = null
 
 }else{
@@ -941,7 +941,7 @@ data.forEach(p=>{
 html += `
 <p>
 
-${p.nome}
+${p.nome} - ${p.bairro || "Sem bairro"}
 
 <button onclick="editarPredio('${p.id}','${p.nome}')">
 ✏️ Editar
@@ -960,14 +960,21 @@ document.getElementById("listaPredios").innerHTML = html
 
 }
 
-async function editarPredio(id,nome){
+async function editarPredio(id){
 
 if(window.nivelUsuario === "funcionario" && window.idEditando){
 alert("Funcionário não pode editar")
 return
 }
 
-document.getElementById("nomePredio").value = nome
+const { data } = await client
+.from("predios")
+.select("*")
+.eq("id", id)
+.single()
+
+document.getElementById("nomePredio").value = data.nome
+document.getElementById("bairroPredio").value = data.bairro || ""
 
 window.predioEditando = id
 
