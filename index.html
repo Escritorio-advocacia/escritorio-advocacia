@@ -813,7 +813,7 @@ const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 const { createClient } = supabase
 const client = createClient(supabaseUrl, supabaseKey)
 
-function pegarPredioId()
+function pegarPredioId(){
   const el = document.getElementById("predioSelect")
   if(!el) return null
 
