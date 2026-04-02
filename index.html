@@ -967,8 +967,18 @@ document.getElementById("ocupacaoPredios").innerHTML = html
 }
 async function carregarSelects(){
 
-const { data: predios } = await client.from("predios").select("*")
-const { data: unidades } = await client.from("unidades").select("*")
+const { data: predios, error: erroPredios } = await client.from("predios").select("*")
+const { data: unidades, error: erroUnidades } = await client.from("unidades").select("*")
+
+if(erroPredios || erroUnidades){
+  console.log("Erro ao carregar selects", erroPredios, erroUnidades)
+  return
+}
+
+if(!predios || !unidades){
+  console.log("Sem dados nos selects")
+  return
+}
 
 let htmlPredios = ""
 predios.forEach(p=>{
@@ -999,12 +1009,19 @@ document.getElementById("unidadeSelect").innerHTML = htmlUnidades
 }
 async function listarPredios(){
 
-  const { data } = await client.from("predios").select("*")
+ const { data, error } = await client.from("predios").select("*")
 
-  const lista = document.getElementById("listaPredios")
-  lista.innerHTML = ""
+if(error){
+  console.log("Erro ao buscar prédios:", error)
+  return
+}
 
-  data.forEach(p => {
+if(!data){
+  console.log("Sem prédios")
+  return
+}
+
+data.forEach(p => {
 
     const container = document.createElement("p")
 
@@ -1290,11 +1307,19 @@ async function excluirInquilino(id){
 }
 async function listarInquilinos(){
 
-  const { data } = await client.from("inquilinos").select("*")
+ const { data, error } = await client.from("inquilinos").select("*")
 
-  let html = ""
+if(error){
+  console.log("Erro ao buscar inquilinos:", error)
+  return
+}
 
-  data.forEach(i => {
+if(!data){
+  console.log("Sem inquilinos")
+  return
+}
+
+data.forEach(i => {
 
     html += `
     <p>
@@ -1503,7 +1528,17 @@ listarContratos()
 
 async function listarContratos(){
 
-const {data} = await client.from("contratos").select("*")
+const { data, error } = await client.from("contratos").select("*")
+
+if(error){
+  console.log("Erro ao buscar contratos:", error)
+  return
+}
+
+if(!data){
+  console.log("Sem contratos")
+  return
+}
 
 let html=""
 
@@ -2111,9 +2146,15 @@ document.getElementById("dashboardDados").innerHTML = `
 }
 async function calcularOcupacao(){
 
-const { data: unidades } = await client
+const { data: unidades, error } = await client
 .from("unidades")
 .select("*")
+.eq("predio_id", predio_id)
+
+if(error || !unidades){
+  console.log("Erro mapa ocupação", error)
+  return
+}
 
 let total = unidades.length
 
