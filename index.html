@@ -1645,7 +1645,7 @@ function criarCard(pagamento, total) {
       <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
 
       <span style="color:${cor}; font-weight:bold;">
-  ${status.toUpperCase()}
+  ${(pagamento.status || "").toUpperCase()}
 </span>
 
       <br><br>
