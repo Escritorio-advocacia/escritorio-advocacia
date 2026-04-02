@@ -972,7 +972,9 @@ const { data: unidades } = await client.from("unidades").select("*")
 
 let htmlPredios = ""
 predios.forEach(p=>{
-htmlPredios += `<option value="${p.id}">${p.nome}</option>`
+htmlPredios += `<option value="${p.id}">
+${p.rua} Nº ${p.numero}
+</option>`
 })
 
 let htmlUnidades = ""
@@ -1568,7 +1570,9 @@ pagamentos.forEach(pagamento => {
   const unidade = unidades.find(u => String(u.id) === String(contrato?.unidade_id))
   const predio = predios.find(p => p.id == unidade?.predio_id)
 
-  const enderecoCompleto = predio?.nome || "Não informado"
+ const enderecoCompleto = predio
+  ? `${predio.rua} Nº ${predio.numero}`
+  : "Não informado"
   const numeroUnidade = unidade?.numero || "-"
 
   const nomesMeses = [
@@ -1908,7 +1912,9 @@ async function gerarReciboCompleto(pagamento_id){
 
     gerarRecibo({
       nome: inquilino?.nome || "-",
-      endereco: predio?.nome || "-",
+      endereco: predio
+  ? `${predio.rua} Nº ${predio.numero}`
+  : "-"
       unidade: unidade?.numero || "-",
       mes: pagamento.mes,
       aluguel,
@@ -2756,7 +2762,7 @@ async function montarDadosRecibo(pagamento_id){
   return {
     nome: inquilino?.nome || "-",
 
-    rua: predio?.rua || predio?.nome || "-",
+   rua: predio?.rua || "-",
     numero: predio?.numero || "",
     bairro: predio?.bairro || "-",
     cidade: predio?.cidade || "Fortaleza - CE",
