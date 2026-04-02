@@ -2693,7 +2693,7 @@ async function montarDadosRecibo(pagamento_id){
   forma: pagamento?.forma_pagamento || "PENDENTE"
 }
 }
-function gerarRecibo(dados) {
+function gerarRecibo(dados){
 
   const dataAtual = new Date().toLocaleDateString()
 
@@ -2705,65 +2705,43 @@ function gerarRecibo(dados) {
   const nomeMes = nomesMeses[(dados.mes || 1) - 1]
 
   const html = `
-    <div style="
-      width:100%;
-      max-width:700px;
-      margin:auto;
-      padding:20px;
-      font-family:Arial;
-      background:#fff;
-      border:2px solid #000;
-    ">
+  <div style="max-width:600px;margin:auto;padding:20px;border:1px solid #000;font-family:Arial">
 
-      <h2 style="text-align:center;">RECIBO DE PAGAMENTO</h2>
+  <h2 style="text-align:center;">RECIBO DE PAGAMENTO</h2>
+  <hr>
 
-      <p><b>Recebemos de:</b> ${dados.nome || "-"}</p>
+  <p><b>Recebemos de:</b> ${dados.nome || "-"}</p>
+  <p><b>Referente ao mês:</b> ${nomeMes}</p>
+  <p><b>Vencimento:</b> ${dados.vencimento || "-"}</p>
 
-      <p><b>Referente ao mês:</b> ${nomeMes}</p>
+  <hr>
 
-      <p><b>Vencimento:</b> ${dados.vencimento || "-"}</p>
+  <p><b>Unidade:</b> ${dados.unidade || "-"}</p>
 
-      <hr>
+  <hr>
 
-      <p><b>Endereço:</b><br>
-      ${dados.rua || "-"} 
-      ${dados.numero ? ", Nº " + dados.numero : ""}
-      <br>
-      ${dados.bairro || "-"}
-      <br>
-      ${dados.cidade || "-"}
-      <br>
-      CEP: ${dados.cep || "-"}
-      </p>
+  <p>Aluguel: R$ ${(dados.aluguel || 0).toFixed(2)}</p>
+  <p>Água: R$ ${(dados.agua || 0).toFixed(2)}</p>
+  <p>Juros: R$ ${(dados.juros || 0).toFixed(2)}</p>
 
-      <p><b>Unidade:</b> ${dados.unidade || "-"}</p>
+  <h3>Total: R$ ${(dados.total || 0).toFixed(2)}</h3>
 
-      <hr>
+  <p><b>Forma:</b> ${dados.forma || "-"}</p>
 
-      <p>Aluguel: R$ ${(dados.aluguel || 0).toFixed(2)}</p>
-      <p>Água: R$ ${(dados.agua || 0).toFixed(2)}</p>
-      <p>Juros: R$ ${(dados.juros || 0).toFixed(2)}</p>
+  <br><br>
 
-      <h3>Total: R$ ${(dados.total || 0).toFixed(2)}</h3>
+  <p>${dataAtual}</p>
 
-      <p><b>Forma:</b> ${dados.forma || "-"}</p>
+  <br><br>
 
-      <br>
+  ___________________________<br>
+  Assinatura
 
-      <p>${dados.cidade || ""}, ${dataAtual}</p>
-
-      <br><br>
-
-      _______________________________<br>
-      Assinatura
-
-    </div>
+  </div>
   `
 
-  // 🔥 AO INVÉS DE ABRIR JANELA → MOSTRA NA TELA
   document.getElementById("recibo").innerHTML = html
 
-  // 🔥 ROLA ATÉ O RECIBO
   document.getElementById("recibo").scrollIntoView({
     behavior: "smooth"
   })
