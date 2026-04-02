@@ -810,7 +810,9 @@ transition: all 0.2s ease;
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
 const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 
-const client = supabase.createClient(supabaseUrl, supabaseKey)
+const { createClient } = supabase
+const client = createClient(supabaseUrl, supabaseKey)
+
   
 async function salvarPredio(){
 
@@ -965,86 +967,54 @@ document.getElementById("ocupacaoPredios").innerHTML = html
 }
 async function carregarSelects(){
 
-  try{
+const { data: predios } = await client.from("predios").select("*")
+const { data: unidades } = await client.from("unidades").select("*")
 
-    const { data: predios, error: erro1 } = await client
-      .from("predios")
-      .select("*")
+let htmlPredios = ""
+predios.forEach(p=>{
+htmlPredios += `<option value="${p.id}">${p.nome}</option>`
+})
 
-    const { data: unidades, error: erro2 } = await client
-      .from("unidades")
-      .select("*")
+let htmlUnidades = ""
 
-    if(erro1 || erro2){
-      console.log("Erro Supabase:", erro1, erro2)
-      return
-    }
+unidades.forEach(u=>{
 
-  const listaPredios = Array.isArray(predios) ? predios : []
-const listaUnidades = Array.isArray(unidades) ? unidades : []
+const predio = predios.find(p => p.id == u.predio_id)
 
-    let htmlPredios = ""
+htmlUnidades += `
+<option value="${u.id}">
+${predio 
+  ? `${predio.rua}, Nº ${predio.numero} - ${predio.bairro || ""}` 
+  : "Sem prédio"
+} - ${u.numero}
+</option>
+`
 
-    listaPredios.forEach(p=>{
-      htmlPredios += `<option value="${p.id}">
-        ${p.rua} Nº ${p.numero}
-      </option>`
-    })
+})
 
-    let htmlUnidades = ""
-
-    listaUnidades.forEach(u=>{
-
-    const predio = (listaPredios || []).find(p => p.id == u.predio_id)
-
-      htmlUnidades += `
-        <option value="${u.id}">
-          ${predio ? predio.rua : "Sem prédio"} - ${u.numero}
-        </option>
-      `
-    })
-
-   const predioSelect = document.getElementById("predioSelect")
-if(predioSelect){
-  predioSelect.innerHTML = htmlPredios
-}
-
-const unidadeSelect = document.getElementById("unidadeSelect")
-if(unidadeSelect){
-  unidadeSelect.innerHTML = htmlUnidades
-}
-
-  }catch(e){
-    console.error("ERRO carregarSelects:", e)
-  }
+document.getElementById("predioSelect").innerHTML = htmlPredios
+document.getElementById("unidadeSelect").innerHTML = htmlUnidades
 }
 async function listarPredios(){
 
- const lista = document.getElementById("listaPredios")
- lista.innerHTML = ""
+  const { data } = await client.from("predios").select("*")
 
- const { data, error } = await client.from("predios").select("*")
+  const lista = document.getElementById("listaPredios")
+  lista.innerHTML = ""
 
- if(error){
-  console.log("Erro ao buscar prédios:", error)
-  return
- }
-
- (data || []).forEach(p => {
+  data.forEach(p => {
 
     const container = document.createElement("p")
 
     container.innerHTML = `
-    ${p.rua || "Sem rua"} 
-    ${p.numero ? "Nº " + p.numero : ""} 
-    - ${p.bairro || "Sem bairro"}
+     ${p.rua} Nº ${p.numero} - ${p.bairro || "Sem bairro"}
     `
 
     const btnEditar = document.createElement("button")
     btnEditar.innerText = "✏️ Editar"
-    btnEditar.onclick = function(){
-      editarPredio(p.id)
-    }
+   btnEditar.onclick = function(){
+  editarPredio(p.id)
+}
 
     const btnExcluir = document.createElement("button")
     btnExcluir.innerText = "🗑 Excluir"
@@ -1114,19 +1084,14 @@ async function listarUnidades(){
 
 const predio_id = document.getElementById("predioSelect").value
 
-const { data, error } = await client
+const {data} = await client
 .from("unidades")
 .select("*")
-.eq("predio_id", predio_id)
-
-if(error){
-  console.log("Erro ao buscar unidades:", error)
-  return
-}
+.eq("predio_id", predio_id) // 🔥 FILTRO AQUI
 
 let html=""
 
-(data || []).forEach(u=>{
+data.forEach(u=>{
 
 html += `
 <p>
@@ -1254,14 +1219,14 @@ if(input && input.files.length > 0){
   // 🔥 CRIA CONTRATO AUTOMÁTICO
  const { data: contratoCriado, error: erroContrato } = await client
   .from("contratos")
- .insert({
-  inquilino_id: inquilinoCriado.id,
-  unidade_id,
-  valor_aluguel,
-  dia_vencimento, //
+  .insert({
+    inquilino_id: inquilinoCriado.id,
+    unidade_id,
+    valor_aluguel,
+    dia_vencimento,
   arquivo_contrato: contrato_url || "",
-  status: "ativo"
-})
+    status: "ativo"
+  })
   .select()
   .single()
 
@@ -1312,70 +1277,62 @@ async function excluirInquilino(id){
 }
 async function listarInquilinos(){
 
-  const { data, error } = await client.from("inquilinos").select("*")
-
-  if(error){
-    console.log("Erro ao buscar inquilinos:", error)
-    return
-  }
-
-  // 🔥 GARANTE ARRAY REAL (ANTI BUG)
-  const lista = Array.isArray(data) ? data : []
+  const { data } = await client.from("inquilinos").select("*")
 
   let html = ""
 
-  lista.forEach(i => {
+  data.forEach(i => {
 
     html += `
     <p>
 
-    <b>${i?.nome || "Sem nome"}</b>
-    ${i?.nome_responsavel ? `<br><b>${i.nome_responsavel}</b>` : ""}
+    <b>${i.nome}</b>
+    ${i.nome_responsavel ? `<br><b>${i.nome_responsavel}</b>` : ""}
 
-    <br>📞 WhatsApp: ${i?.whatsapp || "-"}
-    ${i?.whatsapp_responsavel ? `<br>👤 Resp: ${i.whatsapp_responsavel}` : ""}
+    <br>📞 WhatsApp: ${i.whatsapp || "-"}
+    ${i.whatsapp_responsavel ? `<br>👤 Resp: ${i.whatsapp_responsavel}` : ""}
 
-    <br>🪪 CPF: ${i?.cpf || "-"}
-    ${i?.cpf_responsavel ? `<br>👤 CPF Resp: ${i.cpf_responsavel}` : ""}
+    <br>🪪 CPF: ${i.cpf || "-"}
+    ${i.cpf_responsavel ? `<br>👤 CPF Resp: ${i.cpf_responsavel}` : ""}
 
-    <br>🆔 RG: ${i?.rg || "-"}
-    ${i?.rg_responsavel ? `<br>👤 RG Resp: ${i.rg_responsavel}` : ""}
+    <br>🆔 RG: ${i.rg || "-"}
+    ${i.rg_responsavel ? `<br>👤 RG Resp: ${i.rg_responsavel}` : ""}
 
-    <br>💰 R$ ${i?.valor_aluguel || 0}
+    <br>💰 R$ ${i.valor_aluguel || 0}
 
     <br><br>
 
-    <button onclick="cobrarWhatsApp('${i?.nome || ""}', '${i?.whatsapp || ""}', '${i?.whatsapp_responsavel || ""}', ${i?.valor_aluguel || 0})">
+    <button onclick="cobrarWhatsApp('${i.nome}', '${i.whatsapp}', '${i.whatsapp_responsavel}', ${i.valor_aluguel || 0})">
     📲 Cobrar
     </button>
 
-    <button onclick="simularInquilino(${i?.valor_aluguel || 0}, ${i?.valor_agua || 0}, ${i?.dia_vencimento || 1})">
+    <button onclick="simularInquilino(${i.valor_aluguel || 0}, ${i.valor_agua || 0}, ${i.dia_vencimento || 1})">
     💰 Simular
     </button>
 
-    <button onclick="verHistoricoInquilino('${i?.id || ""}')">📊 Histórico</button>
+   <button onclick="verHistoricoInquilino('${i.id}')">📊 Histórico</button>
 
-    <button onclick="editarInquilino('${i?.id || ""}')">✏️ Editar</button>
+<button onclick="editarInquilino('${i.id}')">✏️ Editar</button>
 
-    <button onclick="excluirInquilino('${i?.id || ""}')">🗑 Excluir</button>
+<button onclick="excluirInquilino('${i.id}')">🗑 Excluir</button>
 
-    ${i?.contrato_url ? `
-      <button onclick="verContrato('${i.contrato_url}')">
-        📄 Ver contrato
-      </button>
-    ` : `<span>Sem contrato</span>`}
+${i.contrato_url ? `
+  <button onclick="verContrato('${i.contrato_url}')">
+    📄 Ver contrato
+  </button>
+` : `
+  <span>Sem contrato</span>
+`}
 
-    <hr>
+<hr>
 
     </p>
     `
+
   })
 
-  const container = document.getElementById("listaInquilinos")
-
-  if(container){
-    container.innerHTML = '<div class="listaSistema">' + html + '</div>'
-  }
+  document.getElementById("listaInquilinos").innerHTML =
+  '<div class="listaSistema">' + html + '</div>'
 
 }
 function cobrarWhatsApp(nome, whatsapp1, whatsapp2, valor){
@@ -1533,17 +1490,7 @@ listarContratos()
 
 async function listarContratos(){
 
-const { data, error } = await client.from("contratos").select("*")
-
-if(error){
-  console.log("Erro ao buscar contratos:", error)
-  return
-}
-
-if(!data){
-  console.log("Sem contratos")
-  return
-}
+const {data} = await client.from("contratos").select("*")
 
 let html=""
 
@@ -1621,9 +1568,7 @@ pagamentos.forEach(pagamento => {
   const unidade = unidades.find(u => String(u.id) === String(contrato?.unidade_id))
   const predio = predios.find(p => p.id == unidade?.predio_id)
 
- const enderecoCompleto = predio
-  ? `${predio.rua} Nº ${predio.numero}`
-  : "Não informado"
+  const enderecoCompleto = predio?.nome || "Não informado"
   const numeroUnidade = unidade?.numero || "-"
 
   const nomesMeses = [
@@ -1961,19 +1906,17 @@ async function gerarReciboCompleto(pagamento_id){
     const juros = 0
     const total = aluguel + agua + juros
 
-  gerarRecibo({
-  nome: inquilino?.nome || "-",
-  endereco: predio
-    ? `${predio.rua} Nº ${predio.numero}`
-    : "-",
-  unidade: unidade?.numero || "-",
-  mes: pagamento.mes,
-  aluguel,
-  agua,
-  juros,
-  total,
-  forma: pagamento.forma_pagamento || "-"
-})
+    gerarRecibo({
+      nome: inquilino?.nome || "-",
+      endereco: predio?.nome || "-",
+      unidade: unidade?.numero || "-",
+      mes: pagamento.mes,
+      aluguel,
+      agua,
+      juros,
+      total,
+      forma: pagamento.forma_pagamento || "-"
+    })
 
   }catch(e){
     console.error("ERRO RECIBO:", e)
@@ -2151,21 +2094,14 @@ document.getElementById("dashboardDados").innerHTML = `
 }
 async function calcularOcupacao(){
 
-const predio_id = document.getElementById("predioSelect")?.value
-if(!predio_id) return
-
-const { data: unidades, error } = await client
+const { data: unidades } = await client
 .from("unidades")
 .select("*")
-.eq("predio_id", predio_id)
-
-if(error || !unidades){
-  console.log("Erro mapa ocupação", error)
-  return
-}
 
 let total = unidades.length
-let ocupadas = unidades.filter(u => u.status === "ocupada").length
+
+let ocupadas = unidades.filter(u => u.status === "ocupado").length
+
 let vazias = total - ocupadas
 
 let porcentagem = total > 0 ? Math.round((ocupadas / total) * 100) : 0
@@ -2207,7 +2143,7 @@ html += `
 Mês ${p.mes} atrasado<br>
 Divida: R$ ${p.valor}<br>
 
-<button onclick="cobrarWhatsApp('${inquilino.whatsapp}','${inquilino.nome}','${p.valor}')">
+<button onclick="cobrarWhatsapp('${inquilino.whatsapp}','${inquilino.nome}','${p.valor}')">
 📲 Cobrar
 </button>
 
@@ -2371,7 +2307,7 @@ mes: p.mes
 })
 
 lista.forEach(i=>{
-cobrarWhatsApp(i.telefone,i.nome,i.valor)
+cobrarWhatsapp(i.telefone,i.nome,i.valor)
 })
 
 }
@@ -2382,20 +2318,25 @@ const predio_id = document.getElementById("predioSelect").value
 const { data: unidades } = await client
 .from("unidades")
 .select("*")
-.eq("predio_id", predio_id)
+.eq("predio_id", predio_id) // 🔥 FILTRO
 
-const { data: contratos } = await client.from("contratos").select("*")
-const { data: inquilinos } = await client.from("inquilinos").select("*")
+const { data: contratos } = await client
+.from("contratos")
+.select("*")
+
+const { data: inquilinos } = await client
+.from("inquilinos")
+.select("*")
 
 let html = ""
 
-(unidades || []).forEach(u => {
+unidades.forEach(u => {
 
-const contrato = (contratos || []).find(c => c.unidade_id == u.id)
+const contrato = contratos.find(c => c.unidade_id == u.id)
 
 if(contrato){
 
-const inquilino = (inquilinos || []).find(i => i.id == contrato.inquilino_id)
+const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
 
 html += `
 <p style="color:green">
@@ -2502,7 +2443,7 @@ if(!inquilino) return
 html+=`
 <p>
 ${inquilino.nome} - R$${c.valor_aluguel}
-<button onclick="cobrarWhatsApp('${inquilino.whatsapp}','${inquilino.nome}',${c.valor_aluguel})">
+<button onclick="cobrarWhatsapp('${inquilino.whatsapp}','${inquilino.nome}',${c.valor_aluguel})">
 📲 Cobrar
 </button>
 </p>
@@ -2815,7 +2756,7 @@ async function montarDadosRecibo(pagamento_id){
   return {
     nome: inquilino?.nome || "-",
 
-   rua: predio?.rua || "-",
+    rua: predio?.rua || predio?.nome || "-",
     numero: predio?.numero || "",
     bairro: predio?.bairro || "-",
     cidade: predio?.cidade || "Fortaleza - CE",
@@ -3279,11 +3220,7 @@ await carregarSelects()
 document.querySelector(".conteudo").style.display = "block"
 abrirTela("dashboard")
   
-try{
-  await calcularOcupacao()
-}catch(e){
-  console.log("Erro ocupação ignorado")
-}
+await calcularOcupacao()
 await listarPredios()
 await listarUnidades()
 await listarInquilinos()
@@ -3294,8 +3231,9 @@ await atualizarStatusAtrasados()
 window.onerror = function(msg, url, line){
   console.error("ERRO:", msg, "Linha:", line)
 
+  mostrarAlerta("Erro no sistema. Tente novamente.", "erro")
+}
 setInterval(async () => {
-
   try{
     await listarPagamentos()
     await listarInquilinos()
@@ -3304,7 +3242,6 @@ setInterval(async () => {
   }catch(e){
     console.error("Erro no auto refresh:", e)
   }
-
 }, 10000)
 </script>
     
@@ -3313,3 +3250,4 @@ setInterval(async () => {
 </body>
 </html>
 
+Eu apaguei a coluna nome… agora veja se tem algo errado aí ainda
