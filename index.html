@@ -861,30 +861,56 @@ if(!confirm("Deseja excluir este prédio?")){
 return
 }
 
-// apagar contratos das unidades primeiro
+// 🔥 pegar unidades
 const { data: unidades } = await client
   .from("unidades")
   .select("*")
   .eq("predio_id", id)
 
 for (let u of unidades) {
-  await client.from("contratos").delete().eq("unidade_id", u.id)
+
+  // 🔥 pegar contratos da unidade
+  const { data: contratos } = await client
+    .from("contratos")
+    .select("*")
+    .eq("unidade_id", u.id)
+
+  for (let c of contratos) {
+
+    // 🔥 apagar pagamentos primeiro
+    await client
+      .from("pagamentos")
+      .delete()
+      .eq("contrato_id", c.id)
+
+  }
+
+  // 🔥 apagar contratos
+  await client
+    .from("contratos")
+    .delete()
+    .eq("unidade_id", u.id)
 }
 
-// apagar unidades
-await client.from("unidades").delete().eq("predio_id", id)
+// 🔥 apagar unidades
+await client
+  .from("unidades")
+  .delete()
+  .eq("predio_id", id)
 
-// apagar prédio
+// 🔥 apagar prédio
 const { error } = await client
   .from("predios")
   .delete()
   .eq("id", id)
 
 if(error){
-alert("Erro ao excluir prédio")
-console.log(error)
-return
+  console.log(error)
+  alert("Erro ao excluir prédio")
+  return
 }
+
+alert("Prédio excluído com sucesso")
 
 listarPredios()
 }
