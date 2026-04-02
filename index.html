@@ -966,7 +966,7 @@ html += `
 
 ${p.nome} - ${p.bairro || "Sem bairro"}
 
-<button class="btnEditar" data-id="${p.id}">
+<button onclick="editarPredio('${p.id}')">
 ✏️ Editar
 </button>
 
