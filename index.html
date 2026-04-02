@@ -812,6 +812,16 @@ const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 
 const { createClient } = supabase
 const client = createClient(supabaseUrl, supabaseKey)
+
+  function getPredioId(){
+  const el = document.getElementById("predioSelect")
+  if(!el) return null
+
+  const val = el.value
+  if(!val || val === "undefined") return null
+
+  return val
+}
   
 console.log("SUPABASE:", supabase)
 console.log("CLIENT:", client)
@@ -1116,8 +1126,13 @@ await carregarSelects()
 }
 async function listarUnidades(){
 
+try{
+
 const predio_id = getPredioId()
-if(!predio_id) return
+if(!predio_id){
+  console.log("Sem predio selecionado")
+  return
+}
 
 const { data, error } = await client
 .from("unidades")
@@ -1135,7 +1150,6 @@ let html=""
 
 html += `
 <p>
-
 Unidade ${u.numero}
 
 <button onclick="editarUnidade('${u.id}','${u.numero}')">
@@ -1145,13 +1159,16 @@ Unidade ${u.numero}
 <button onclick="excluirUnidade('${u.id}')">
 🗑 Excluir
 </button>
-
 </p>
 `
 
 })
 
 document.getElementById("listaUnidades").innerHTML = html
+
+}catch(e){
+console.error("Erro listarUnidades:", e)
+}
 
 }
 async function editarUnidade(id,numero){
@@ -2383,6 +2400,8 @@ cobrarWhatsApp(i.telefone,i.nome,i.valor)
 }
 async function mapaOcupacao(){
 
+try{
+
 const predio_id = getPredioId()
 if(!predio_id) return
 
@@ -2423,6 +2442,10 @@ html += `
 })
 
 document.getElementById("mapaOcupacao").innerHTML = html
+
+}catch(e){
+console.error("Erro mapa ocupação:", e)
+}
 
 }
 async function buscarInquilino(){
@@ -3317,7 +3340,6 @@ await atualizarStatusAtrasados()
 }
 window.onerror = function(msg, url, line){
   console.error("ERRO:", msg, "Linha:", line)
-}
 }
 
 setInterval(async () => {
