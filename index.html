@@ -1817,57 +1817,65 @@ gerarRecibo(dados)
 }
 async function gerarReciboCompleto(pagamento_id){
 
-  // 🔥 buscar pagamento
-  const { data: pagamento } = await client
-    .from("pagamentos")
-    .select("*")
-    .eq("id", pagamento_id)
-    .single()
+  try{
 
-  // 🔥 contrato
-  const { data: contrato } = await client
-    .from("contratos")
-    .select("*")
-    .eq("id", pagamento.contrato_id)
-    .single()
+    const { data: pagamento } = await client
+      .from("pagamentos")
+      .select("*")
+      .eq("id", pagamento_id)
+      .single()
 
-  // 🔥 inquilino
-  const { data: inquilino } = await client
-    .from("inquilinos")
-    .select("*")
-    .eq("id", contrato.inquilino_id)
-    .single()
+    const { data: contrato } = await client
+      .from("contratos")
+      .select("*")
+      .eq("id", pagamento.contrato_id)
+      .single()
 
-  // 🔥 unidade
-  const { data: unidade } = await client
-    .from("unidades")
-    .select("*")
-    .eq("id", String(contrato.unidade_id))
-    .single()
+    const { data: inquilino } = await client
+      .from("inquilinos")
+      .select("*")
+      .eq("id", contrato.inquilino_id)
+      .single()
 
-  // 🔥 prédio
-  const { data: predio } = await client
-    .from("predios")
-    .select("*")
-    .eq("id", unidade.predio_id)
-    .single()
+    const { data: unidade } = await client
+      .from("unidades")
+      .select("*")
+      .eq("id", contrato.unidade_id)
+      .single()
 
-  const aluguel = pagamento.valor || 0
-  const agua = pagamento.valor_agua || 0
-  const juros = 0
-  const total = aluguel + agua + juros
+    let predio = null
 
-  gerarRecibo({
-    nome: inquilino?.nome || "-",
-    endereco: predio?.nome || "-",
-    unidade: unidade?.numero || "-",
-    mes: pagamento.mes,
-    aluguel,
-    agua,
-    juros,
-    total,
-    forma: pagamento.forma_pagamento || "-"
-  })
+    if(unidade && unidade.predio_id){
+      const res = await client
+        .from("predios")
+        .select("*")
+        .eq("id", unidade.predio_id)
+        .single()
+
+      predio = res.data
+    }
+
+    const aluguel = pagamento.valor || 0
+    const agua = pagamento.valor_agua || 0
+    const juros = 0
+    const total = aluguel + agua + juros
+
+    gerarRecibo({
+      nome: inquilino?.nome || "-",
+      endereco: predio?.nome || "-",
+      unidade: unidade?.numero || "-",
+      mes: pagamento.mes,
+      aluguel,
+      agua,
+      juros,
+      total,
+      forma: pagamento.forma_pagamento || "-"
+    })
+
+  }catch(e){
+    console.error("ERRO RECIBO:", e)
+    alert("Erro ao gerar recibo")
+  }
 
 }
 async function calcularInadimplentes(){
@@ -3143,13 +3151,15 @@ window.onerror = function(msg, url, line){
 
   mostrarAlerta("Erro no sistema. Tente novamente.", "erro")
 }
-setInterval(() => {
-
-listarPagamentos()
-listarInquilinos()
-listarPredios()
-carregarDashboard()
-
+setInterval(async () => {
+  try{
+    await listarPagamentos()
+    await listarInquilinos()
+    await listarPredios()
+    await carregarDashboard()
+  }catch(e){
+    console.error("Erro no auto refresh:", e)
+  }
 }, 10000)
 </script>
     
