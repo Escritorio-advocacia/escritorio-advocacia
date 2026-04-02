@@ -998,11 +998,8 @@ const { data } = await client
 .eq("id", id)
 .single()
 
-document.getElementById("ruaPredio").value = data.rua
-document.getElementById("numeroPredio").value = data.numero
-document.getElementById("bairroPredio").value = data.bairro
-document.getElementById("cidadePredio").value = data.cidade
-document.getElementById("cepPredio").value = data.cep
+document.getElementById("nomePredio").value = data.nome
+document.getElementById("bairroPredio").value = data.bairro || ""
 
 window.predioEditando = id
 
@@ -1013,9 +1010,12 @@ const predio_id = document.getElementById("predioSelect").value
 const numero = document.getElementById("numeroUnidade").value
 
 await client.from("unidades").insert({
-  predio_id,
+  nome,
+  rua,
   numero,
-  status: "livre"
+  bairro,
+  cidade,
+  cep
 })
 
 listarUnidades()
@@ -1645,7 +1645,7 @@ function criarCard(pagamento, total) {
       <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
 
       <span style="color:${cor}; font-weight:bold;">
-  ${(pagamento.status || "").toUpperCase()}
+  ${status.toUpperCase()}
 </span>
 
       <br><br>
@@ -1666,9 +1666,19 @@ function criarCard(pagamento, total) {
           📲 WhatsApp
         </button>
          
-        <button onclick="gerarReciboCompleto(${pagamento.id})">
-📄 Recibo
-</button>
+        <button onclick="gerarRecibo({
+  nome: '${nome}',
+  endereco: '${enderecoCompleto}',
+  unidade: '${numeroUnidade}',
+  mes: ${pagamento.mes},
+  aluguel: ${aluguel},
+  agua: ${agua},
+  juros: ${juros},
+  total: ${total},
+  forma: '${pagamento.forma_pagamento || ""}'
+})">
+          📄 Recibo
+        </button>
         `
         : `<span style="color:green; font-weight:bold;">✔ Pago</span>`
       }
@@ -1809,8 +1819,57 @@ gerarRecibo(dados)
 }
 async function gerarReciboCompleto(pagamento_id){
 
-  const dados = await montarDadosRecibo(pagamento_id)
-  gerarRecibo(dados)
+  // 🔥 buscar pagamento
+  const { data: pagamento } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("id", pagamento_id)
+    .single()
+
+  // 🔥 contrato
+  const { data: contrato } = await client
+    .from("contratos")
+    .select("*")
+    .eq("id", pagamento.contrato_id)
+    .single()
+
+  // 🔥 inquilino
+  const { data: inquilino } = await client
+    .from("inquilinos")
+    .select("*")
+    .eq("id", contrato.inquilino_id)
+    .single()
+
+  // 🔥 unidade
+  const { data: unidade } = await client
+    .from("unidades")
+    .select("*")
+    .eq("id", String(contrato.unidade_id))
+    .single()
+
+  // 🔥 prédio
+  const { data: predio } = await client
+    .from("predios")
+    .select("*")
+    .eq("id", unidade.predio_id)
+    .single()
+
+  const aluguel = pagamento.valor || 0
+  const agua = pagamento.valor_agua || 0
+  const juros = 0
+  const total = aluguel + agua + juros
+
+  gerarRecibo({
+    nome: inquilino?.nome || "-",
+    endereco: predio?.nome || "-",
+    unidade: unidade?.numero || "-",
+    mes: pagamento.mes,
+    aluguel,
+    agua,
+    juros,
+    total,
+    forma: pagamento.forma_pagamento || "-"
+  })
 
 }
 async function calcularInadimplentes(){
@@ -2579,6 +2638,7 @@ TOTAL: ${total.toFixed(2)}`
 }
 async function montarDadosRecibo(pagamento_id){
 
+  
   const { data: pagamento } = await client
     .from("pagamentos")
     .select("*")
@@ -2603,19 +2663,44 @@ async function montarDadosRecibo(pagamento_id){
     .eq("id", contrato.unidade_id)
     .single()
 
+  const { data: predio } = await client
+    .from("predios")
+    .select("*")
+    .eq("id", unidade.predio_id)
+    .single()
+
+
+  const aluguel = pagamento.valor || 0
+  const agua = pagamento.valor_agua || 0
+  const juros = 0
+  const total = aluguel + agua + juros
+
   return {
-    nome: inquilino?.nome || "-",
-    unidade: unidade?.numero || "-",
-    mes: pagamento?.mes || "-",
-    aluguel: pagamento?.valor || 0,
-    agua: pagamento?.valor_agua || 0,
-    juros: 0,
-    total: (pagamento?.valor || 0) + (pagamento?.valor_agua || 0),
-    forma: pagamento?.forma_pagamento || "-",
-    vencimento: "-"
-  }
+  nome: inquilino?.nome || "-",
+
+  rua: predio?.rua || predio?.nome || "-", // 👈 AQUI
+  numero: predio?.numero || "",
+  bairro: predio?.bairro || "-",
+  cidade: predio?.cidade || "Fortaleza - CE",
+  cep: predio?.cep || "-",
+
+  unidade: unidade?.numero || "-",
+  mes: pagamento.mes,
+
+  vencimento: new Date(
+    pagamento.ano,
+    pagamento.mes - 1,
+    contrato?.dia_vencimento || 5
+  ).toLocaleDateString(),
+
+  aluguel,
+  agua,
+  juros,
+  total,
+  forma: pagamento.forma_pagamento || "PENDENTE"
 }
-function gerarRecibo(dados){
+}
+function gerarRecibo(dados) {
 
   const dataAtual = new Date().toLocaleDateString()
 
@@ -2624,49 +2709,84 @@ function gerarRecibo(dados){
     "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
   ]
 
-  const nomeMes = nomesMeses[(dados.mes || 1) - 1]
+  const nomeMes = nomesMeses[dados.mes - 1]
 
   const html = `
-  <div style="max-width:600px;margin:auto;padding:20px;border:1px solid #000;font-family:Arial">
+    <div style="
+      width:700px;
+      margin:auto;
+      padding:30px;
+      font-family:Arial;
+      background:#fff;
+      border:2px solid #000;
+    ">
 
-  <h2 style="text-align:center;">RECIBO DE PAGAMENTO</h2>
-  <hr>
+      <h2 style="text-align:center;">
+        RECIBO DE PAGAMENTO
+      </h2>
 
-  <p><b>Recebemos de:</b> ${dados.nome || "-"}</p>
-  <p><b>Referente ao mês:</b> ${nomeMes}</p>
-  <p><b>Vencimento:</b> ${dados.vencimento || "-"}</p>
+      <hr>
 
-  <hr>
+      <p><b>Recebemos de:</b> ${dados.nome}</p>
 
-  <p><b>Unidade:</b> ${dados.unidade || "-"}</p>
+      <p><b>Referente ao mês:</b> ${nomeMes}</p>
 
-  <hr>
+      <p><b>Vencimento:</b> ${dados.vencimento}</p>
 
-  <p>Aluguel: R$ ${(dados.aluguel || 0).toFixed(2)}</p>
-  <p>Água: R$ ${(dados.agua || 0).toFixed(2)}</p>
-  <p>Juros: R$ ${(dados.juros || 0).toFixed(2)}</p>
+      <hr>
 
-  <h3>Total: R$ ${(dados.total || 0).toFixed(2)}</h3>
+      <p><b>Endereço do imóvel:</b><br>
+      ${dados.rua}
+      ${dados.numero ? `, Nº ${dados.numero}` : ""}<br>
+      ${dados.bairro}<br>
+      ${dados.cidade}<br>
+      CEP: ${dados.cep}</p>
 
-  <p><b>Forma:</b> ${dados.forma || "-"}</p>
+      <p><b>Unidade:</b> ${dados.unidade}</p>
 
-  <br><br>
+      <hr>
 
-  <p>${dataAtual}</p>
+      <p>Aluguel: R$ ${dados.aluguel.toFixed(2)}</p>
+      <p>Água: R$ ${dados.agua.toFixed(2)}</p>
+      <p>Juros: R$ ${dados.juros.toFixed(2)}</p>
 
-  <br><br>
+      <h3>Total: R$ ${dados.total.toFixed(2)}</h3>
 
-  ___________________________<br>
-  Assinatura
+      <p><b>Forma de pagamento:</b> ${dados.forma}</p>
 
-  </div>
+      <br>
+
+      <p>
+      Declaro para os devidos fins que o valor acima foi recebido,
+      dando plena quitação ao pagamento referente ao período.
+      </p>
+
+      <br><br>
+
+      <p>${dados.cidade}, ${dataAtual}</p>
+
+      <br><br>
+
+      _______________________________<br>
+      Assinatura
+
+    </div>
   `
 
-  document.getElementById("recibo").innerHTML = html
+  const win = window.open("", "", "width=800,height=600")
 
-  document.getElementById("recibo").scrollIntoView({
-    behavior: "smooth"
-  })
+  win.document.write(`
+    <html>
+      <body>
+        ${html}
+        <script>
+          window.onload = () => window.print();
+        <\/script>
+      </body>
+    </html>
+  `)
+
+  win.document.close()
 }
 async function login(){
 
@@ -3052,3 +3172,4 @@ carregarDashboard()
 </div>
 </body>
 </html>
+
