@@ -813,7 +813,7 @@ const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 const { createClient } = supabase
 const client = createClient(supabaseUrl, supabaseKey)
 
-  function getPredioId(){
+function pegarPredioId()
   const el = document.getElementById("predioSelect")
   if(!el) return null
 
@@ -1128,7 +1128,7 @@ async function listarUnidades(){
 
 try{
 
-const predio_id = getPredioId()
+const predio_id = pegarPredioId()
 if(!predio_id){
   console.log("Sem predio selecionado")
   return
@@ -2402,7 +2402,7 @@ async function mapaOcupacao(){
 
 try{
 
-const predio_id = getPredioId()
+const predio_id = pegarPredioId()
 if(!predio_id) return
 
 const { data: unidades } = await client
@@ -3223,7 +3223,7 @@ div.remove()
 }
 async function filtrarUnidades(){
 
-const predio_id = getPredioId()
+const predio_id = pegarPredioId()
 if(!predio_id) return
 
 const { data: unidades, error } = await client
@@ -3330,7 +3330,7 @@ try{
 await listarPredios()
 
 // 🔥 SÓ RODA SE TIVER PREDIO
-if(getPredioId()){
+if(pegarPredioId()){
   await listarUnidades()
   await mapaOcupacao()
 }
