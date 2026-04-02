@@ -989,6 +989,11 @@ window.editarPredio = async function(id){
     .eq("id", id)
     .single()
 
+  if(!data){
+alert("Erro ao carregar prédio")
+return
+}
+  
   document.getElementById("ruaPredio").value = data.rua || ""
   document.getElementById("numeroPredio").value = data.numero || ""
   document.getElementById("bairroPredio").value = data.bairro || ""
@@ -1316,7 +1321,7 @@ const { data } = await client
 
 document.getElementById("nomeInquilino").value = data.nome
 document.getElementById("cpfInquilino").value = data.cpf
-document.getElementById("telefoneInquilino").value = data.telefone
+document.getElementById("telefoneInquilino").value = data.whatsapp
 document.getElementById("emailInquilino").value = data.email
 document.getElementById("valorAluguel").value = data.valor_aluguel
 document.getElementById("valorAgua").value = data.valor_agua
@@ -1553,7 +1558,7 @@ pagamentos.forEach(pagamento => {
 
   let total = aluguel + agua + juros
 
-    if (filtro && pagamento.status !== filtro) return
+    if (filtro && status !== filtro) return
     if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
 
     let cor = "#ccc"
@@ -1648,7 +1653,7 @@ function criarCard(pagamento, total) {
       <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
 
       <span style="color:${cor}; font-weight:bold;">
-  ${status.toUpperCase()}
+ ${pagamento.status?.toUpperCase()}
 </span>
 
       <br><br>
@@ -2073,24 +2078,6 @@ div.innerHTML = html
 
 }
 
-function cobrarWhatsapp(telefone,nome,valor,telefone2,nome2){
-
-const mensagem1 = `Olá ${nome}.
-Seu aluguel no valor de R$ ${valor} está em atraso.`
-
-window.open(`https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem1)}`)
-
-if(telefone2){
-const mensagem2 = `Olá ${nome2}.
-O aluguel vinculado ao contrato está em atraso.
-Valor: R$ ${valor}`
-
-setTimeout(()=>{
-window.open(`https://wa.me/55${telefone2}?text=${encodeURIComponent(mensagem2)}`)
-},1000)
-}
-
-}
 async function cobrarTodos(){
 
 const hoje = new Date()
@@ -2309,15 +2296,16 @@ if(i.nome.toLowerCase().includes(texto)){
 html += `
 <p>
 ${i.nome} - ${i.telefone}
-cobrarWhatsapp(
-'${i.telefone}',
-'${i.nome}',
-'${i.valor_aluguel}',
-'${i.telefone_responsavel}',
-'${i.nome_responsavel}'
-)
+
+<button onclick="cobrarWhatsApp(
+  '${i.nome}',
+  '${i.whatsapp}',
+  '${i.whatsapp_responsavel}',
+  ${i.valor_aluguel || 0}
+)">
 📲 Cobrar
 </button>
+
 </p>
 `
 
@@ -3161,8 +3149,9 @@ await listarPagamentos()
 await atualizarStatusAtrasados()
 }
 window.onerror = function(msg, url, line){
-console.error("ERRO:", msg, "Linha:", line)
-alert("Erro no sistema! Aperte F12 e veja o console.")
+  console.error("ERRO:", msg, "Linha:", line)
+
+  mostrarAlerta("Erro no sistema. Tente novamente.", "erro")
 }
 setInterval(() => {
 
@@ -3172,7 +3161,6 @@ listarPredios()
 carregarDashboard()
 
 }, 10000)
-  window.editarPredio = window.editarPredio
 </script>
     
 </div>
