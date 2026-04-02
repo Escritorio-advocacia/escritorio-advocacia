@@ -810,9 +810,7 @@ transition: all 0.2s ease;
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
 const supabaseKey = "sb_publishable_CzV3zALwQBTrRwR_6btWbw_jvcBzW5z"
 
-const { createClient } = supabase
-const client = createClient(supabaseUrl, supabaseKey)
-
+const client = supabase.createClient(supabaseUrl, supabaseKey)
   
 async function salvarPredio(){
 
@@ -2154,11 +2152,13 @@ document.getElementById("dashboardDados").innerHTML = `
 }
 async function calcularOcupacao(){
 
+const predio_id = document.getElementById("predioSelect")?.value
+if(!predio_id) return
+
 const { data: unidades, error } = await client
 .from("unidades")
 .select("*")
-const predio_id = document.getElementById("predioSelect")?.value
-if(!predio_id) return
+.eq("predio_id", predio_id)
 
 if(error || !unidades){
   console.log("Erro mapa ocupação", error)
@@ -2166,9 +2166,7 @@ if(error || !unidades){
 }
 
 let total = unidades.length
-
-let ocupadas = unidades.filter(u => u.status === "ocupado").length
-
+let ocupadas = unidades.filter(u => u.status === "ocupada").length
 let vazias = total - ocupadas
 
 let porcentagem = total > 0 ? Math.round((ocupadas / total) * 100) : 0
@@ -3297,11 +3295,8 @@ await atualizarStatusAtrasados()
 window.onerror = function(msg, url, line){
   console.error("ERRO:", msg, "Linha:", line)
 
-  mostrarAlerta("Erro no sistema. Tente novamente.", "erro")
-}
-}catch(e){
-  console.error("Erro no auto refresh:", e)
-}
+setInterval(async () => {
+
   try{
     await listarPagamentos()
     await listarInquilinos()
@@ -3310,6 +3305,7 @@ window.onerror = function(msg, url, line){
   }catch(e){
     console.error("Erro no auto refresh:", e)
   }
+
 }, 10000)
 </script>
     
