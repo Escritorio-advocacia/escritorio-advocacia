@@ -983,23 +983,23 @@ document.getElementById("listaPredios").innerHTML = html
 
 }
 
-async function editarPredio(id){
+window.editarPredio = async function(id){
 
-const { data } = await client
-.from("predios")
-.select("*")
-.eq("id", id)
-.single()
+  alert("clicou " + id)
 
-// ✅ preenche os campos corretos
-document.getElementById("ruaPredio").value = data.rua || ""
-document.getElementById("numeroPredio").value = data.numero || ""
-document.getElementById("bairroPredio").value = data.bairro || ""
-document.getElementById("cidadePredio").value = data.cidade || ""
-document.getElementById("cepPredio").value = data.cep || ""
+  const { data } = await client
+    .from("predios")
+    .select("*")
+    .eq("id", id)
+    .single()
 
-window.predioEditando = id
+  document.getElementById("ruaPredio").value = data.rua || ""
+  document.getElementById("numeroPredio").value = data.numero || ""
+  document.getElementById("bairroPredio").value = data.bairro || ""
+  document.getElementById("cidadePredio").value = data.cidade || ""
+  document.getElementById("cepPredio").value = data.cep || ""
 
+  window.predioEditando = id
 }
 async function salvarUnidade(){
 
