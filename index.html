@@ -955,32 +955,28 @@ document.getElementById("unidadeSelect").innerHTML = htmlUnidades
 }
 async function listarPredios(){
 
-const {data} = await client.from("predios").select("*")
+  const {data} = await client.from("predios").select("*")
 
-let html=""
+  let html = ""
 
-data.forEach(p=>{
+  data.forEach(p => {
 
-html += `
-<p>
+    html += `
+    <p>
+      ${p.nome} - ${p.bairro || "Sem bairro"}
 
-${p.nome} - ${p.bairro || "Sem bairro"}
+      <button onclick="editarPredio('${p.id}')">
+        ✏️ Editar
+      </button>
 
-<button onclick="editarPredio('${p.id}')">
-✏️ Editar
-</button>
+      <button onclick="excluirPredio('${p.id}')">
+        🗑 Excluir
+      </button>
+    </p>
+    `
+  })
 
-<button onclick="excluirPredio('${p.id}')">
-🗑 Excluir
-</button>
-
-</p>
-`
-
-})
-
-document.getElementById("listaPredios").innerHTML = html
-
+  document.getElementById("listaPredios").innerHTML = html
 }
 
 window.editarPredio = async function(id){
