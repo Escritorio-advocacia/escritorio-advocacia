@@ -966,7 +966,7 @@ html += `
 
 ${p.nome} - ${p.bairro || "Sem bairro"}
 
-<button onclick="editarPredio('${p.id}')">
+<button class="btnEditar" data-id="${p.id}">
 ✏️ Editar
 </button>
 
@@ -978,7 +978,11 @@ ${p.nome} - ${p.bairro || "Sem bairro"}
 `
 
 })
-
+document.querySelectorAll(".btnEditar").forEach(btn=>{
+  btn.onclick = () => {
+    editarPredio(btn.dataset.id)
+  }
+})
 document.getElementById("listaPredios").innerHTML = html
 
 }
