@@ -1666,24 +1666,9 @@ function criarCard(pagamento, total) {
           📲 WhatsApp
         </button>
          
-        <button onclick="gerarRecibo({
-  nome: '${nome}',
-  rua: '${enderecoCompleto}',
-  numero: '',
-  bairro: '',
-  cidade: '',
-  cep: '',
-  unidade: '${numeroUnidade}',
-  mes: ${pagamento.mes},
-  aluguel: ${aluguel},
-  agua: ${agua},
-  juros: ${juros},
-  total: ${total},
-  forma: '${pagamento.forma_pagamento || ""}',
-  vencimento: ''
-})">
-          📄 Recibo
-        </button>
+        <button onclick="gerarReciboCompleto(${pagamento.id})">
+📄 Recibo
+</button>
         `
         : `<span style="color:green; font-weight:bold;">✔ Pago</span>`
       }
