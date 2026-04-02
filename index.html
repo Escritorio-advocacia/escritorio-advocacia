@@ -648,6 +648,8 @@ transition: all 0.2s ease;
 <button onclick="salvarPredio()">Salvar</button>
 <div id="listaPredios"></div>
 
+<input id="bairroPredio" placeholder="Bairro">
+  
 <h3>Unidades</h3>
 
 <h3>Mapa de Ocupação</h3>
@@ -812,6 +814,7 @@ const client = createClient(supabaseUrl, supabaseKey)
 async function salvarPredio(){
 
 const nome = document.getElementById("nomePredio").value
+const bairro = document.getElementById("bairroPredio").value
 
 if(window.predioEditando){
 
@@ -820,7 +823,7 @@ window.predioEditando = null
 
 }else{
 
-await client.from("predios").insert({nome})
+await client.from("predios").insert({nome, bairro})
 
 }
 
@@ -2592,6 +2595,12 @@ TOTAL: ${total.toFixed(2)}`
 }
 async function montarDadosRecibo(pagamento_id){
 
+  const vencimento = new Date(
+  pagamento.ano,
+  pagamento.mes - 1,
+  contrato.dia_vencimento || 5
+  ).toLocaleDateString()
+
   const { data: pagamento } = await client
     .from("pagamentos")
     .select("*")
@@ -2631,12 +2640,14 @@ async function montarDadosRecibo(pagamento_id){
   return {
     nome: inquilino?.nome || "-",
     endereco: predio?.nome || "-",
+    bairro: predio?.bairro || "-",
     unidade: unidade?.numero || "-",
     mes: pagamento.mes,
     aluguel,
     agua,
     juros,
     total,
+    vencimento,
     forma: pagamento.forma_pagamento || "PENDENTE"
   }
 }
@@ -2662,9 +2673,11 @@ function gerarRecibo(dados) {
 
       <p><b>Inquilino:</b> ${dados.nome}</p>
       <p><b>Endereço:</b> ${dados.endereco || "-"}</p>
+      <p><b>Bairro:</b> ${dados.bairro || "-"}</p>
       <p><b>Unidade:</b> ${dados.unidade || "-"}</p>
       <p><b>Mês:</b> ${dados.mes}</p>
-
+      <p><b>Vencimento:</b> ${dados.vencimento}</p>
+      
       <hr>
 
       🏠 Aluguel: <b>R$ ${Number(dados.aluguel).toFixed(2)}</b>
