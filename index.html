@@ -1517,6 +1517,13 @@ pagamentos.forEach(pagamento => {
   const enderecoCompleto = predio?.nome || "Não informado"
   const numeroUnidade = unidade?.numero || "-"
 
+  const nomesMeses = [
+    "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+    "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+     ]
+
+  const nomeMes = nomesMeses[pagamento.mes - 1]
+
   const diaVencimento = contrato?.dia_vencimento || 5
 
   const vencimento = new Date(
@@ -1558,7 +1565,7 @@ pagamentos.forEach(pagamento => {
         
         <b style="font-size:16px;">${nome}</b><br><br>
 
-        📅 Mês: ${pagamento.mes}<br>
+        📅 Mês: ${nomeMes}<br>
         🏠 Aluguel: R$ ${aluguel.toFixed(2)}<br>
         🚿 Água: R$ ${agua.toFixed(2)}<br>
         💸 Juros: R$ ${juros.toFixed(2)}<br>
