@@ -644,7 +644,12 @@ transition: all 0.2s ease;
 
 <h3>Prédios</h3>
 
-<input id="nomePredio" placeholder="Nome do prédio ou endereço">
+<input id="ruaPredio" placeholder="Rua">
+<input id="numeroPredio" placeholder="Número">
+<input id="bairroPredio" placeholder="Bairro">
+<input id="cidadePredio" placeholder="Cidade">
+<input id="cepPredio" placeholder="CEP">
+  
 <button onclick="salvarPredio()">Salvar</button>
 <div id="listaPredios"></div>
 
@@ -813,17 +818,37 @@ const client = createClient(supabaseUrl, supabaseKey)
   
 async function salvarPredio(){
 
-const nome = document.getElementById("nomePredio").value
+const rua = document.getElementById("ruaPredio").value
+const numero = document.getElementById("numeroPredio").value
 const bairro = document.getElementById("bairroPredio").value
+const cidade = document.getElementById("cidadePredio").value
+const cep = document.getElementById("cepPredio").value
+
+const nome = `${rua}, ${numero} - ${bairro}`
 
 if(window.predioEditando){
 
-await client.from("predios").update({nome, bairro}).eq("id",window.predioEditando)
+await client.from("predios").update({
+  nome,
+  rua,
+  numero,
+  bairro,
+  cidade,
+  cep
+})
+.eq("id",window.predioEditando)
 window.predioEditando = null
 
 }else{
 
-await client.from("predios").insert({nome, bairro})
+await client.from("predios").insert({
+  nome,
+  rua,
+  numero,
+  bairro,
+  cidade,
+  cep
+})
 
 }
 
@@ -985,8 +1010,12 @@ const predio_id = document.getElementById("predioSelect").value
 const numero = document.getElementById("numeroUnidade").value
 
 await client.from("unidades").insert({
-predio_id,
-numero
+  nome,
+  rua,
+  numero,
+  bairro,
+  cidade,
+  cep
 })
 
 listarUnidades()
