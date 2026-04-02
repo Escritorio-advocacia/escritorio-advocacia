@@ -1116,12 +1116,8 @@ await carregarSelects()
 }
 async function listarUnidades(){
 
-const predio_id = document.getElementById("predioSelect").value
-
-if(!predio_id){
-  console.log("Sem predio selecionado")
-  return
-}
+const predio_id = getPredioId()
+if(!predio_id) return
 
 const { data, error } = await client
 .from("unidades")
@@ -2160,7 +2156,7 @@ document.getElementById("dashboardDados").innerHTML = `
 }
 async function calcularOcupacao(){
 
-const predio_id = document.getElementById("predioSelect")?.value
+const predio_id = getPredioId()
 if(!predio_id) return
 
 const { data: unidades, error } = await client
@@ -2180,11 +2176,12 @@ let vazias = total - ocupadas
 let porcentagem = total > 0 ? Math.round((ocupadas / total) * 100) : 0
 
 document.getElementById("ocupacaoPredios").innerHTML = `
-🏢 Prédios: ${total}<br>
+🏢 Total: ${total}<br>
 🏠 Ocupados: ${ocupadas}<br>
 ⬜ Vazios: ${vazias}<br>
 📊 Ocupação: ${porcentagem}%
 `
+
 }
 async function listarDevedores(){
 
@@ -2386,11 +2383,9 @@ cobrarWhatsApp(i.telefone,i.nome,i.valor)
 }
 async function mapaOcupacao(){
 
-const predio_id = document.getElementById("predioSelect").value
+const predio_id = getPredioId()
+if(!predio_id) return
 
-if(!predio_id){
-  return
-}
 const { data: unidades } = await client
 .from("unidades")
 .select("*")
@@ -3205,16 +3200,22 @@ div.remove()
 }
 async function filtrarUnidades(){
 
+const predio_id = getPredioId()
 if(!predio_id) return
 
-const { data: unidades } = await client
+const { data: unidades, error } = await client
 .from("unidades")
 .select("*")
 .eq("predio_id", predio_id)
 
+if(error){
+  console.log("Erro ao filtrar unidades:", error)
+  return
+}
+
 let html = ""
 
-unidades.forEach(u=>{
+(unidades || []).forEach(u=>{
 html += `<option value="${u.id}">${u.numero}</option>`
 })
 
@@ -3287,21 +3288,32 @@ listarPagamentos()
 
 }
 window.onload = async function() {
+
 await carregarSelects()
+
 document.querySelector(".conteudo").style.display = "block"
+
 abrirTela("dashboard")
-  
+
 try{
   await calcularOcupacao()
 }catch(e){
   console.log("Erro ocupação ignorado")
 }
+
 await listarPredios()
-await listarUnidades()
+
+// 🔥 SÓ RODA SE TIVER PREDIO
+if(getPredioId()){
+  await listarUnidades()
+  await mapaOcupacao()
+}
+
 await listarInquilinos()
 await listarContratos()
 await listarPagamentos()
 await atualizarStatusAtrasados()
+
 }
 window.onerror = function(msg, url, line){
   console.error("ERRO:", msg, "Linha:", line)
