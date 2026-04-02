@@ -985,6 +985,9 @@ document.getElementById("listaPredios").innerHTML = html
 
 async function editarPredio(id){
 
+  async function editarPredio(id){
+  alert("clicou " + id)
+  
 const { data } = await client
 .from("predios")
 .select("*")
