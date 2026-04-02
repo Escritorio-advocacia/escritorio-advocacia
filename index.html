@@ -2683,17 +2683,17 @@ async function montarDadosRecibo(pagamento_id){
   bairro: predio?.bairro || "-",
   cidade: predio?.cidade || "Fortaleza - CE",
   cep: predio?.cep || "-",
-
+  vencimento: vencimentoFormatado,
   unidade: unidade?.numero || "-",
   mes: pagamento.mes,
 
   const dia = contrato?.dia_vencimento || 5
 
-vencimento: new Date(
+const vencimentoFormatado = new Date(
   pagamento.ano,
   pagamento.mes - 1,
   dia
-).toLocaleDateString(),
+).toLocaleDateString()
 
   aluguel,
   agua,
