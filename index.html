@@ -2681,30 +2681,36 @@ async function montarDadosRecibo(pagamento_id){
   const total = aluguel + agua + juros
 
   return {
-    nome: inquilino?.nome || "-",
-    endereco: predio?.nome || "-",
-    bairro: predio?.bairro || "-",
-    cep: predio?.cep || "-",
-    unidade: unidade?.numero || "-",
-    mes: pagamento.mes,
-    aluguel,
-    agua,
-    juros,
-    total,
-    vencimento,
-    forma: pagamento.forma_pagamento || "PENDENTE"
-  }
+  nome: inquilino?.nome || "-",
+  rua: predio?.rua || "-",
+  numero: predio?.numero || "-",
+  bairro: predio?.bairro || "-",
+  cidade: predio?.cidade || "Fortaleza - CE",
+  cep: predio?.cep || "-",
+  unidade: unidade?.numero || "-",
+  mes: pagamento.mes,
+  vencimento: new Date(
+    pagamento.ano,
+    pagamento.mes - 1,
+    contrato?.dia_vencimento || 5
+  ).toLocaleDateString(),
+  aluguel,
+  agua,
+  juros,
+  total,
+  forma: pagamento.forma_pagamento || "PENDENTE"
+}
 }
 function gerarRecibo(dados) {
 
-   const nomesMeses = [
-  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
-   ]
+  const dataAtual = new Date().toLocaleDateString()
 
-const nomeMes = nomesMeses[dados.mes - 1]
+  const nomesMeses = [
+    "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+    "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+  ]
 
-  const data = new Date().toLocaleDateString()
+  const nomeMes = nomesMeses[dados.mes - 1]
 
   const html = `
     <div style="
@@ -2713,44 +2719,56 @@ const nomeMes = nomesMeses[dados.mes - 1]
       padding:30px;
       font-family:Arial;
       background:#fff;
-      border:2px solid #ddd;
+      border:2px solid #000;
     ">
 
-      <h2 style="text-align:center; color:#2563eb;">
-        🧾 RECIBO DE PAGAMENTO
+      <h2 style="text-align:center;">
+        RECIBO DE PAGAMENTO
       </h2>
 
       <hr>
 
-      <p><b>Inquilino:</b> ${dados.nome}</p>
-      <p><b>Endereço:</b> ${dados.endereco || "-"}</p>
-      <p><b>Bairro:</b> ${dados.bairro || "-"}</p>
-      <p><b>CEP:</b> ${dados.cep || "-"}</p>
-      <p><b>Unidade:</b> ${dados.unidade || "-"}</p>
+      <p><b>Recebemos de:</b> ${dados.nome}</p>
+
+      <p><b>Referente ao mês:</b> ${nomeMes}</p>
+
       <p><b>Vencimento:</b> ${dados.vencimento}</p>
-      <p><b>Mês:</b> ${nomeMes}</p>
-      <hr>
-
-      🏠 Aluguel: <b>R$ ${Number(dados.aluguel).toFixed(2)}</b>
-      🚿 Água: <b>R$ ${Number(dados.agua).toFixed(2)}</b>
-      💸 Juros: <b>R$ ${Number(dados.juros).toFixed(2)}</b>
-     💰 Total: <b>R$ ${Number(dados.total).toFixed(2)}</b>
 
       <hr>
 
-      <h3 style="color:#16a34a;">
-        💰 Total: R$ ${Number(dados.total).toFixed(2)}
-      </h3>
+      <p><b>Endereço do imóvel:</b><br>
+      ${dados.rua}, Nº ${dados.numero}<br>
+      ${dados.bairro}<br>
+      ${dados.cidade}<br>
+      CEP: ${dados.cep}</p>
 
-      <p><b>Forma de pagamento:</b> ${dados.forma || "-"}</p>
-      <p><b>Data:</b> ${data}</p>
-      <p><b>Cidade:</b> Fortaleza-CE</p>
+      <p><b>Unidade:</b> ${dados.unidade}</p>
+
+      <hr>
+
+      <p>Aluguel: R$ ${dados.aluguel.toFixed(2)}</p>
+      <p>Água: R$ ${dados.agua.toFixed(2)}</p>
+      <p>Juros: R$ ${dados.juros.toFixed(2)}</p>
+
+      <h3>Total: R$ ${dados.total.toFixed(2)}</h3>
+
+      <p><b>Forma de pagamento:</b> ${dados.forma}</p>
+
+      <br>
+
+      <p>
+      Declaro para os devidos fins que o valor acima foi recebido,
+      dando plena quitação ao pagamento referente ao período.
+      </p>
+
       <br><br>
 
-      <div>
-        _______________________________<br>
-        Assinatura
-      </div>
+      <p>${dados.cidade}, ${dataAtual}</p>
+
+      <br><br>
+
+      _______________________________<br>
+      Assinatura
 
     </div>
   `
