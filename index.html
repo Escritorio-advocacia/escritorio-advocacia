@@ -2684,6 +2684,7 @@ async function montarDadosRecibo(pagamento_id){
     nome: inquilino?.nome || "-",
     endereco: predio?.nome || "-",
     bairro: predio?.bairro || "-",
+    cep: predio?.cep || "-",
     unidade: unidade?.numero || "-",
     mes: pagamento.mes,
     aluguel,
@@ -2724,6 +2725,7 @@ const nomeMes = nomesMeses[dados.mes - 1]
       <p><b>Inquilino:</b> ${dados.nome}</p>
       <p><b>Endereço:</b> ${dados.endereco || "-"}</p>
       <p><b>Bairro:</b> ${dados.bairro || "-"}</p>
+      <p><b>CEP:</b> ${dados.cep || "-"}</p>
       <p><b>Unidade:</b> ${dados.unidade || "-"}</p>
       <p><b>Vencimento:</b> ${dados.vencimento}</p>
       <p><b>Mês:</b> ${nomeMes}</p>
