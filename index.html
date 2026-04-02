@@ -2696,6 +2696,13 @@ async function montarDadosRecibo(pagamento_id){
 }
 function gerarRecibo(dados) {
 
+   const nomesMeses = [
+  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+   ]
+
+const nomeMes = nomesMeses[dados.mes - 1]
+
   const data = new Date().toLocaleDateString()
 
   const html = `
@@ -2718,9 +2725,8 @@ function gerarRecibo(dados) {
       <p><b>Endereço:</b> ${dados.endereco || "-"}</p>
       <p><b>Bairro:</b> ${dados.bairro || "-"}</p>
       <p><b>Unidade:</b> ${dados.unidade || "-"}</p>
-      <p><b>Mês:</b> ${dados.mes}</p>
       <p><b>Vencimento:</b> ${dados.vencimento}</p>
-      
+      <p><b>Mês:</b> ${nomeMes}</p>
       <hr>
 
       🏠 Aluguel: <b>R$ ${Number(dados.aluguel).toFixed(2)}</b>
