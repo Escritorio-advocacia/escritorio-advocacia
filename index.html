@@ -1953,19 +1953,19 @@ async function gerarReciboCompleto(pagamento_id){
     const juros = 0
     const total = aluguel + agua + juros
 
-    gerarRecibo({
-      nome: inquilino?.nome || "-",
-      endereco: predio
-  ? `${predio.rua} Nº ${predio.numero}`
-  : "-"
-      unidade: unidade?.numero || "-",
-      mes: pagamento.mes,
-      aluguel,
-      agua,
-      juros,
-      total,
-      forma: pagamento.forma_pagamento || "-"
-    })
+  gerarRecibo({
+  nome: inquilino?.nome || "-",
+  endereco: predio
+    ? `${predio.rua} Nº ${predio.numero}`
+    : "-",
+  unidade: unidade?.numero || "-",
+  mes: pagamento.mes,
+  aluguel,
+  agua,
+  juros,
+  total,
+  forma: pagamento.forma_pagamento || "-"
+})
 
   }catch(e){
     console.error("ERRO RECIBO:", e)
