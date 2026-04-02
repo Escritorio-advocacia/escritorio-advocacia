@@ -861,26 +861,32 @@ if(!confirm("Deseja excluir este prédio?")){
 return
 }
 
-// 🔥 APAGA UNIDADES PRIMEIRO
-await client
-.from("unidades")
-.delete()
-.eq("predio_id", id)
+// apagar contratos das unidades primeiro
+const { data: unidades } = await client
+  .from("unidades")
+  .select("*")
+  .eq("predio_id", id)
 
-// 🔥 AGORA APAGA PRÉDIO
+for (let u of unidades) {
+  await client.from("contratos").delete().eq("unidade_id", u.id)
+}
+
+// apagar unidades
+await client.from("unidades").delete().eq("predio_id", id)
+
+// apagar prédio
 const { error } = await client
-.from("predios")
-.delete()
-.eq("id", id)
+  .from("predios")
+  .delete()
+  .eq("id", id)
 
 if(error){
-alert("Erro ao excluir. Esse prédio pode ter contratos vinculados.")
+alert("Erro ao excluir prédio")
 console.log(error)
 return
 }
 
 listarPredios()
-
 }
 async function ocupacaoPorPredio(){
 
@@ -987,7 +993,7 @@ async function listarPredios(){
 
     const btnExcluir = document.createElement("button")
     btnExcluir.innerText = "🗑 Excluir"
-    bbtnExcluir.onclick = () => window.excluirPredio(p.id)
+    btnExcluir.onclick = () => window.excluirPredio(p.id)
     
     container.appendChild(btnEditar)
     container.appendChild(btnExcluir)
