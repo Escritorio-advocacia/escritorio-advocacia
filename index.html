@@ -2695,10 +2695,25 @@ const vencimentoFormatado = new Date(
   dia
 ).toLocaleDateString()
 
+return {
+  nome: inquilino?.nome || "-",
+
+  rua: predio?.rua || predio?.nome || "-",
+  numero: predio?.numero || "",
+  bairro: predio?.bairro || "-",
+  cidade: predio?.cidade || "Fortaleza - CE",
+  cep: predio?.cep || "-",
+
+  vencimento: vencimentoFormatado, // ✅ agora existe
+
+  unidade: unidade?.numero || "-",
+  mes: pagamento.mes,
+
   aluguel,
   agua,
   juros,
   total,
+
   forma: pagamento.forma_pagamento || "PENDENTE"
 }
 }
