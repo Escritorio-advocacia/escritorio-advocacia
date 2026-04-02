@@ -656,7 +656,7 @@ transition: all 0.2s ease;
 <h3>Unidades</h3>
 
 <h3>Mapa de Ocupação</h3>
-<div id="mapaOcupacao"></div>
+<div id="mapaOcupacaoDiv"></div>
 
 <select id="predioSelect" onchange="filtrarUnidades(); listarUnidades(); mapaOcupacao()"></select>
 
@@ -2441,7 +2441,7 @@ html += `
 
 })
 
-document.getElementById("mapaOcupacao").innerHTML = html
+document.getElementById("mapaOcupacaoDiv").innerHTML = html
 
 }catch(e){
 console.error("Erro mapa ocupação:", e)
@@ -3269,9 +3269,12 @@ btn.style.display = "none"
 function abrirTela(tela){
 if(tela==="predios"){
 listarPredios()
-listarUnidades()
-mapaOcupacao()
-carregarSelects() // 👈 ESSENCIAL
+carregarSelects()
+
+if(getPredioId()){
+  listarUnidades()
+  mapaOcupacao()
+}
 }
 document.querySelectorAll(".tela").forEach(div => {
 div.style.display = "none"
