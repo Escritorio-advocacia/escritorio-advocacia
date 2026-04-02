@@ -1118,6 +1118,11 @@ async function listarUnidades(){
 
 const predio_id = document.getElementById("predioSelect").value
 
+if(!predio_id){
+  console.log("Sem predio selecionado")
+  return
+}
+
 const { data, error } = await client
 .from("unidades")
 .select("*")
@@ -2383,6 +2388,9 @@ async function mapaOcupacao(){
 
 const predio_id = document.getElementById("predioSelect").value
 
+if(!predio_id){
+  return
+}
 const { data: unidades } = await client
 .from("unidades")
 .select("*")
@@ -3197,7 +3205,7 @@ div.remove()
 }
 async function filtrarUnidades(){
 
-const predio_id = document.getElementById("predioSelect").value
+if(!predio_id) return
 
 const { data: unidades } = await client
 .from("unidades")
