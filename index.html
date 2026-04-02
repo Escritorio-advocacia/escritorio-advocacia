@@ -1247,13 +1247,14 @@ if(input && input.files.length > 0){
   // 🔥 CRIA CONTRATO AUTOMÁTICO
  const { data: contratoCriado, error: erroContrato } = await client
   .from("contratos")
-  .insert({
-    inquilino_id: inquilinoCriado.id,
-    unidade_id,
-    valor_aluguel,
-    dia_vencimento,
+ .insert({
+  inquilino_id: inquilinoCriado.id,
+  unidade_id,
+  valor_aluguel,
+  dia_vencimento, //
   arquivo_contrato: contrato_url || "",
-    status: "ativo"
+  status: "ativo"
+})
   })
   .select()
   .single()
