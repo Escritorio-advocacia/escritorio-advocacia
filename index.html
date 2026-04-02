@@ -869,7 +869,7 @@ const { data: unidades } = await client
 
 for (let u of unidades) {
 
-  // 🔥 pegar contratos da unidade
+  // 🔥 contratos da unidade
   const { data: contratos } = await client
     .from("contratos")
     .select("*")
@@ -877,12 +877,17 @@ for (let u of unidades) {
 
   for (let c of contratos) {
 
-    // 🔥 apagar pagamentos primeiro
+    // 🔥 apagar pagamentos
     await client
       .from("pagamentos")
       .delete()
       .eq("contrato_id", c.id)
 
+    // 🔥 apagar INQUILINO (FALTAVA ISSO)
+    await client
+      .from("inquilinos")
+      .delete()
+      .eq("id", c.inquilino_id)
   }
 
   // 🔥 apagar contratos
@@ -905,7 +910,7 @@ const { error } = await client
   .eq("id", id)
 
 if(error){
-  console.log(error)
+  console.log("ERRO REAL:", error)
   alert("Erro ao excluir prédio")
   return
 }
