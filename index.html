@@ -1009,33 +1009,31 @@ document.getElementById("unidadeSelect").innerHTML = htmlUnidades
 }
 async function listarPredios(){
 
+ const lista = document.getElementById("listaPredios")
+ lista.innerHTML = ""
+
  const { data, error } = await client.from("predios").select("*")
 
-if(error){
+ if(error){
   console.log("Erro ao buscar prédios:", error)
   return
-}
+ }
 
-if(!data){
-  console.log("Sem prédios")
-  return
-}
-
-data.forEach(p => {
+ data.forEach(p => {
 
     const container = document.createElement("p")
 
     container.innerHTML = `
     ${p.rua || "Sem rua"} 
-${p.numero ? "Nº " + p.numero : ""} 
-- ${p.bairro || "Sem bairro"}
+    ${p.numero ? "Nº " + p.numero : ""} 
+    - ${p.bairro || "Sem bairro"}
     `
 
     const btnEditar = document.createElement("button")
     btnEditar.innerText = "✏️ Editar"
-   btnEditar.onclick = function(){
-  editarPredio(p.id)
-}
+    btnEditar.onclick = function(){
+      editarPredio(p.id)
+    }
 
     const btnExcluir = document.createElement("button")
     btnExcluir.innerText = "🗑 Excluir"
@@ -1307,7 +1305,7 @@ async function excluirInquilino(id){
 }
 async function listarInquilinos(){
 
- const { data, error } = await client.from("inquilinos").select("*")
+const { data, error } = await client.from("inquilinos").select("*")
 
 if(error){
   console.log("Erro ao buscar inquilinos:", error)
@@ -1320,8 +1318,7 @@ if(!data){
 }
 
 data.forEach(i => {
-
-    html += `
+    let html += "
     <p>
 
     <b>${i.nome}</b>
