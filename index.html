@@ -647,8 +647,9 @@ transition: all 0.2s ease;
 <input id="numeroPredio" placeholder="Número">
 <input id="bairroPredio" placeholder="Bairro">
 <input id="cidadePredio" placeholder="Cidade">
-<input id="cepPredio" placeholder="CEP">
-  
+<input id="cepPredio" placeholder="CEP" onkeyup="buscarCEP()">
+<input id="estadoPredio" placeholder="Estado">
+   
 <button onclick="salvarPredio()">Salvar</button>
 <div id="listaPredios"></div>
   
@@ -821,6 +822,7 @@ async function salvarPredio(){
   const cidade = document.getElementById("cidadePredio").value
   const cep = document.getElementById("cepPredio").value
 
+  
   if(window.predioEditando){
 
     await client
@@ -1041,7 +1043,8 @@ async function editarPredio(id){
   document.getElementById("bairroPredio").value = data.bairro || ""
   document.getElementById("cidadePredio").value = data.cidade || ""
   document.getElementById("cepPredio").value = data.cep || ""
-
+  document.getElementById("estadoPredio").value = data.uf || ""
+  
   window.predioEditando = id
 }
 async function salvarUnidade(){
@@ -1915,6 +1918,35 @@ async function gerarReciboCompleto(pagamento_id){
   }catch(e){
     console.error("ERRO RECIBO:", e)
     alert("Erro ao gerar recibo")
+  }
+
+}
+  async function buscarCEP(){
+
+  const cep = document.getElementById("cepPredio").value.replace(/\D/g, "")
+
+  if(cep.length !== 8){
+    alert("CEP inválido")
+    return
+  }
+
+  try{
+
+    const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    const data = await resposta.json()
+
+    if(data.erro){
+      alert("CEP não encontrado")
+      return
+    }
+
+    document.getElementById("ruaPredio").value = data.logradouro || ""
+    document.getElementById("bairroPredio").value = data.bairro || ""
+    document.getElementById("cidadePredio").value = data.localidade || ""
+
+  }catch(e){
+    console.log(e)
+    alert("Erro ao buscar CEP")
   }
 
 }
