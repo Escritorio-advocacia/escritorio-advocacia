@@ -1009,7 +1009,9 @@ async function listarPredios(){
     const container = document.createElement("p")
 
     container.innerHTML = `
-     ${p.rua} Nº ${p.numero} - ${p.bairro || "Sem bairro"}
+    ${p.rua || "Sem rua"} 
+${p.numero ? "Nº " + p.numero : ""} 
+- ${p.bairro || "Sem bairro"}
     `
 
     const btnEditar = document.createElement("button")
