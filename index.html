@@ -965,59 +965,58 @@ document.getElementById("ocupacaoPredios").innerHTML = html
 }
 async function carregarSelects(){
 
-try{
+  try{
 
-  const resPredios = await client.from("predios").select("*")
-  const resUnidades = await client.from("unidades").select("*")
+    const { data: predios, error: erro1 } = await client
+      .from("predios")
+      .select("*")
 
-  // 🔥 proteção TOTAL
-  const predios = Array.isArray(resPredios?.data) ? resPredios.data : []
-  const unidades = Array.isArray(resUnidades?.data) ? resUnidades.data : []
+    const { data: unidades, error: erro2 } = await client
+      .from("unidades")
+      .select("*")
 
-  if(resPredios?.error || resUnidades?.error){
-    console.log("Erro ao carregar selects", resPredios?.error, resUnidades?.error)
-    return
-  }
+    if(erro1 || erro2){
+      console.log("Erro Supabase:", erro1, erro2)
+      return
+    }
 
-  let htmlPredios = ""
+  const listaPredios = Array.isArray(predios) ? predios : []
+const listaUnidades = Array.isArray(unidades) ? unidades : []
 
-  predios.forEach(p=>{
-    htmlPredios += `<option value="${p?.id || ""}">
-    ${p?.rua || ""} Nº ${p?.numero || ""}
-    </option>`
-  })
+    let htmlPredios = ""
 
-  let htmlUnidades = ""
+    listaPredios.forEach(p=>{
+      htmlPredios += `<option value="${p.id}">
+        ${p.rua} Nº ${p.numero}
+      </option>`
+    })
 
-  unidades.forEach(u=>{
+    let htmlUnidades = ""
 
-    const predio = predios.find(p => p?.id == u?.predio_id)
+    listaUnidades.forEach(u=>{
 
-    htmlUnidades += `
-    <option value="${u?.id || ""}">
-    ${predio 
-      ? `${predio?.rua || ""}, Nº ${predio?.numero || ""}`
-      : "Sem prédio"
-    } - ${u?.numero || ""}
-    </option>
-    `
-  })
+    const predio = (listaPredios || []).find(p => p.id == u.predio_id)
 
-  const predioSelect = document.getElementById("predioSelect")
-  const unidadeSelect = document.getElementById("unidadeSelect")
+      htmlUnidades += `
+        <option value="${u.id}">
+          ${predio ? predio.rua : "Sem prédio"} - ${u.numero}
+        </option>
+      `
+    })
 
-  // 🔥 evita erro de DOM
-  if(predioSelect){
-    predioSelect.innerHTML = htmlPredios
-  }
-
-  if(unidadeSelect){
-    unidadeSelect.innerHTML = htmlUnidades
-  }
-
-}catch(e){
-  console.error("ERRO GRAVE carregarSelects:", e)
+   const predioSelect = document.getElementById("predioSelect")
+if(predioSelect){
+  predioSelect.innerHTML = htmlPredios
 }
+
+const unidadeSelect = document.getElementById("unidadeSelect")
+if(unidadeSelect){
+  unidadeSelect.innerHTML = htmlUnidades
+}
+
+  }catch(e){
+    console.error("ERRO carregarSelects:", e)
+  }
 }
 async function listarPredios(){
 
