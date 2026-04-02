@@ -955,30 +955,34 @@ document.getElementById("unidadeSelect").innerHTML = htmlUnidades
 }
 async function listarPredios(){
 
-  const {data} = await client.from("predios").select("*")
+  const { data } = await client.from("predios").select("*")
 
-  let html = ""
+  const lista = document.getElementById("listaPredios")
+  lista.innerHTML = ""
 
   data.forEach(p => {
 
-    html += `
-    <p>
+    const container = document.createElement("p")
+
+    container.innerHTML = `
       ${p.nome} - ${p.bairro || "Sem bairro"}
-
-      <button onclick="editarPredio(${JSON.stringify(p.id)})">
-        ✏️ Editar
-      </button>
-
-      <button onclick="excluirPredio(${JSON.stringify(p.id)})">
-        🗑 Excluir
-      </button>
-    </p>
     `
+
+    const btnEditar = document.createElement("button")
+    btnEditar.innerText = "✏️ Editar"
+    btnEditar.onclick = () => editarPredio(p.id)
+
+    const btnExcluir = document.createElement("button")
+    btnExcluir.innerText = "🗑 Excluir"
+    btnExcluir.onclick = () => excluirPredio(p.id)
+
+    container.appendChild(btnEditar)
+    container.appendChild(btnExcluir)
+
+    lista.appendChild(container)
+
   })
-
-  document.getElementById("listaPredios").innerHTML = html
 }
-
 window.editarPredio = async function(id){
 
   alert("clicou " + id)
