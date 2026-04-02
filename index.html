@@ -998,8 +998,11 @@ const { data } = await client
 .eq("id", id)
 .single()
 
-document.getElementById("nomePredio").value = data.nome
-document.getElementById("bairroPredio").value = data.bairro || ""
+document.getElementById("ruaPredio").value = data.rua
+document.getElementById("numeroPredio").value = data.numero
+document.getElementById("bairroPredio").value = data.bairro
+document.getElementById("cidadePredio").value = data.cidade
+document.getElementById("cepPredio").value = data.cep
 
 window.predioEditando = id
 
@@ -1010,12 +1013,9 @@ const predio_id = document.getElementById("predioSelect").value
 const numero = document.getElementById("numeroUnidade").value
 
 await client.from("unidades").insert({
-  nome,
-  rua,
+  predio_id,
   numero,
-  bairro,
-  cidade,
-  cep
+  status: "livre"
 })
 
 listarUnidades()
