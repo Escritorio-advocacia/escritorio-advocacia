@@ -2962,7 +2962,8 @@ password: senha
 })
 
 if(error){
-alert("Erro no login")
+alert(error.message)
+console.log(error)
 return
 }
 
