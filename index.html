@@ -1481,70 +1481,6 @@ pagamentos.forEach(pagamento => {
   })
 }
  
-function criarCard(pagamento, total) {
-
-  const lista = document.getElementById("listaPagamentos")
-
-  const div = document.createElement("div")
-
-  let cor = "#ccc"
-  if (pagamento.status === "pago") cor = "green"
-  if (pagamento.status === "pendente") cor = "orange"
-  if (pagamento.status === "atrasado") cor = "red"
-
-  const aluguel = pagamento.valor || 0
-  const agua = pagamento.valor_agua || 0
-  const juros = total - aluguel - agua
-
-  // ✅ NOME CORRETO DO INQUILINO
- const nome = pagamento.nome || "Inquilino"
-
-  div.innerHTML = `
-    <div class="cardPagamento" style="border-left:5px solid ${cor};">
-      
-      <b style="font-size:16px;">${nome}</b><br><br>
-
-      📅 Mês: ${pagamento.mes}<br>
-      🏠 Aluguel: R$ ${aluguel.toFixed(2)}<br>
-      🚿 Água: R$ ${agua.toFixed(2)}<br>
-
-      <br>
-      <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
-
-      <span style="color:${cor}; font-weight:bold;">
- ${pagamento.status?.toUpperCase()}
-</span>
-
-      <br><br>
-
-      ${
-        pagamento.status?.toLowerCase().trim() !== "pago"
-        ? `
-        <button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
-          💳 Receber
-        </button>
-        
-        <button onclick="enviarWhatsApp(
-          '${nome}',
-          '${pagamento.telefone || ""}',
-          ${total},
-          ${pagamento.mes}
-        )">
-          📲 WhatsApp
-        </button>
-         
-      <button onclick="gerarReciboCompleto(${pagamento.id})">
-📄 Recibo
-</button>
-        `
-        : `<span style="color:green; font-weight:bold;">✔ Pago</span>`
-      }
-
-    </div>
-  `
-
-  lista.appendChild(div)
-}
   async function buscarPagamentos(texto){
 
 const { data } = await client
@@ -1775,38 +1711,7 @@ async function buscarCEP(){
 
   }, 500) // espera digitar
 }
-async function calcularInadimplentes(){
 
-const { data } = await client
-.from("pagamentos")
-.select("*")
-
-let html = ""
-
-const hoje = new Date()
-const diaHoje = hoje.getDate()
-
-data.forEach(p => {
-
-if(p.status == "pendente"){
-
-let atraso = diaHoje - p.mes
-
-if(atraso > 5){
-
-html += `
-<p>⚠ Pagamento ${p.id} — ${atraso} dias de atraso</p>
-`
-
-}
-
-}
-
-})
-
-document.getElementById("inadimplentes").innerHTML = html
-
-}
 async function relatorioInadimplentes(){
 
 const { data: pagamentos } = await client
@@ -1981,44 +1886,6 @@ div.innerHTML = html
 
 }
 
-async function cobrarTodos(){
-
-const hoje = new Date()
-const mesAtual = hoje.getMonth() + 1
-
-const { data: pagamentos } = await client.from("pagamentos").select("*")
-const { data: contratos } = await client.from("contratos").select("*")
-const { data: inquilinos } = await client.from("inquilinos").select("*")
-
-pagamentos.forEach(p => {
-
-if(p.status == "pendente" && p.mes < mesAtual){
-
-const contrato = contratos.find(c => c.id == p.contrato_id)
-
-if(!contrato) return
-
-const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
-
-if(!inquilino) return
-
-const mensagem = `Olá ${inquilino.nome}.
-
-Seu aluguel do mês ${p.mes} está em atraso.
-
-Valor: R$${p.valor}
-
-Favor regularizar.`
-
-const url = `https://wa.me/55${inquilino.whatsapp}?text=${encodeURIComponent(mensagem)}`
-
-window.open(url)
-
-}
-
-})
-
-}
 async function alertaInadimplentes(){
 
 const div = document.getElementById("alertaInadimplentes")
@@ -2463,33 +2330,7 @@ document.getElementById("resultadoSimulacao").innerHTML = `
 `
 
 }
-  async function atualizarAtrasos() {
-
-  const { data: pagamentos } = await client
-    .from("pagamentos")
-    .select("*")
-
-  const hoje = new Date()
-
-  for (let p of pagamentos) {
-
-    if (p.status === "pago") continue
-
-    const vencimento = new Date(p.ano, p.mes - 1, p.dia_vencimento)
-
-    const diasAtraso = Math.floor((hoje - vencimento) / (1000 * 60 * 60 * 24))
-
-    if (diasAtraso > 5) {
-
-      await client
-        .from("pagamentos")
-        .update({ status: "atrasado" })
-        .eq("id", p.id)
-    }
-  }
-
-  alert("Atrasos atualizados!")
-}
+  
   function simularInquilino(aluguel,agua,vencimento){
 
 const hoje = new Date()
@@ -2804,54 +2645,7 @@ Mês ${p.mes} - R$ ${p.valor} - ${p.status}
 document.getElementById("relatorio").innerHTML = html
 
 }
-async function historicoInquilino(inquilino_id){
 
-const { data: contratos } = await client
-.from("contratos")
-.select("*")
-.eq("inquilino_id", inquilino_id)
-
-if(!contratos.length){
-document.getElementById("historicoPagamentos").innerHTML = "Sem histórico"
-return
-}
-
-const contrato_id = contratos[0].id
-
-const { data: pagamentos } = await client
-.from("pagamentos")
-.select("*")
-.eq("contrato_id", contrato_id)
-.order("mes")
-
-let html = ``
-
-pagamentos.forEach(p => {
-
-let status = p.status
-let cor = "black"
-
-if(p.status == "pago"){
-status = "✔ Pago"
-cor = "green"
-}
-
-if(p.status == "pendente"){
-status = "⏳ Pendente"
-cor = "orange"
-}
-
-html += `
-<p style="color:${cor}">
-Mês ${p.mes} - R$ ${p.valor} - ${status}
-</p>
-`
-
-})
-
-document.getElementById("historicoPagamentos").innerHTML = html
-
-}
   async function encerrarContrato(contrato_id, unidade_id){
 
 if(!confirm("Deseja realmente encerrar este contrato?")){
