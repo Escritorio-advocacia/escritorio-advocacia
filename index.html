@@ -17,6 +17,9 @@
 .tela{
 display:none;
 }
+.layout{
+  display:none;
+}
 
 /* RESET */
 *{
@@ -279,6 +282,32 @@ input,select{
 </head>
 
 <body>
+  <!-- LOGIN -->
+<div class="loginContainer">
+
+  <div class="loginLeft">
+    <h1>🏢 Sistema de Aluguel</h1>
+    <p>Controle completo de imóveis, contratos e pagamentos</p>
+  </div>
+
+  <div class="loginRight">
+
+    <div class="loginCard">
+
+      <h2>Entrar</h2>
+
+      <input id="emailLogin" placeholder="Seu email">
+      <input id="senhaLogin" type="password" placeholder="Sua senha">
+
+      <button onclick="login()">Entrar</button>
+
+      <div id="usuarioLogado"></div>
+
+    </div>
+
+  </div>
+
+</div>
 <div class="layout">
 
 <div class="sidebar">
@@ -307,35 +336,7 @@ input,select{
   </div>
 </div>
 
-<h2>Login</h2>
-    
-<div class="loginContainer">
 
-  <div class="loginLeft">
-    <h1>🏢 Sistema de Aluguel</h1>
-    <p>Controle completo de imóveis, contratos e pagamentos</p>
-  </div>
-
-  <div class="loginRight">
-
-    <div class="loginCard">
-
-      <h2>Entrar</h2>
-
-      <input id="emailLogin" placeholder="Seu email">
-      <input id="senhaLogin" type="password" placeholder="Sua senha">
-
-      <button class="btnLogin" onclick="login()">Entrar</button>
-
-      <button class="btnLogout" onclick="logout()">Sair</button>
-
-      <div id="usuarioLogado"></div>
-
-    </div>
-
-  </div>
-
-</div>
 <hr>
   
 <h2>Sistema de Aluguel</h2>
@@ -498,7 +499,7 @@ input,select{
 <button onclick="filtrarPagamentos('pago')">Pagos</button>
 <button onclick="filtrarPagamentos('pendente')">Pendentes</button>
 <button onclick="filtrarPagamentos('atrasado')">Atrasados</button>
-<button onclick="atualizarAtrasos()">Atualizar atrasos</button>
+<button onclick="atualizarStatusAtrasados()">Atualizar atrasos</button>
 </div>
 
 <div id="listaPagamentos"></div>
@@ -546,6 +547,9 @@ input,select{
 const supabaseUrl = "https://foegiwrgbkkhsqzpgcou.supabase.co"
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvZWdpd3JnYmtraHNxenBnY291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NDIwOTksImV4cCI6MjA4ODIxODA5OX0.j8KQDZigVRaUH6vXtlHhKZxuKkIAXgSECxOqNxwhIyg"
 
+if (!window.supabase) {
+  alert("Erro ao carregar Supabase")
+}
 const { createClient } = supabase
 const client = createClient(supabaseUrl, supabaseKey)
 
@@ -710,7 +714,8 @@ html += `
 
 })
 
-document.getElementById("ocupacaoPredios").innerHTML = html
+const el = document.getElementById("ocupacaoPredios")
+if (el) el.innerHTML = html
 
 }
 async function carregarSelects(){
@@ -1316,7 +1321,7 @@ Contrato ${c.id}
 📄 Ver contrato
 </button>
 
-<button onclick="historicoInquilino('${c.id}')">
+<button onclick="verHistoricoInquilino('${c.id}')">
 📅 Histórico
 </button>
 
@@ -2555,14 +2560,15 @@ await pegarNivelUsuario(data.user.email)
 controlarPermissoes()
 
 document.querySelector(".loginContainer").style.display = "none"
-document.querySelector(".conteudo").style.display = "block"
+document.querySelector(".layout").style.display = "flex"
 
 }
 async function logout(){
 
-await client.auth.signOut()
+  await client.auth.signOut()
 
-document.getElementById("usuarioLogado").innerHTML = "Deslogado"
+  document.querySelector(".layout").style.display = "none"
+  document.querySelector(".loginContainer").style.display = "flex"
 
 }
 async function pegarNivelUsuario(email){
