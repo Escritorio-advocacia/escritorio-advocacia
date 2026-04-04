@@ -1726,7 +1726,7 @@ let html = "<h3>Relatório de Inadimplentes</h3>"
 
 pagamentos.forEach(p => {
 
-if(p.status.toLowerCase() === "atrasado")
+if(p.status.toLowerCase() === "atrasado"){
 
 const inquilino = inquilinos.find(i => i.id == p.inquilino_id)
 
@@ -1997,7 +1997,7 @@ mes: p.mes
 })
 
 lista.forEach(i=>{
-cobrarWhatsApp(nome, whatsapp1, whatsapp2, valor)
+  cobrarWhatsApp(i.nome, i.telefone, "", i.valor)
 })
 
 }
@@ -2552,11 +2552,14 @@ document.getElementById("usuarioLogado").innerHTML =
 
 await pegarNivelUsuario(data.user.email)
 
-controlarPermissoes()
+if(data.session){
+  document.querySelector(".loginContainer").style.display = "none"
+  document.querySelector(".layout").style.display = "flex"
 
-document.querySelector(".loginContainer").style.display = "none"
-document.querySelector(".layout").style.display = "flex"
+  document.getElementById("usuarioTopo").innerText = data.session.user.email
 
+  await pegarNivelUsuario(data.session.user.email)
+  controlarPermissoes()
 }
 async function logout(){
 
@@ -2843,40 +2846,49 @@ function abrirTela(tela){
 }
 window.onload = async function() {
 
-const { data } = await client.auth.getSession()
+  const { data } = await client.auth.getSession()
 
-if(data.session){
+  // 🔒 SE NÃO ESTIVER LOGADO
+  if(!data.session){
+    document.querySelector(".loginContainer").style.display = "flex"
+    document.querySelector(".layout").style.display = "none"
+    return
+  }
+
+  // ✅ SE ESTIVER LOGADO
   document.querySelector(".loginContainer").style.display = "none"
   document.querySelector(".layout").style.display = "flex"
 
   document.getElementById("usuarioTopo").innerText = data.session.user.email
-}
 
-await carregarSelects()
+  await pegarNivelUsuario(data.session.user.email)
+  controlarPermissoes()
 
-document.querySelector(".conteudo").style.display = "block"
+  // 🔥 RESTO DO SISTEMA
+  await carregarSelects()
 
-abrirTela("dashboard")
+  document.querySelector(".conteudo").style.display = "block"
 
-try{
-  await calcularOcupacao()
-}catch(e){
-  console.log("Erro ocupação ignorado")
-}
+  abrirTela("dashboard")
 
-await listarPredios()
+  try{
+    await calcularOcupacao()
+  }catch(e){
+    console.log("Erro ocupação ignorado")
+  }
 
-// 🔥 SÓ RODA SE TIVER PREDIO
-if(pegarPredioId()){
-  await listarUnidades()
-  await mapaOcupacao()
-}
+  await listarPredios()
 
-await listarInquilinos()
-await listarContratos()
-await listarPagamentos()
-await atualizarStatusAtrasados()
+  // 🔥 SÓ RODA SE TIVER PREDIO
+  if(pegarPredioId()){
+    await listarUnidades()
+    await mapaOcupacao()
+  }
 
+  await listarInquilinos()
+  await listarContratos()
+  await listarPagamentos()
+  await atualizarStatusAtrasados()
 }
 window.onerror = function(msg, url, line){
   console.error("ERRO:", msg, "Linha:", line)
