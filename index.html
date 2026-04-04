@@ -2555,7 +2555,7 @@ await pegarNivelUsuario(data.user.email)
 controlarPermissoes()
 
 document.querySelector(".loginContainer").style.display = "none"
-document.querySelector(".conteudo").style.display = "none"
+document.querySelector(".conteudo").style.display = "block"
 
 }
 async function logout(){
@@ -2812,7 +2812,6 @@ function abrirTela(tela){
     graficoMensal()
     alertaInadimplentes()
     vencimentosHoje()
-    calcularInadimplentes()
     ocupacaoPorPredio()
   }
 
