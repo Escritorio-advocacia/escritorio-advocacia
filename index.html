@@ -19,6 +19,7 @@ display:none;
 }
 .layout{
   display:none;
+  height:100vh;
 }
 
 /* RESET */
@@ -32,12 +33,6 @@ display:none;
 /* BODY */
 body{
   background:#f1f5f9;
-}
-
-/* LAYOUT */
-.layout{
-  display:flex;
-  height:100vh;
 }
 
 /* SIDEBAR (estilo banco) */
@@ -1731,7 +1726,7 @@ let html = "<h3>Relatório de Inadimplentes</h3>"
 
 pagamentos.forEach(p => {
 
-if(p.status === "ATRASADO"){
+if(p.status.toLowerCase() === "atrasado")
 
 const inquilino = inquilinos.find(i => i.id == p.inquilino_id)
 
@@ -2002,7 +1997,7 @@ mes: p.mes
 })
 
 lista.forEach(i=>{
-cobrarWhatsApp(i.telefone,i.nome,i.valor)
+cobrarWhatsApp(nome, whatsapp1, whatsapp2, valor)
 })
 
 }
@@ -2848,6 +2843,15 @@ function abrirTela(tela){
 }
 window.onload = async function() {
 
+const { data } = await client.auth.getSession()
+
+if(data.session){
+  document.querySelector(".loginContainer").style.display = "none"
+  document.querySelector(".layout").style.display = "flex"
+
+  document.getElementById("usuarioTopo").innerText = data.session.user.email
+}
+
 await carregarSelects()
 
 document.querySelector(".conteudo").style.display = "block"
@@ -2889,7 +2893,7 @@ setInterval(async () => {
     console.error("Erro no auto refresh:", e)
   }
 
-}, 10000)
+}, 30000)
 </script>
     
 </div>
