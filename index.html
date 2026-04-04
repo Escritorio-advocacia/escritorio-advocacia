@@ -2530,36 +2530,46 @@ function gerarRecibo(dados) {
 }
 async function login(){
 
-const email = document.getElementById("emailLogin").value
-const senha = document.getElementById("senhaLogin").value
+  const email = document.getElementById("emailLogin").value
+  const senha = document.getElementById("senhaLogin").value
 
-const { data, error } = await client.auth.signInWithPassword({
-email: email,
-password: senha
-})
+  const { data, error } = await client.auth.signInWithPassword({
+    email: email,
+    password: senha
+  })
 
-if(error){
-alert(error.message)
-console.log(error)
-return
-}
+  if(error){
+    alert(error.message)
+    console.log(error)
+    return
+  }
 
-// 👇 MOSTRA USUÁRIO NO TOPO
-document.getElementById("usuarioTopo").innerText = data.user.email
+  // 👇 MOSTRA USUÁRIO
+  document.getElementById("usuarioTopo").innerText = data.user.email
 
-document.getElementById("usuarioLogado").innerHTML =
-"Usuário logado: " + data.user.email
+  document.getElementById("usuarioLogado").innerHTML =
+    "Usuário logado: " + data.user.email
 
-await pegarNivelUsuario(data.user.email)
+  await pegarNivelUsuario(data.user.email)
 
-if(data.session){
-  document.querySelector(".loginContainer").style.display = "none"
-  document.querySelector(".layout").style.display = "flex"
+  if(data.session){
+    document.querySelector(".loginContainer").style.display = "none"
+    document.querySelector(".layout").style.display = "flex"
 
-  document.getElementById("usuarioTopo").innerText = data.session.user.email
+    document.getElementById("usuarioTopo").innerText = data.session.user.email
 
-  await pegarNivelUsuario(data.session.user.email)
-  controlarPermissoes()
+    await pegarNivelUsuario(data.session.user.email)
+    controlarPermissoes()
+
+    // 🔥 CARREGA SISTEMA AO LOGAR
+    await carregarSelects()
+    abrirTela("dashboard")
+    await listarPredios()
+    await listarInquilinos()
+    await listarContratos()
+    await listarPagamentos()
+  }
+
 }
 async function logout(){
 
