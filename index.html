@@ -2451,73 +2451,89 @@ function gerarRecibo(dados) {
 
   const nomeMes = nomesMeses[dados.mes - 1]
 
+  const numeroRecibo = "REC-" + Date.now()
+
   const html = `
-    <div style="
-      width:700px;
-      margin:auto;
-      padding:30px;
-      font-family:Arial;
-      background:#fff;
-      border:2px solid #000;
-    ">
+  <div style="
+    width:700px;
+    margin:auto;
+    padding:30px;
+    font-family:'Inter', Arial;
+    background:#fff;
+    border-radius:12px;
+    border:1px solid #ddd;
+  ">
 
-      <h2 style="text-align:center;">
-        RECIBO DE PAGAMENTO
-      </h2>
+    <!-- TOPO -->
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 style="color:#1e40af;">RECIBO</h2>
+      <span style="font-size:12px; color:#555;">${numeroRecibo}</span>
+    </div>
 
-      <hr>
+    <hr>
 
-      <p><b>Recebemos de:</b> ${dados.nome}</p>
+    <!-- DADOS -->
+    <p><b>Recebemos de:</b> ${dados.nome}</p>
+    <p><b>Referente ao mês:</b> ${nomeMes}</p>
+    <p><b>Vencimento:</b> ${dados.vencimento}</p>
 
-      <p><b>Referente ao mês:</b> ${nomeMes}</p>
+    <hr>
 
-      <p><b>Vencimento:</b> ${dados.vencimento}</p>
+    <!-- ENDEREÇO -->
+    <p><b>Endereço do imóvel:</b><br>
+    ${dados.rua}${dados.numero ? `, Nº ${dados.numero}` : ""}<br>
+    ${dados.bairro}<br>
+    ${dados.cidade}<br>
+    CEP: ${dados.cep}</p>
 
-      <hr>
+    <p><b>Unidade:</b> ${dados.unidade}</p>
 
-      <p><b>Endereço do imóvel:</b><br>
-      ${dados.rua}
-      ${dados.numero ? `, Nº ${dados.numero}` : ""}<br>
-      ${dados.bairro}<br>
-      ${dados.cidade}<br>
-      CEP: ${dados.cep}</p>
+    <hr>
 
-      <p><b>Unidade:</b> ${dados.unidade}</p>
-
-      <hr>
-
+    <!-- VALORES -->
+    <div style="background:#f1f5f9; padding:15px; border-radius:10px;">
       <p>Aluguel: R$ ${dados.aluguel.toFixed(2)}</p>
       <p>Água: R$ ${dados.agua.toFixed(2)}</p>
       <p>Juros: R$ ${dados.juros.toFixed(2)}</p>
 
-      <h3>Total: R$ ${dados.total.toFixed(2)}</h3>
-
-      <p><b>Forma de pagamento:</b> ${dados.forma}</p>
-
-      <br>
-
-      <p>
-      Declaro para os devidos fins que o valor acima foi recebido,
-      dando plena quitação ao pagamento referente ao período.
-      </p>
-
-      <br><br>
-
-      <p>${dados.cidade}, ${dataAtual}</p>
-
-      <br><br>
-
-      _______________________________<br>
-      Assinatura
-
+      <h3 style="margin-top:10px; color:#16a34a;">
+        Total: R$ ${dados.total.toFixed(2)}
+      </h3>
     </div>
+
+    <br>
+
+    <p><b>Forma de pagamento:</b> ${dados.forma}</p>
+
+    <br>
+
+    <p style="font-size:13px; color:#444;">
+    Declaro para os devidos fins que o valor acima foi recebido,
+    dando plena quitação ao pagamento referente ao período.
+    </p>
+
+    <br>
+
+    <!-- RODAPÉ -->
+    <div style="display:flex; justify-content:space-between; margin-top:40px;">
+      <span>${dados.cidade}, ${dataAtual}</span>
+    </div>
+
+    <br><br>
+
+    <div style="text-align:center;">
+      ___________________________<br>
+      <span style="font-size:12px;">Assinatura</span>
+    </div>
+
+  </div>
   `
 
   const win = window.open("", "", "width=800,height=600")
 
   win.document.write(`
     <html>
-      <body>
+      <body style="background:#f1f5f9; padding:20px;">
         ${html}
         <script>
           window.onload = () => window.print();
