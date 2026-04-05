@@ -874,9 +874,10 @@ await client.from("unidades").insert({
 
 alert("Unidade salva com sucesso!")
 
+await carregarSelects()
+
 listarUnidades()
 mapaOcupacao()
-await carregarSelects()
 }
 async function listarUnidades(){
 
