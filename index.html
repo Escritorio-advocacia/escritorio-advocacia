@@ -1106,9 +1106,10 @@ if (erroContrato || !contratoCriado) {
 
   mostrarAlerta("Inquilino cadastrado com sucesso!")
 
-  listarInquilinos()
-  listarPagamentos()
-  document.getElementById("nomeInquilino").value = ""
+  await listarInquilinos()
+  await listarPagamentos()
+  await carregarDashboard()
+document.getElementById("nomeInquilino").value = ""
 document.getElementById("cpfInquilino").value = ""
 document.getElementById("telefoneInquilino").value = ""
 document.getElementById("emailInquilino").value = ""
