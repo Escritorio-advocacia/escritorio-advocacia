@@ -1139,16 +1139,25 @@ if (erroContrato || !contratoCriado) {
 
   for(let mes = 1; mes <= 12; mes++){
 
-  await client.from("pagamentos").insert({
-  contrato_id: contratoCriado.id,
-  mes,
-  ano,
-  valor: valor_aluguel,
-  valor_agua: valor_agua, // 🔥 AQUI
-  status: "pendente"
-})
+  const dataPagamento = new Date(
+    new Date().getFullYear(), // ano atual
+    mes - 1,                  // mês (0 a 11)
+    dia_vencimento            // dia do vencimento
+  )
 
-  }
+  await client.from("pagamentos").insert({
+    contrato_id: contratoCriado.id,
+    mes,
+    ano: new Date().getFullYear(),
+    valor: valor_aluguel,
+    valor_agua: valor_agua,
+    status: "pendente",
+
+    // 🔥 NOVA COLUNA
+    data_pagamento_real: dataPagamento.toISOString()
+  })
+
+}
 
   mostrarAlerta("Inquilino cadastrado com sucesso!")
 
@@ -1347,7 +1356,7 @@ async function salvarContrato(){
 const inquilino_id = document.getElementById("inquilinoSelect").value
 const unidade_id = document.getElementById("unidadeContratoSelect").value
 const valor = document.getElementById("valorContrato").value
-const vencimento = document.getElementById("vencimentoContrato").value
+const vencimento = Number(document.getElementById("vencimentoContrato").value) || 5
 
 const arquivo = document.getElementById("contratoContrato").files[0]
 const { data: inquilino } = await client
@@ -1401,13 +1410,22 @@ await client
 // gerar pagamentos
 for(let mes = 1; mes <= 12; mes++){
 
-await client.from("pagamentos").insert({
-contrato_id: contratoCriado.id,
-mes,
-ano: new Date().getFullYear(),
-valor,
-status: "pendente"
-})
+  const dataPagamento = new Date(
+    new Date().getFullYear(),
+    mes - 1,
+    vencimento || 5 // usa o dia do contrato
+  )
+
+  await client.from("pagamentos").insert({
+    contrato_id: contratoCriado.id,
+    mes,
+    ano: new Date().getFullYear(),
+    valor,
+    status: "pendente",
+
+    // 🔥 NOVA COLUNA
+    data_pagamento_real: dataPagamento.toISOString()
+  })
 
 }
 
