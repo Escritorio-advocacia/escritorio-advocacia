@@ -1392,8 +1392,9 @@ async function listarPagamentos(filtro = null, busca = "") {
   lista.innerHTML = ""
 
   const { data: pagamentos, error } = await client
-    .from("pagamentos")
-    .select("*")
+  .from("pagamentos")
+  .select("*")
+  .limit(100)
 
   if (error || !pagamentos) {
     console.log("Erro ao carregar pagamentos", error)
@@ -1539,6 +1540,7 @@ pagamentos.forEach(pagamento => {
 const { data } = await client
 .from("pagamentos")
 .select("*")
+.limit(100)
 
 let filtrados = data.filter(p => 
 String(p.mes).includes(texto) ||
@@ -1813,6 +1815,7 @@ async function carregarDashboard(){
 const { data } = await client
 .from("pagamentos")
 .select("*")
+.limit(100)
 
 let recebido = 0
 let pendente = 0
@@ -1979,11 +1982,13 @@ div.innerHTML = `
   
 
 let graficoFinanceiroChart = null
+
 async function graficoFinanceiro(){
 
 const { data } = await client
 .from("pagamentos")
 .select("*")
+.limit(100)
 
 let pago = 0
 let pendente = 0
@@ -2343,6 +2348,7 @@ async function graficoMensal(){
 const { data } = await client
 .from("pagamentos")
 .select("*")
+.limit(100)
 
 let meses = []
 let valores = []
