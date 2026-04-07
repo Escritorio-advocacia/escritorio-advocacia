@@ -890,6 +890,8 @@ if(window.unidadeEditando){
 }
 
 alert("Unidade salva com sucesso!")
+document.getElementById("numeroUnidade").value = ""
+document.getElementById("numeroUnidade").focus()
 
 await carregarSelects()
 
@@ -966,7 +968,7 @@ window.unidadeEditando = id
 
 }
   async function excluirUnidade(id){
-if(window.nivelUsuario === "funcionario" && window.idEditando){
+if(window.nivelUsuario === "funcionario"){
 alert("Funcionário não pode editar")
 return
 }
