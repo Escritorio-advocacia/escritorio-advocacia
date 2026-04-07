@@ -1462,10 +1462,10 @@ document.getElementById("listaContratos").innerHTML = html
 
 async function listarPagamentos(filtro = null, busca = "") {
 
-  const lista = document.getElementById("listaPagamentos")
-  lista.innerHTML = ""
+const lista = document.getElementById("listaPagamentos")
+lista.innerHTML = ""
 
-  const hoje = new Date()
+const hoje = new Date()
 const mesAtual = hoje.getMonth() + 1
 const anoAtual = hoje.getFullYear()
 
@@ -1473,7 +1473,7 @@ const { data: pagamentos, error } = await client
   .from("pagamentos")
   .select("*")
   .eq("mes", mesAtual)
-  .eq("ano", anoAtual)
+  
 
   if (error || !pagamentos) {
     console.log("Erro ao carregar pagamentos", error)
