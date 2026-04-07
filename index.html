@@ -1489,8 +1489,6 @@ const { data: pagamentos, error } = await client
     return
   }
 
-  const hoje = new Date()
-  const mesAtual = hoje.getMonth() + 1
 
 const { data: unidades } = await client.from("unidades").select("*")
 const { data: predios } = await client.from("predios").select("*")
@@ -2632,7 +2630,7 @@ const diasAtraso = Math.floor(
     agua,
     juros,
     total,
-    forma: pagamento.forma_pagamento || "PENDENTE"
+    forma: pagamento.forma_pagamento || "PENDENTE",
     
     diasAtraso: diasAtraso > 0 ? diasAtraso : 0,
   }
