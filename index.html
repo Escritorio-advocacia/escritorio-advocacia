@@ -563,7 +563,7 @@ function pegarPredioId(){
   return val
 }
   
-console.log("SUPABASE:", supabase)
+console.log("SUPABASE:", window.supabase)
 console.log("CLIENT:", client)
   
 async function salvarPredio(){
@@ -1898,10 +1898,9 @@ html += `
 Mês ${p.mes} atrasado<br>
 Divida: R$ ${p.valor}<br>
 
-<button onclick="cobrarWhatsApp('${inquilino.whatsapp}','${inquilino.nome}','${p.valor}')">
+<button onclick="cobrarWhatsApp('${inquilino.nome}','${inquilino.whatsapp}','',${p.valor})">
 📲 Cobrar
 </button>
-
 </p>
 `
 
