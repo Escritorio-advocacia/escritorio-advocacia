@@ -844,8 +844,19 @@ async function salvarUnidade(){
 
 const predio_id = document.getElementById("predioSelect").value
 console.log("Predio ID:", predio_id)
-
 const numero = document.getElementById("numeroUnidade").value
+const { data: existente } = await client
+.from("unidades")
+.select("*")
+.eq("predio_id", predio_id)
+.eq("numero", numero)
+.maybeSingle()
+
+if(existente){
+  alert("Essa unidade já existe nesse prédio!")
+  return
+}
+
 
 if(!predio_id){
   alert("Selecione um prédio primeiro")
@@ -869,6 +880,7 @@ if(window.unidadeEditando){
   window.unidadeEditando = null
 
 }else{
+
 
   await client.from("unidades").insert([{
   numero,
@@ -1767,7 +1779,8 @@ pagamentos.forEach(p => {
 
 if(p.status.toLowerCase() === "atrasado"){
 
-const inquilino = inquilinos.find(i => i.id == p.inquilino_id)
+const contrato = contratos.find(c => c.id == p.contrato_id)
+const inquilino = inquilinos.find(i => i.id == contrato?.inquilino_id)
 
 if(inquilino){
 
@@ -3008,7 +3021,7 @@ setInterval(async () => {
     console.error("Erro no auto refresh:", e)
   }
 
-}, 30000)
+}, 60000)
 </script>
     
 </div>
