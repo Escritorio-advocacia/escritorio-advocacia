@@ -889,49 +889,61 @@ setTimeout(() => {
 }
 async function listarUnidades(){
 
-try{
+  try{
 
-const predio_id = pegarPredioId()
-if(!predio_id){
-  console.log("Sem predio selecionado")
-  return
-}
+    const predio_id = pegarPredioId()
 
-const { data, error } = await client
-.from("unidades")
-.select("*")
-.eq("predio_id", predio_id)
+    if(!predio_id){
+      console.log("Sem prédio selecionado")
+      document.getElementById("listaUnidades").innerHTML = "Selecione um prédio"
+      return
+    }
 
-if(error){
-  console.log("Erro ao buscar unidades:", error)
-  return
-}
+    const { data, error } = await client
+      .from("unidades")
+      .select("*")
+      .eq("predio_id", predio_id)
 
-let html=""
+    if(error){
+      console.log("Erro ao buscar unidades:", error)
+      document.getElementById("listaUnidades").innerHTML = "Erro ao carregar unidades"
+      return
+    }
 
-(data || []).forEach(u=>{
+    // 🔥 GARANTE ARRAY REAL (ESSA LINHA RESOLVE O ERRO)
+    const lista = Array.isArray(data) ? data : []
 
-html += `
-<p>
-Unidade ${u.numero}
+    if(lista.length === 0){
+      document.getElementById("listaUnidades").innerHTML = "Nenhuma unidade cadastrada"
+      return
+    }
 
-<button onclick="editarUnidade('${u.id}','${u.numero}')">
-✏️ Editar
-</button>
+    let html = ""
 
-<button onclick="excluirUnidade('${u.id}')">
-🗑 Excluir
-</button>
-</p>
-`
+    lista.forEach(u => {
 
-})
+      html += `
+      <p>
+        Unidade ${u.numero}
 
-document.getElementById("listaUnidades").innerHTML = html
+        <button onclick="editarUnidade('${u.id}','${u.numero}')">
+          ✏️ Editar
+        </button>
 
-}catch(e){
-console.error("Erro listarUnidades:", e)
-}
+        <button onclick="excluirUnidade('${u.id}')">
+          🗑 Excluir
+        </button>
+      </p>
+      `
+
+    })
+
+    document.getElementById("listaUnidades").innerHTML = html
+
+  }catch(e){
+    console.error("Erro listarUnidades:", e)
+    document.getElementById("listaUnidades").innerHTML = "Erro inesperado"
+  }
 
 }
 async function editarUnidade(id,numero){
