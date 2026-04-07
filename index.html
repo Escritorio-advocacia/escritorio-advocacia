@@ -449,7 +449,7 @@ input,select{
 
 <br><br>
 
-<button onclick="salvarInquilino()">Salvar</button>
+<button onclick="salvarInquilino(event)">Salvar</button>
 <button onclick="simularValor()">Simular valor</button>
 
 <div id="resultadoSimulacao"></div>
@@ -567,6 +567,11 @@ console.log("SUPABASE:", window.supabase)
 console.log("CLIENT:", client)
   
 async function salvarPredio(){
+if(window.nivelUsuario === "funcionario"){
+  mostrarAlerta("Você não tem permissão!", "erro")
+  return
+}
+
 
   const rua = document.getElementById("ruaPredio").value
   const numero = document.getElementById("numeroPredio").value
@@ -597,6 +602,11 @@ async function salvarPredio(){
   listarPredios()
 }
 async function excluirPredio(id){
+if(window.nivelUsuario === "funcionario"){
+  mostrarAlerta("Você não tem permissão!", "erro")
+  return
+}
+
 
 if(!confirm("Deseja excluir este prédio?")){
 return
@@ -819,6 +829,11 @@ async function listarPredios(){
 }
 async function editarPredio(id){
   console.log("Editando prédio:", id)
+if(window.nivelUsuario === "funcionario"){
+  mostrarAlerta("Você não tem permissão!", "erro")
+  return
+}
+
 
   const { data, error } = await client
     .from("predios")
@@ -841,6 +856,11 @@ async function editarPredio(id){
   window.predioEditando = id
 }
 async function salvarUnidade(){
+if(window.nivelUsuario === "funcionario"){
+  mostrarAlerta("Você não tem permissão!", "erro")
+  return
+}
+
 
 const predio_id = document.getElementById("predioSelect").value
 console.log("Predio ID:", predio_id)
@@ -961,6 +981,11 @@ async function listarUnidades(){
 
 }
 async function editarUnidade(id,numero){
+if(window.nivelUsuario === "funcionario"){
+  mostrarAlerta("Você não tem permissão!", "erro")
+  return
+}
+
 
 document.getElementById("numeroUnidade").value = numero
 
@@ -985,10 +1010,31 @@ await client
 listarUnidades()
 
 }
-async function salvarInquilino() {
+async function salvarInquilino(event) {
+if(window.nivelUsuario === "funcionario"){
+  mostrarAlerta("Você não tem permissão!", "erro")
+  return
+}
+
+
+const btn = event.target
+btn.disabled = true
 
   const nome = document.getElementById("nomeInquilino").value
   const cpf = document.getElementById("cpfInquilino").value
+  const { data: existe } = await client
+  .from("inquilinos")
+  .select("*")
+  .eq("cpf", cpf)
+  .maybeSingle()
+
+if(existe){
+  mostrarAlerta("CPF já cadastrado!", "erro")
+  btn.disabled = false
+  return
+}
+  
+  
   const rg = document.getElementById("rg").value
   const whatsapp = document.getElementById("telefoneInquilino").value
   const email = document.getElementById("emailInquilino").value
@@ -1118,8 +1164,16 @@ document.getElementById("valorAgua").value = ""
 document.getElementById("diaVencimento").value = ""
 document.getElementById("nomeInquilino").focus()
   
+  btn.disabled = false
+  
 }
 async function excluirInquilino(id){
+  if(window.nivelUsuario === "funcionario"){
+  mostrarAlerta("Você não tem permissão!", "erro")
+  return
+}
+  
+  
   if(!confirm("Deseja realmente excluir este inquilino?")){
     return
   }
@@ -1222,6 +1276,11 @@ Por favor, realizar o pagamento.`
 
 }
 async function editarInquilino(id){
+if(window.nivelUsuario === "funcionario"){
+  mostrarAlerta("Você não tem permissão!", "erro")
+  return
+}
+
 
 const { data } = await client
 .from("inquilinos")
@@ -1279,6 +1338,11 @@ if (error || !pagamentos || pagamentos.length === 0) {
 
 }
 async function salvarContrato(){
+  if(window.nivelUsuario === "funcionario"){
+  mostrarAlerta("Você não tem permissão!", "erro")
+  return
+}
+  
 
 const inquilino_id = document.getElementById("inquilinoSelect").value
 const unidade_id = document.getElementById("unidadeContratoSelect").value
@@ -1401,10 +1465,15 @@ async function listarPagamentos(filtro = null, busca = "") {
   const lista = document.getElementById("listaPagamentos")
   lista.innerHTML = ""
 
-  const { data: pagamentos, error } = await client
+  const hoje = new Date()
+const mesAtual = hoje.getMonth() + 1
+const anoAtual = hoje.getFullYear()
+
+const { data: pagamentos, error } = await client
   .from("pagamentos")
   .select("*")
-  .limit(100)
+  .eq("mes", mesAtual)
+  .eq("ano", anoAtual)
 
   if (error || !pagamentos) {
     console.log("Erro ao carregar pagamentos", error)
@@ -2790,6 +2859,11 @@ document.getElementById("relatorio").innerHTML = html
 }
 
   async function encerrarContrato(contrato_id, unidade_id){
+if(window.nivelUsuario === "funcionario"){
+  mostrarAlerta("Você não tem permissão!", "erro")
+  return
+}
+
 
 if(!confirm("Deseja realmente encerrar este contrato?")){
 return
@@ -2921,23 +2995,22 @@ document.getElementById("unidadeSelect").innerHTML = html
 }
 function controlarPermissoes(){
 
-if(window.nivelUsuario === "funcionario"){
+  if(window.nivelUsuario === "funcionario"){
 
-// ❌ esconder coisas perigosas
-document.querySelector("button[onclick=\"abrirTela('predios')\"]").style.display = "none"
-document.querySelector("button[onclick=\"abrirTela('contratos')\"]").style.display = "none"
+    // 🔒 ESCONDER BOTÕES PERIGOSOS
+    document.querySelectorAll("button").forEach(btn => {
 
-// ❌ bloquear exclusão e edição
-document.querySelectorAll("button").forEach(btn => {
+      if(
+        btn.innerText.includes("Excluir") ||
+        btn.innerText.includes("Editar") ||
+        btn.innerText.includes("Salvar")
+      ){
+        btn.style.display = "none"
+      }
 
-if(btn.innerText.includes("Excluir") || 
-   btn.innerText.includes("Editar")){
-btn.style.display = "none"
-}
+    })
 
-})
-
-}
+  }
 
 }
 function abrirTela(tela){
