@@ -870,10 +870,10 @@ if(window.unidadeEditando){
 
 }else{
 
-  await client.from("unidades").insert({
-    numero,
-    predio_id
-  })
+  await client.from("unidades").insert([{
+  numero,
+  predio_id
+}])
 
 }
 
@@ -2029,52 +2029,91 @@ lista.forEach(i=>{
 }
 async function mapaOcupacao(){
 
-try{
+  try{
 
-const predio_id = pegarPredioId()
-if(!predio_id) return
+    const predio_id = pegarPredioId()
 
-const { data: unidades } = await client
-.from("unidades")
-.select("*")
-.eq("predio_id", predio_id)
+    if(!predio_id){
+      document.getElementById("mapaOcupacaoDiv").innerHTML = "Selecione um prédio"
+      return
+    }
 
-const { data: contratos } = await client.from("contratos").select("*")
-const { data: inquilinos } = await client.from("inquilinos").select("*")
+    const { data: unidades, error: erro1 } = await client
+      .from("unidades")
+      .select("*")
+      .eq("predio_id", predio_id)
 
-let html = ""
+    const { data: contratos, error: erro2 } = await client
+      .from("contratos")
+      .select("*")
 
-(unidades || []).forEach(u => {
+    const { data: inquilinos, error: erro3 } = await client
+      .from("inquilinos")
+      .select("*")
 
-const contrato = (contratos || []).find(c => c.unidade_id == u.id)
+    if(erro1 || erro2 || erro3){
+      console.log("Erro ao carregar mapa:", erro1, erro2, erro3)
+      document.getElementById("mapaOcupacaoDiv").innerHTML = "Erro ao carregar dados"
+      return
+    }
 
-if(contrato){
+    const listaUnidades = Array.isArray(unidades) ? unidades : []
+    const listaContratos = Array.isArray(contratos) ? contratos : []
+    const listaInquilinos = Array.isArray(inquilinos) ? inquilinos : []
 
-const inquilino = (inquilinos || []).find(i => i.id == contrato.inquilino_id)
+    if(listaUnidades.length === 0){
+      document.getElementById("mapaOcupacaoDiv").innerHTML = "Nenhuma unidade cadastrada"
+      return
+    }
 
-html += `
-<p style="color:green">
-🟢 Unidade ${u.numero} - ${inquilino ? inquilino.nome : "Ocupada"}
-</p>
-`
+    let html = "<h3>🏢 Mapa de Ocupação</h3>"
 
-}else{
+    listaUnidades.forEach(u => {
 
-html += `
-<p style="color:red">
-🔴 Unidade ${u.numero} - Vazia
-</p>
-`
+      const contrato = listaContratos.find(c => c.unidade_id == u.id)
 
-}
+      if(contrato){
 
-})
+        const inquilino = listaInquilinos.find(i => i.id == contrato.inquilino_id)
 
-document.getElementById("mapaOcupacaoDiv").innerHTML = html
+        html += `
+          <div style="
+            background:#dcfce7;
+            padding:12px;
+            margin:8px 0;
+            border-radius:10px;
+            border-left:5px solid #16a34a;
+          ">
+            🟢 <b>Unidade ${u.numero}</b><br>
+            👤 ${inquilino ? inquilino.nome : "Ocupada"}
+          </div>
+        `
 
-}catch(e){
-console.error("Erro mapa ocupação:", e)
-}
+      } else {
+
+        html += `
+          <div style="
+            background:#fee2e2;
+            padding:12px;
+            margin:8px 0;
+            border-radius:10px;
+            border-left:5px solid #dc2626;
+          ">
+            🔴 <b>Unidade ${u.numero}</b><br>
+            Vazia
+          </div>
+        `
+
+      }
+
+    })
+
+    document.getElementById("mapaOcupacaoDiv").innerHTML = html
+
+  }catch(e){
+    console.error("Erro mapa ocupação:", e)
+    document.getElementById("mapaOcupacaoDiv").innerHTML = "Erro inesperado"
+  }
 
 }
 async function buscarInquilino(){
