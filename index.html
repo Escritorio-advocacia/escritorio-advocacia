@@ -2602,6 +2602,17 @@ async function montarDadosRecibo(pagamento_id){
     pagamento.mes - 1,
     dia
   ).toLocaleDateString()
+const hoje = new Date()
+
+const dataVencimento = new Date(
+  pagamento.ano,
+  pagamento.mes - 1,
+  dia
+)
+
+const diasAtraso = Math.floor(
+  (hoje - dataVencimento) / (1000 * 60 * 60 * 24)
+)
 
   return {
     nome: inquilino?.nome || "-",
@@ -2622,6 +2633,8 @@ async function montarDadosRecibo(pagamento_id){
     juros,
     total,
     forma: pagamento.forma_pagamento || "PENDENTE"
+    
+    diasAtraso: diasAtraso > 0 ? diasAtraso : 0,
   }
 }
 function gerarRecibo(dados) {
@@ -2660,6 +2673,8 @@ function gerarRecibo(dados) {
     <p><b>Recebemos de:</b> ${dados.nome}</p>
     <p><b>Referente ao mês:</b> ${nomeMes}</p>
     <p><b>Vencimento:</b> ${dados.vencimento}</p>
+    
+    ${dados.diasAtraso > 0 ? `<p style="color:red;"><b>⏰ ${dados.diasAtraso} dias em atraso</b></p>` : ""}
 
     <hr>
 
