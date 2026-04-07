@@ -550,10 +550,14 @@ const client = createClient(supabaseUrl, supabaseKey)
 
 function pegarPredioId(){
   const el = document.getElementById("predioSelect")
+
   if(!el) return null
 
   const val = el.value
-  if(!val || val === "undefined") return null
+
+  if(!val || val === "" || val === "undefined"){
+    return null
+  }
 
   return val
 }
@@ -895,7 +899,7 @@ if(!predio_id){
 const { data, error } = await client
 .from("unidades")
 .select("*")
-.eq("predio_id", Number(predio_id))
+.eq("predio_id", predio_id)
 
 if(error){
   console.log("Erro ao buscar unidades:", error)
@@ -1842,7 +1846,7 @@ if(!predio_id) return
 const { data: unidades, error } = await client
 .from("unidades")
 .select("*")
-.eq("predio_id", Number(predio_id))
+.eq("predio_id", predio_id)
 
 if(error || !unidades){
   console.log("Erro mapa ocupação", error)
@@ -2033,7 +2037,7 @@ if(!predio_id) return
 const { data: unidades } = await client
 .from("unidades")
 .select("*")
-.eq("predio_id", Number(predio_id))
+.eq("predio_id", predio_id)
 
 const { data: contratos } = await client.from("contratos").select("*")
 const { data: inquilinos } = await client.from("inquilinos").select("*")
@@ -2812,7 +2816,7 @@ if(!predio_id) return
 const { data: unidades, error } = await client
 .from("unidades")
 .select("*")
-.eq("predio_id", Number(predio_id))
+.eq("predio_id", predio_id)
 
 if(error){
   console.log("Erro ao filtrar unidades:", error)
