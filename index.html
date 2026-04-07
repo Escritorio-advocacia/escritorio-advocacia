@@ -1566,6 +1566,8 @@ pagamentos.forEach(pagamento => {
         <b style="font-size:16px;">${nome}</b><br><br>
 
         📅 Mês: ${nomeMes}<br>
+        ${diasAtraso > 0 ? `<span style="color:red;">⏰ ${diasAtraso} dias em atraso</span><br>` : ""}
+        
         🏠 Aluguel: R$ ${aluguel.toFixed(2)}<br>
         🚿 Água: R$ ${agua.toFixed(2)}<br>
         💸 Juros: R$ ${juros.toFixed(2)}<br>
