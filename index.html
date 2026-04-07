@@ -582,7 +582,7 @@ async function salvarPredio(){
       .update({ rua, numero, bairro, cidade, cep })
       .eq("id", window.predioEditando)
 
-    alert("Prédio atualizado!")
+    mostrarAlerta("Prédio atualizado!")
     window.predioEditando = null
 
   } else {
@@ -591,7 +591,7 @@ async function salvarPredio(){
       .from("predios")
       .insert([{ rua, numero, bairro, cidade, cep }])
 
-    alert("Prédio cadastrado!")
+    mostrarAlerta("Prédio cadastrado!")
   }
 
   listarPredios()
@@ -656,7 +656,7 @@ if(error){
   return
 }
 
-alert("Prédio excluído com sucesso")
+mostrarAlerta("Prédio excluído com sucesso")
 
 listarPredios()
 }
@@ -889,7 +889,7 @@ if(window.unidadeEditando){
 
 }
 
-alert("Unidade salva com sucesso!")
+mostrarAlerta("Unidade salva com sucesso!")
 document.getElementById("numeroUnidade").value = ""
 document.getElementById("numeroUnidade").focus()
 
@@ -1057,7 +1057,7 @@ if(input && input.files.length > 0){
     .single()
 
   if(error){
-    alert("Erro ao salvar inquilino")
+    mostrarAlerta("Erro ao salvar inquilino", "erro")
     console.log(error)
     return
   }
@@ -1104,7 +1104,7 @@ if (erroContrato || !contratoCriado) {
 
   }
 
-  alert("🔥 Inquilino + contrato + pagamentos criados!")
+  mostrarAlerta("Inquilino cadastrado com sucesso!")
 
   listarInquilinos()
   listarPagamentos()
