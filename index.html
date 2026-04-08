@@ -1561,12 +1561,9 @@ pagamentos.forEach(pagamento => {
 
   const diaVencimento = contrato?.dia_vencimento || 5
 
-  const vencimento = new Date(
-    pagamento.ano,
-    pagamento.mes - 1,
-    diaVencimento
-  )
-
+  const vencimento = pagamento.data_vencimento
+  ? new Date(pagamento.data_vencimento)
+  : new Date(pagamento.ano, pagamento.mes - 1, diaVencimento)
   const diasAtraso = Math.floor(
     (new Date() - vencimento) / (1000 * 60 * 60 * 24)
   )
