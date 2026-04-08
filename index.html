@@ -611,9 +611,14 @@ if(window.nivelUsuario === "funcionario"){
 
   } else {
 
-    await client
-      .from("predios")
-      .insert([{ rua, numero, bairro, cidade, cep }])
+    const { error } = await client
+  .from("predios")
+  .insert([{ rua, numero, bairro, cidade, cep }])
+
+if(error){
+  tratarErro(error, "Erro ao salvar prédio")
+  return
+}
 
     mostrarAlerta("Prédio cadastrado!")
   }
@@ -921,11 +926,14 @@ if(window.unidadeEditando){
 }else{
 
 
-  await client.from("unidades").insert([{
+  const { error } = await client.from("unidades").insert([{
   numero,
   predio_id
 }])
 
+if(error){
+  tratarErro(error, "Erro ao salvar unidade")
+  return
 }
 
 mostrarAlerta("Unidade salva com sucesso!")
@@ -1021,10 +1029,15 @@ if(!confirm("Deseja excluir esta unidade?")){
 return
 }
 
-await client
+const { error } = await client
 .from("unidades")
 .delete()
 .eq("id",id)
+
+if(error){
+  tratarErro(error, "Erro ao excluir unidade")
+  return
+}
 
 listarUnidades()
 
@@ -1206,10 +1219,15 @@ async function excluirInquilino(id){
     return
   }
 
-  await client
-    .from("inquilinos")
-    .delete()
-    .eq("id", id)
+const { error } = await client
+  .from("inquilinos")
+  .delete()
+  .eq("id", id)
+
+if(error){
+  tratarErro(error, "Erro ao excluir inquilino")
+  return
+}
 
   alert("🔥 Inquilino excluído com sucesso!")
 }
@@ -1441,18 +1459,18 @@ for(let mes = 1; mes <= 12; mes++){
     mes - 1,
     vencimento || 5 // usa o dia do contrato
   )
+const { error } = await client.from("pagamentos").insert({
+  contrato_id: contratoCriado.id,
+  mes,
+  ano: new Date().getFullYear(),
+  valor,
+  status: "pendente",
+  data_vencimento: dataPagamento.toISOString()
+})
 
-  await client.from("pagamentos").insert({
-    contrato_id: contratoCriado.id,
-    mes,
-    ano: new Date().getFullYear(),
-    valor,
-    status: "pendente",
-
-    // 🔥 NOVA COLUNA
-    data_vencimento: dataPagamento.toISOString()
-  })
-
+if(error){
+  tratarErro(error, "Erro ao gerar pagamentos")
+  return
 }
 
 listarContratos()
@@ -1735,13 +1753,15 @@ async function confirmarPagamento(id, forma){
 
   const hoje = new Date()
 
-  await client
-    .from("pagamentos")
-    .update({
-      status:"pago",
-      forma_pagamento: forma,
-      data_pagamento: hoje.toISOString()
-    })
+ const { error } = await client
+  .from("inquilinos")
+  .delete()
+  .eq("id", id)
+
+if(error){
+  tratarErro(error, "Erro ao excluir inquilino")
+  return
+}
     .eq("id", id)
 
   fecharModal()
@@ -2928,17 +2948,15 @@ return
 }
 
 // marcar contrato como encerrado
-await client
-.from("contratos")
-.update({ status:"encerrado" })
-.eq("id", contrato_id)
+const { error } = await client
+  .from("inquilinos")
+  .delete()
+  .eq("id", id)
 
-// liberar unidade
-await client
-.from("unidades")
-.update({ status:"livre" })
-.eq("id", unidade_id)
-
+if(error){
+  tratarErro(error, "Erro ao excluir inquilino")
+  return
+}
 alert("Contrato encerrado e unidade liberada")
 
 listarContratos()
@@ -2984,10 +3002,14 @@ for(const p of data){
 
 if(p.status === "pendente" && p.mes < mesAtual){
 
-await client
-.from("pagamentos")
-.update({ status: "atrasado" })
-.eq("id", p.id)
+const { error } = await client
+  .from("pagamentos")
+  .update({ status: "atrasado" })
+  .eq("id", p.id)
+
+if(error){
+  tratarErro(error, "Erro ao atualizar pagamento")
+}
 
 }
 
