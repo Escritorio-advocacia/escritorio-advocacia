@@ -1758,16 +1758,20 @@ async function confirmarPagamento(id, forma){
 
   const hoje = new Date()
 
- const { error } = await client
-  .from("inquilinos")
-  .delete()
+await client
+  .from("pagamentos")
+  .update({
+    status: "pago",
+    forma_pagamento: forma,
+    data_pagamento: new Date()
+  })
   .eq("id", id)
 
 if(error){
   tratarErro(error, "Erro ao excluir inquilino")
   return
 }
-    .eq("id", id)
+   
 
   fecharModal()
   listarPagamentos()
@@ -2953,11 +2957,16 @@ return
 }
 
 // marcar contrato como encerrado
-const { error } = await client
-  .from("inquilinos")
-  .delete()
-  .eq("id", id)
+await client
+  .from("contratos")
+  .update({ status: "encerrado" })
+  .eq("id", contrato_id)
 
+await client
+  .from("unidades")
+  .update({ status: "livre" })
+  .eq("id", unidade_id)
+    
 if(error){
   tratarErro(error, "Erro ao excluir inquilino")
   return
