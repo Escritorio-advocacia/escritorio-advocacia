@@ -694,6 +694,37 @@ mostrarAlerta("Prédio excluído com sucesso")
 
 listarPredios()
 }
+
+function calcularValorAtualizado(pagamento){
+
+  const hoje = new Date()
+  const vencimento = new Date(pagamento.data_vencimento)
+
+  let diasAtraso = Math.floor((hoje - vencimento) / (1000 * 60 * 60 * 24))
+
+  if(diasAtraso < 0) diasAtraso = 0
+
+  const valorOriginal = Number(pagamento.valor)
+
+  let multa = 0
+  let juros = 0
+  let valorFinal = valorOriginal
+
+  if(diasAtraso > 0){
+    multa = valorOriginal * 0.10
+    juros = valorOriginal * 0.0033 * diasAtraso
+    valorFinal = valorOriginal + multa + juros
+  }
+
+  return {
+    valorOriginal,
+    diasAtraso,
+    multa,
+    juros,
+    valorFinal
+  }
+}
+
 async function ocupacaoPorPredio(){
 
 const { data: predios } = await client
@@ -1492,18 +1523,17 @@ document.getElementById("listaContratos").innerHTML = html
 }
 async function listarPagamentos(filtro = null, busca = "") {
 
-const lista = document.getElementById("listaPagamentos")
-lista.innerHTML = ""
+  const lista = document.getElementById("listaPagamentos")
+  lista.innerHTML = ""
 
-const hoje = new Date()
-const mesAtual = hoje.getMonth() + 1
-const anoAtual = hoje.getFullYear()
+  const hoje = new Date()
+  const mesAtual = hoje.getMonth() + 1
+  const anoAtual = hoje.getFullYear()
 
-const { data: pagamentos, error } = await client
- .from("pagamentos")
-.select("id, contrato_id, valor, valor_agua, status, data_vencimento, mes, ano")
-  .eq("mes", mesAtual)
-  
+  const { data: pagamentos, error } = await client
+    .from("pagamentos")
+    .select("id, contrato_id, valor, valor_agua, status, data_vencimento, mes, ano")
+    .eq("mes", mesAtual)
 
   if (error || !pagamentos) {
     console.log("Erro ao carregar pagamentos", error)
@@ -1513,122 +1543,119 @@ const { data: pagamentos, error } = await client
 
   const { data: contratos } = await client.from("contratos").select("*")
   const { data: inquilinos } = await client.from("inquilinos").select("*")
+  const { data: unidades } = await client.from("unidades").select("*")
+  const { data: predios } = await client.from("predios").select("*")
 
   if (!pagamentos.length) {
     lista.innerHTML = "Nenhum pagamento encontrado"
     return
   }
 
+  pagamentos.forEach(pagamento => {
 
-const { data: unidades } = await client.from("unidades").select("*")
-const { data: predios } = await client.from("predios").select("*")
+    // 🔥 cálculo PROFISSIONAL
+    const calc = calcularValorAtualizado(pagamento)
 
-pagamentos.forEach(pagamento => {
+    // contrato
+    const contrato = contratos.find(c => c.id == pagamento.contrato_id)
 
-  if (pagamento.mes > mesAtual) return
+    // inquilino
+    const inquilino = inquilinos.find(i => i.id == contrato?.inquilino_id)
 
-  // 🔥 PRIMEIRO pega contrato
-  const contrato = contratos.find(c => c.id == pagamento.contrato_id)
+    const nome = inquilino?.nome || "Inquilino"
+    const telefone = inquilino?.whatsapp || ""
 
-  // 🔥 DEPOIS inquilino
-  const inquilino = inquilinos.find(i => i.id == contrato?.inquilino_id)
+    // unidade e prédio
+    const unidade = unidades.find(u => String(u.id) === String(contrato?.unidade_id))
+    const predio = predios.find(p => p.id == unidade?.predio_id)
 
-  const nome = inquilino?.nome || "Inquilino"
-  const telefone = inquilino?.whatsapp || ""
+    const enderecoCompleto = predio
+      ? `${predio.rua} Nº ${predio.numero}`
+      : "Não informado"
 
-  // 🔥 AGORA unidade e prédio (ordem correta)
-  const unidade = unidades.find(u => String(u.id) === String(contrato?.unidade_id))
-  const predio = predios.find(p => p.id == unidade?.predio_id)
+    const numeroUnidade = unidade?.numero || "-"
 
- const enderecoCompleto = predio
-  ? `${predio.rua} Nº ${predio.numero}`
-  : "Não informado"
-  const numeroUnidade = unidade?.numero || "-"
+    const nomesMeses = [
+      "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+      "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+    ]
 
-  const nomesMeses = [
-    "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-    "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
-     ]
+    const nomeMes = nomesMeses[pagamento.mes - 1]
 
-  const nomeMes = nomesMeses[pagamento.mes - 1]
+    let status = (pagamento.status || "").toLowerCase().trim()
 
-  const diaVencimento = contrato?.dia_vencimento || 5
-
-  const vencimento = pagamento.data_vencimento
-  ? new Date(pagamento.data_vencimento)
-  : new Date(pagamento.ano, pagamento.mes - 1, diaVencimento)
-  const diasAtraso = Math.floor(
-    (new Date() - vencimento) / (1000 * 60 * 60 * 24)
-  )
-
-  let aluguel = pagamento.valor || 0
-  let agua = pagamento.valor_agua || 0
-  let juros = 0
-
-  let status = (pagamento.status || "").toLowerCase().trim()
-
-  if (diasAtraso > 5 && status !== "pago") {
-    juros = aluguel * 0.005 * diasAtraso
-    agua += agua * 0.10
-    status = "atrasado"
-  }
-
-  let total = aluguel + agua + juros
-
+    // filtro
     if (filtro && status !== filtro) return
     if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
 
+    // cor status
     let cor = "#ccc"
     if (status === "pago") cor = "green"
     if (status === "pendente") cor = "orange"
-    if (status === "atrasado") cor = "red"
+    if (calc.diasAtraso > 0 && status !== "pago") cor = "red"
 
     const div = document.createElement("div")
 
     div.innerHTML = `
-      <div style="border:1px solid ${cor}; padding:15px; margin:10px; border-radius:10px; background:white;">
+      <div style="
+        border:1px solid ${cor};
+        padding:15px;
+        margin:10px;
+        border-radius:10px;
+        background:white;
+      ">
         
-        <b style="font-size:16px;">${nome}</b><br><br>
+        <b style="font-size:16px;">${nome}</b><br>
+        📍 ${enderecoCompleto} - Unidade ${numeroUnidade}<br><br>
 
         📅 Mês: ${nomeMes}<br>
-        ${diasAtraso > 0 ? `<span style="color:red;">⏰ ${diasAtraso} dias em atraso</span><br>` : ""}
-        
-        🏠 Aluguel: R$ ${aluguel.toFixed(2)}<br>
-        🚿 Água: R$ ${agua.toFixed(2)}<br>
-        💸 Juros: R$ ${juros.toFixed(2)}<br>
+
+        ${
+          calc.diasAtraso > 0
+          ? `
+            <span style="color:red;">⏰ ${calc.diasAtraso} dias em atraso</span><br>
+            💸 Multa: R$ ${calc.multa.toFixed(2)}<br>
+            📈 Juros: R$ ${calc.juros.toFixed(2)}<br>
+          `
+          : `<span style="color:green;">Em dia</span><br>`
+        }
+
+        🏠 Valor original: R$ ${calc.valorOriginal.toFixed(2)}<br>
 
         <br>
-        <b style="font-size:16px;">💰 Total: R$ ${total.toFixed(2)}</b><br>
+        <b style="font-size:18px;">
+          💰 Total: R$ ${calc.valorFinal.toFixed(2)}
+        </b><br>
 
         <span style="color:${cor}; font-weight:bold;">
-  ${status.toUpperCase()}
-</span>
+          ${status.toUpperCase()}
+        </span>
 
         <br><br>
 
         ${
           status !== "pago"
           ? `
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
 
-            <button onclick="abrirPagamento(${pagamento.id}, ${total})" class="btnReceber">
-              💳 Pagar
-            </button>
+              <button onclick="abrirPagamento(${pagamento.id}, ${calc.valorFinal})" class="btnReceber">
+                💳 Pagar
+              </button>
 
-            <button onclick="enviarWhatsApp(
-              '${nome}',
-              '${telefone}',
-              ${total},
-              ${pagamento.mes}
-            )">
-              📲 WhatsApp
-            </button>
+              <button onclick="enviarWhatsApp(
+                '${nome}',
+                '${telefone}',
+                ${calc.valorFinal},
+                ${pagamento.mes}
+              )">
+                📲 WhatsApp
+              </button>
 
-            <button onclick="gerarReciboCompleto(${pagamento.id})">
-            📄 Recibo
-            </button>
+              <button onclick="gerarReciboCompleto(${pagamento.id})">
+                📄 Recibo
+              </button>
 
-          </div>
+            </div>
           `
           : `<span style="color:green; font-weight:bold;">✔ Pago</span>`
         }
@@ -1711,6 +1738,8 @@ async function confirmarPagamento(id, forma){
     .eq("id", id)
     .single()
 
+const calc = calcularValorAtualizado(pagamento)
+
   if(pagamento.status === "pago"){
     alert("Esse pagamento já foi realizado!")
     fecharModal()
@@ -1722,10 +1751,11 @@ async function confirmarPagamento(id, forma){
 const { error } = await client
   .from("pagamentos")
   .update({
-    status: "pago",
-    forma_pagamento: forma,
-    data_pagamento: new Date()
-  })
+  status: "pago",
+  forma_pagamento: forma,
+  data_pagamento: new Date(),
+  valor_pago: calc.valorFinal // 👈 ESSA LINHA NOVA
+})
   .eq("id", id)
 
 if(error){
