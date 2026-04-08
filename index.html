@@ -562,7 +562,12 @@ if (!window.supabase) {
   
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
   
+function tratarErro(error, mensagem = "Erro inesperado") {
+  console.error("ERRO REAL:", error)
+  mostrarAlerta(mensagem, "erro")
+}
 
+  
 function pegarPredioId(){
   const el = document.getElementById("predioSelect")
 
