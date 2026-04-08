@@ -1392,100 +1392,59 @@ if (error || !pagamentos || pagamentos.length === 0) {
 
 }
 async function salvarContrato(){
+
   if(window.nivelUsuario === "funcionario"){
-  mostrarAlerta("Você não tem permissão!", "erro")
-  return
-}
-  
-
-const inquilino_id = document.getElementById("inquilinoSelect").value
-const unidade_id = document.getElementById("unidadeContratoSelect").value
-const valor = document.getElementById("valorContrato").value
-const vencimento = Number(document.getElementById("vencimentoContrato").value) || 5
-if(!vencimento || vencimento < 1 || vencimento > 31){
-  alert("Digite um dia de vencimento válido (1 a 31)")
-  return
-}
-
-
-const arquivo = document.getElementById("contratoContrato").files[0]
-const { data: inquilino } = await client
-.from("inquilinos")
-.select("*")
-.eq("id", inquilino_id)
-.single()
-let urlContrato = null
-
-// upload do contrato
-if(arquivo){
-
-const nomeArquivo = Date.now() + "_" + arquivo.name
-
-const { data, error } = await client.storage
-.from("contratos")
-.upload(nomeArquivo, arquivo)
-
-if(!error){
-urlContrato = nomeArquivo
-}
-
-}
-
-// criar contrato no banco
-const { data: contratoCriado, error: erroContrato } = await client
-  .from("contratos")
-  .insert({
-    inquilino_id: inquilino_id,
-    unidade_id: Number(unidade_id),
-    valor_aluguel: Number(valor),
-    dia_vencimento: Number(vencimento),
-    arquivo_contrato: urlContrato || "",
-    status: "ativo"
-  })
-  .select()
-  .single()
-
-if (erroContrato) {
-  console.log("ERRO REAL DO SUPABASE:", erroContrato)
-  alert("Erro ao criar contrato")
-  return
-}
-
-// marcar unidade como ocupada
-await client
-.from("unidades")
-.update({ status: "ocupada" })
-.eq("id", unidade_id)
-
-// gerar pagamentos
-for(let mes = 1; mes <= 12; mes++){
-
-  const dataPagamento = new Date(
-    new Date().getFullYear(),
-    mes - 1,
-    vencimento || 5
-  )
-
-  const { error } = await client.from("pagamentos").insert({
-    contrato_id: contratoCriado.id,
-    mes,
-    ano: new Date().getFullYear(),
-    valor,
-    status: "pendente",
-    data_vencimento: dataPagamento.toISOString()
-  })
-
-  if(error){
-    tratarErro(error, "Erro ao gerar pagamentos")
+    mostrarAlerta("Você não tem permissão!", "erro")
     return
   }
 
-} 
+  const inquilino_id = document.getElementById("inquilinoSelect").value
+  const unidade_id = document.getElementById("unidadeContratoSelect").value
+  const valor = Number(document.getElementById("valorContrato").value)
+  const vencimento = Number(document.getElementById("vencimentoContrato").value) || 5
 
+  if(!vencimento || vencimento < 1 || vencimento > 31){
+    alert("Digite um dia de vencimento válido (1 a 31)")
+    return
+  }
 
-listarContratos()
+  const arquivo = document.getElementById("contratoContrato").files[0]
 
-} 
+  let urlContrato = null
+
+  // 🔥 UPLOAD DO CONTRATO (continua no JS)
+  if(arquivo){
+    const nomeArquivo = Date.now() + "_" + arquivo.name
+
+    const { error } = await client.storage
+      .from("contratos")
+      .upload(nomeArquivo, arquivo)
+
+    if(!error){
+      urlContrato = nomeArquivo
+    }
+  }
+
+  // 🔥 AGORA É O BANCO QUE FAZ TUDO (TRANSACTION)
+  const { error } = await client.rpc("criar_contrato_completo", {
+    p_inquilino_id: inquilino_id,
+    p_unidade_id: unidade_id,
+    p_valor: valor,
+    p_vencimento: vencimento,
+    p_arquivo: urlContrato || ""
+  })
+
+  if(error){
+    console.log("ERRO:", error)
+    mostrarAlerta("Erro ao criar contrato", "erro")
+    return
+  }
+
+  mostrarAlerta("Contrato criado com sucesso!")
+
+  listarContratos()
+  listarPagamentos()
+}
 async function listarContratos(){
 
 const { data, error } = await client
