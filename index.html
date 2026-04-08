@@ -2243,7 +2243,15 @@ lista.push({
 })
 
 lista.forEach(i=>{
-  cobrarWhatsApp(i.nome, i.telefone, "", i.valor)
+  enviarWhatsApp(
+    i.nome,
+    i.telefone,
+    i.valor,
+    i.mes,
+    i.diasAtraso,
+    i.multa,
+    i.juros
+  )
 })
 
 }
