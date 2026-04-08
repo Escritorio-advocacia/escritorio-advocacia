@@ -807,7 +807,7 @@ async function listarPredios(){
  const lista = document.getElementById("listaPredios")
  lista.innerHTML = ""
 
- const { data, error } = await client.from("predios").select("*")
+ const { data, error } = await client.from("predios").select("id, rua, numero")
 
  if(error){
   console.log("Erro ao buscar prédios:", error)
@@ -949,7 +949,7 @@ async function listarUnidades(){
 
     const { data, error } = await client
       .from("unidades")
-      .select("*")
+      .select("id, numero, predio_id")
       .eq("predio_id", predio_id)
 
     if(error){
@@ -1210,7 +1210,9 @@ async function excluirInquilino(id){
 }
 async function listarInquilinos(){
 
-  const { data, error } = await client.from("inquilinos").select("*")
+ const { data, error } = await client
+  .from("inquilinos")
+  .select("id, nome, whatsapp, cpf, valor_aluguel, valor_agua, dia_vencimento, contrato_url, nome_responsavel, whatsapp_responsavel")
 
   if(error){
     console.log("Erro ao buscar inquilinos:", error)
@@ -1455,7 +1457,7 @@ listarContratos()
 
 async function listarContratos(){
 
-const { data, error } = await client.from("contratos").select("*")
+const { data, error } = await client.from("contratos").select("id, inquilino_id, unidade_id, dia_vencimento")
 
 if(error){
   console.log("Erro ao buscar contratos:", error)
@@ -1508,7 +1510,7 @@ const anoAtual = hoje.getFullYear()
 
 const { data: pagamentos, error } = await client
   .from("pagamentos")
-  .select("*")
+ .select("id, contrato_id, valor, valor_agua, status, data_vencimento")
   .eq("mes", mesAtual)
   
 
