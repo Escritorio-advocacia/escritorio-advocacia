@@ -1698,31 +1698,53 @@ document.getElementById("listaPagamentos").innerHTML = html
 }
 function abrirPagamento(id, valor){
 
-const modal = document.createElement("div")
-modal.className = "modalPagamento"
+  const pagamento = window.pagamentosCache?.find(p => p.id == id)
 
-modal.innerHTML = `
-<div class="modalBox">
+  if(!pagamento){
+    alert("Erro ao carregar pagamento")
+    return
+  }
 
-<h3>💳 Receber pagamento</h3>
+  const calc = calcularValorAtualizado(pagamento)
 
-<p>Valor: R$ ${valor}</p>
+  const modal = document.createElement("div")
+  modal.className = "modalPagamento"
 
-<button onclick="confirmarPagamento(${id}, 'PIX')">PIX</button>
+  modal.innerHTML = `
+    <div class="modalBox">
 
-<button onclick="confirmarPagamento(${id}, 'DINHEIRO')">Dinheiro</button>
+      <h3>💳 Receber pagamento</h3>
 
-<button onclick="confirmarPagamento(${id}, 'CARTÃO')">Cartão</button>
+      <p>Valor original: R$ ${calc.valorOriginal.toFixed(2)}</p>
 
-<br><br>
+      ${
+        calc.diasAtraso > 0
+        ? `
+          <p style="color:red;">
+            ${calc.diasAtraso} dias em atraso
+          </p>
+          <p>Multa: R$ ${calc.multa.toFixed(2)}</p>
+          <p>Juros: R$ ${calc.juros.toFixed(2)}</p>
+        `
+        : `<p style="color:green;">Em dia</p>`
+      }
 
-<button onclick="fecharModal()">Cancelar</button>
+      <h3>💰 Total: R$ ${calc.valorFinal.toFixed(2)}</h3>
 
-</div>
-`
+      <br>
 
-document.body.appendChild(modal)
+      <button onclick="confirmarPagamento(${id}, 'PIX')">PIX</button>
+      <button onclick="confirmarPagamento(${id}, 'DINHEIRO')">Dinheiro</button>
+      <button onclick="confirmarPagamento(${id}, 'CARTÃO')">Cartão</button>
 
+      <br><br>
+
+      <button onclick="fecharModal()">Cancelar</button>
+
+    </div>
+  `
+
+  document.body.appendChild(modal)
 }
 function fecharModal(){
   const modal = document.querySelector(".modalPagamento")
