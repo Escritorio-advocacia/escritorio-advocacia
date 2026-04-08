@@ -2214,11 +2214,16 @@ if(!contrato) return
 const inquilino = inquilinos.find(i=>i.id==contrato.inquilino_id)
 if(!inquilino) return
 
+const calc = calcularValorAtualizado(p)
+
 lista.push({
-nome: inquilino.nome,
-telefone: inquilino.whatsapp,
-valor: p.valor,
-mes: p.mes
+  nome: inquilino.nome,
+  telefone: inquilino.whatsapp,
+  valor: calc.valorFinal,
+  diasAtraso: calc.diasAtraso,
+  multa: calc.multa,
+  juros: calc.juros,
+  mes: p.mes
 })
 
 }
