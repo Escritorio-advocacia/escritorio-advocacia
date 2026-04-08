@@ -1535,6 +1535,8 @@ async function listarPagamentos(filtro = null, busca = "") {
     .select("id, contrato_id, valor, valor_agua, status, data_vencimento, mes, ano")
     .eq("mes", mesAtual)
 
+window.pagamentosCache = pagamentos
+
   if (error || !pagamentos) {
     console.log("Erro ao carregar pagamentos", error)
     lista.innerHTML = "Erro ao carregar pagamentos"
@@ -2672,12 +2674,13 @@ async function montarDadosRecibo(pagamento_id){
     .eq("id", unidade.predio_id)
     .single()
 
-  const aluguel = pagamento.valor || 0
-  const agua = pagamento.valor_agua || 0
-  const juros = 0
-  const total = aluguel + agua + juros
+  const calc = calcularValorAtualizado(pagamento)
 
-  // ✅ AQUI AGORA CERTO
+const aluguel = calc.valorOriginal
+const agua = pagamento.valor_agua || 0
+const juros = calc.juros
+const total = calc.valorFinal
+
   const dia = contrato?.dia_vencimento || 5
 
   const vencimentoFormatado = new Date(
