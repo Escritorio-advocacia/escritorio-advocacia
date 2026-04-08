@@ -1463,27 +1463,29 @@ for(let mes = 1; mes <= 12; mes++){
   const dataPagamento = new Date(
     new Date().getFullYear(),
     mes - 1,
-    vencimento || 5 // usa o dia do contrato
+    vencimento || 5
   )
-const { error } = await client.from("pagamentos").insert({
-  contrato_id: contratoCriado.id,
-  mes,
-  ano: new Date().getFullYear(),
-  valor,
-  status: "pendente",
-  data_vencimento: dataPagamento.toISOString()
-})
 
-if(error){
-  tratarErro(error, "Erro ao gerar pagamentos")
-  return
-}
+  const { error } = await client.from("pagamentos").insert({
+    contrato_id: contratoCriado.id,
+    mes,
+    ano: new Date().getFullYear(),
+    valor,
+    status: "pendente",
+    data_vencimento: dataPagamento.toISOString()
+  })
+
+  if(error){
+    tratarErro(error, "Erro ao gerar pagamentos")
+    return
+  }
+
+} 
+
 
 listarContratos()
 
-}
-
-
+} 
 async function listarContratos(){
 
 const { data, error } = await client
@@ -1529,7 +1531,6 @@ Contrato ${c.id}
 document.getElementById("listaContratos").innerHTML = html
 
 }
-
 async function listarPagamentos(filtro = null, busca = "") {
 
 const lista = document.getElementById("listaPagamentos")
