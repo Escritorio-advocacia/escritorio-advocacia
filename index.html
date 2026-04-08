@@ -1338,14 +1338,23 @@ async function listarInquilinos(){
   }
   
 }
-function cobrarWhatsApp(nome, whatsapp1, whatsapp2, valor){
+function cobrarWhatsApp(nome, whatsapp1, whatsapp2, valor, mes, diasAtraso, multa, juros){
 
   let mensagem = `Olá, ${nome}! 👋
-Seu aluguel está pendente.
 
-💰 Valor: R$ ${valor}
+Identificamos um pagamento em aberto.
 
-Por favor, realizar o pagamento.`
+📅 Referente ao mês: ${mes}
+⏰ Dias em atraso: ${diasAtraso}
+
+💸 Multa: R$ ${Number(multa).toFixed(2)}
+📈 Juros: R$ ${Number(juros).toFixed(2)}
+
+💰 Valor atualizado: R$ ${Number(valor).toFixed(2)}
+
+Pedimos por gentileza que realize o pagamento o quanto antes.
+
+Caso já tenha pago, desconsidere esta mensagem.`
 
   let numeros = [whatsapp1, whatsapp2].filter(n => n && n.trim() !== "")
 
@@ -1645,12 +1654,15 @@ window.pagamentosCache = pagamentos
               </button>
 
               <button onclick="enviarWhatsApp(
-                '${nome}',
-                '${telefone}',
-                ${calc.valorFinal},
-                ${pagamento.mes}
-              )">
-                📲 WhatsApp
+               '${nome}',
+               '${telefone}',
+               ${calc.valorFinal},
+               ${pagamento.mes},
+               ${calc.diasAtraso},
+               ${calc.multa},
+               ${calc.juros}
+               )">
+              📲 WhatsApp
               </button>
 
               <button onclick="gerarReciboCompleto(${pagamento.id})">
