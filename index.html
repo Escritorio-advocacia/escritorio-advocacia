@@ -438,7 +438,14 @@ input,select{
 
 <input id="valorAgua" placeholder="Valor da água">
 
-<input id="diaVencimento" placeholder="Dia do vencimento">
+<input 
+  id="diaVencimento" 
+  type="number" 
+  placeholder="Dia do vencimento"
+  min="1" 
+  max="31"
+  required
+>
 
 <input type="file" id="contratoInquilino">
 
@@ -473,7 +480,14 @@ input,select{
 
 <input id="valorContrato" placeholder="Valor do aluguel">
 
-<input id="vencimentoContrato" placeholder="Dia do vencimento">
+<input 
+  id="vencimentoContrato" 
+  type="number" 
+  placeholder="Dia do vencimento"
+  min="1" 
+  max="31"
+  required
+>
 
 <input type="file" id="contratoContrato">
 
@@ -1357,6 +1371,11 @@ const inquilino_id = document.getElementById("inquilinoSelect").value
 const unidade_id = document.getElementById("unidadeContratoSelect").value
 const valor = document.getElementById("valorContrato").value
 const vencimento = Number(document.getElementById("vencimentoContrato").value) || 5
+if(!vencimento || vencimento < 1 || vencimento > 31){
+  alert("Digite um dia de vencimento válido (1 a 31)")
+  return
+}
+
 
 const arquivo = document.getElementById("contratoContrato").files[0]
 const { data: inquilino } = await client
