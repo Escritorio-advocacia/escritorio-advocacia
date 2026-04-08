@@ -1043,14 +1043,16 @@ listarUnidades()
 
 }
 async function salvarInquilino(event) {
+
+ const btn = event.target
+  btn.disabled = true
+  
+try{
+    
 if(window.nivelUsuario === "funcionario"){
   mostrarAlerta("Você não tem permissão!", "erro")
   return
 }
-
-
-const btn = event.target
-btn.disabled = true
 
   const nome = document.getElementById("nomeInquilino").value
   const cpf = document.getElementById("cpfInquilino").value
@@ -1206,6 +1208,9 @@ document.getElementById("diaVencimento").value = ""
 document.getElementById("nomeInquilino").focus()
   
   btn.disabled = false
+  }catch(e){
+  tratarErro(e, "Erro ao salvar inquilino")
+ }
   
 }
 async function excluirInquilino(id){
@@ -1299,7 +1304,7 @@ async function listarInquilinos(){
   if(container){
     container.innerHTML = '<div class="listaSistema">' + html + '</div>'
   }
-
+  btn.disabled = false
 }
 function cobrarWhatsApp(nome, whatsapp1, whatsapp2, valor){
 
