@@ -2373,16 +2373,42 @@ ${i.nome} - ${i.telefone}
 document.getElementById("listaInquilinos").innerHTML = html
 
 }
-function enviarWhatsApp(nome, telefone, total, mes) {
+function enviarWhatsApp(nome, telefone, valor, mes, diasAtraso = 0, multa = 0, juros = 0){
 
-  let mensagem = `Olá ${nome} 👋
+  let mensagem = ""
+
+  // 🔥 SE ESTÁ EM ATRASO → COBRANÇA COM MULTA
+  if(diasAtraso > 0){
+
+    mensagem = `Olá, ${nome}! 👋
+
+Identificamos um pagamento em aberto.
+
+📅 Referente ao mês: ${mes}
+⏰ Dias em atraso: ${diasAtraso}
+
+💸 Multa: R$ ${Number(multa).toFixed(2)}
+📈 Juros: R$ ${Number(juros).toFixed(2)}
+
+💰 Valor atualizado: R$ ${Number(valor).toFixed(2)}
+
+Pedimos por gentileza que realize o pagamento o quanto antes.
+
+Caso já tenha pago, desconsidere esta mensagem.`
+
+  } else {
+
+    // ✅ SE NÃO TEM ATRASO → MENSAGEM NORMAL
+    mensagem = `Olá ${nome} 👋
 
 Seu pagamento foi registrado com sucesso.
 
 📅 Mês: ${mes}
-💰 Valor: R$ ${total.toFixed(2)}
+💰 Valor: R$ ${Number(valor).toFixed(2)}
 
 Obrigado!`
+
+  }
 
   telefone = telefone.replace(/\D/g, "")
 
