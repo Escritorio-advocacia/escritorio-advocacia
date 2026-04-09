@@ -3586,6 +3586,8 @@ function abrirTela(tela){
   if(tela === "pagamentos"){
     listarPagamentos()
   }
+  document.querySelector(".sidebar").classList.remove("ativo")
+  
 }
 window.onload = async function() {
 
@@ -3638,7 +3640,8 @@ window.onerror = function(msg, url, line){
 }
 
 function toggleMenu(){
-  document.querySelector(".sidebar").classList.toggle("ativo")
+  const menu = document.querySelector(".sidebar")
+  menu.classList.toggle("ativo")
 }
 
 // 🔥 MODO PROFISSIONAL (sem auto update)
