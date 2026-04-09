@@ -18,9 +18,8 @@
 display:none;
 }
 .layout{
-  display:none;
-  height:100vh;
   display:flex;
+  min-height:100vh; /* 🔥 ESSENCIAL */
 }
 
 /* RESET */
@@ -312,6 +311,11 @@ body{
 
   height: fit-content;
 }
+.conteudo{
+  display:flex;
+  flex-direction:column;
+}
+  
 </style>
   
 </head>
