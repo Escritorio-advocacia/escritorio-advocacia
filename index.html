@@ -3064,16 +3064,14 @@ const diasAtraso = Math.floor(
   vencimento: vencimentoFormatado,
   unidade: unidade?.numero || "-",
   mes: pagamento.mes,
-}
 
-    aluguel,
-    agua,
-    juros,
-    total,
-    forma: pagamento.forma_pagamento || "PENDENTE",
-    
-    diasAtraso: diasAtraso > 0 ? diasAtraso : 0,
-  }
+  aluguel,
+  agua,
+  juros,
+  total,
+  forma: pagamento.forma_pagamento || "PENDENTE",
+
+  diasAtraso: diasAtraso > 0 ? diasAtraso : 0,
 }
 function gerarRecibo(dados) {
 
