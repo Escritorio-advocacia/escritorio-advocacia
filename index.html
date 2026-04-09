@@ -41,6 +41,12 @@ body{
   min-height:100vh;
 }
 
+.layout{
+  display:none; /* 👈 ESSENCIAL */
+  flex-direction:row;
+  min-height:100vh;
+}
+
 /* SIDEBAR */
 .sidebar{
   width:220px;
@@ -78,10 +84,10 @@ body{
 /* CONTEÚDO CENTRAL */
 .conteudo{
   flex:1;
-  padding:20px;
+  padding:15px;
   width:100%;
-  max-width:1200px;
-  margin:0 auto;
+  max-width:100%; /* 👈 CORRIGIDO */
+  margin:0;
 }
 
 /* TOPBAR */
@@ -355,6 +361,8 @@ input,select{
 
 }
 
+
+
 </style>
 
 
@@ -433,12 +441,12 @@ input,select{
 
 <div class="graficoBox">
 <h3>Gráfico Financeiro</h3>
-<canvas id="graficoFinanceiro" width="400" height="250"></canvas>
+<canvas id="graficoFinanceiro"></canvas>
 </div>
 
 <div class="graficoBox">
 <h3>Recebimentos por mês</h3>
-<canvas id="graficoMensal" width="400" height="250"></canvas>
+<canvas id="graficoMensal"></canvas>
 </div>
 
 </div>
