@@ -17,18 +17,6 @@
 
 <style>
 
-/* TELAS */
-.tela{
-  display:none;
-}
-
-/* LAYOUT */
-.layout{
-  display:flex;
-  min-height:100vh;
-  align-items:flex-start;
-}
-
 /* RESET */
 *{
   margin:0;
@@ -37,10 +25,20 @@
   font-family:'Inter', Arial, sans-serif;
 }
 
-/* BODY */
 body{
   background:#f1f5f9;
-  overflow:auto;
+  overflow-x:hidden;
+}
+
+/* TELAS */
+.tela{
+  display:none;
+}
+
+/* LAYOUT PRINCIPAL */
+.layout{
+  display:flex;
+  min-height:100vh;
 }
 
 /* SIDEBAR */
@@ -49,7 +47,7 @@ body{
   min-width:220px;
   background:linear-gradient(180deg,#0f172a,#020617);
   color:white;
-  padding:25px;
+  padding:20px;
   display:flex;
   flex-direction:column;
   gap:12px;
@@ -77,12 +75,13 @@ body{
   color:white;
 }
 
-/* CONTEÚDO */
+/* CONTEÚDO CENTRAL */
 .conteudo{
   flex:1;
-  padding:25px;
+  padding:20px;
   width:100%;
-  display:block;
+  max-width:1200px;
+  margin:0 auto;
 }
 
 /* TOPBAR */
@@ -90,10 +89,11 @@ body{
   position:sticky;
   top:0;
   z-index:1000;
-
   display:flex;
   justify-content:space-between;
   align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
   background:white;
   padding:15px 20px;
   border-radius:0 0 14px 14px;
@@ -112,9 +112,7 @@ button{
   cursor:pointer;
   transition:0.2s;
   box-shadow:0 4px 10px rgba(0,0,0,0.15);
-
-  width:100%;
-  max-width:200px;
+  width:auto;
 }
 
 button:hover{
@@ -125,7 +123,7 @@ button:hover{
 /* CARDS */
 .cards{
   display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+  grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
   gap:20px;
   margin-top:20px;
 }
@@ -140,7 +138,7 @@ button:hover{
 }
 
 .card:hover{
-  transform:translateY(-6px) scale(1.02);
+  transform:translateY(-5px);
 }
 
 .card::before{
@@ -166,15 +164,31 @@ button:hover{
 }
 
 .card span{
-  font-size:28px;
+  font-size:26px;
   font-weight:700;
-  color:#0f172a;
+}
+
+/* DASHBOARD GRID */
+.gridDashboard{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:20px;
+}
+
+/* LADO DIREITO */
+.ladoDireito{
+  position:sticky;
+  top:20px;
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
 
 /* GRÁFICOS */
 .areaGraficos{
-  display:flex;
-  flex-wrap:wrap;
+  display:grid;
+  grid-template-columns:1fr 1fr;
   gap:20px;
   margin-top:20px;
 }
@@ -184,6 +198,11 @@ button:hover{
   padding:20px;
   border-radius:14px;
   box-shadow:0 8px 25px rgba(0,0,0,0.08);
+  width:100%;
+}
+
+canvas{
+  max-width:100%;
 }
 
 /* INPUTS */
@@ -192,6 +211,77 @@ input,select{
   border-radius:10px;
   border:1px solid #e5e7eb;
   width:100%;
+}
+
+/* FORM GRID */
+.formGrid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap:15px;
+  margin-top:20px;
+}
+
+.campo{
+  display:flex;
+  flex-direction:column;
+}
+
+.campo label{
+  font-size:12px;
+  color:#64748b;
+  margin-bottom:4px;
+  font-weight:600;
+}
+
+/* BOTÕES FORM */
+.botoes{
+  margin-top:20px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+/* PAGAMENTOS */
+.cardPagamento{
+  background:white;
+  padding:18px;
+  margin:10px 0;
+  border-radius:14px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+.acoes{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.acoes button{
+  flex:1;
+  min-width:90px;
+}
+
+/* MODAL */
+.modalPagamento{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.6);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.modalBox{
+  background:white;
+  padding:25px;
+  border-radius:14px;
+  width:90%;
+  max-width:320px;
+  text-align:center;
 }
 
 /* LOGIN */
@@ -222,138 +312,47 @@ input,select{
   padding:35px;
   border-radius:18px;
   box-shadow:0 15px 40px rgba(0,0,0,0.2);
-  width:320px;
-}
-
-/* PAGAMENTOS */
-.cardPagamento{
-  background:white;
-  padding:18px;
-  margin:10px;
-  border-radius:14px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
-}
-
-.acoes{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:10px;
-}
-
-.acoes button{
-  flex:1;
-  min-width:90px;
-}
-
-/* MODAL */
-.modalPagamento{
-  position:fixed;
-  top:0;
-  left:0;
   width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.6);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:999;
+  max-width:350px;
 }
 
-.modalBox{
-  background:white;
-  padding:25px;
-  border-radius:14px;
-  width:300px;
-  text-align:center;
-}
+/* MOBILE */
+@media(max-width:900px){
 
-/* DASHBOARD */
-.gridDashboard{
-  display:flex;
-  gap:20px;
-  align-items:flex-start;
-}
-
-.ladoEsquerdo{
-  flex:2;
-  min-width:0;
-}
-
-.ladoDireito{
-  flex:1;
-  position:sticky;
-  top:20px;
-  align-self:flex-start;
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
-}
-
-.ladoDireito h3{
-  margin-bottom:10px;
-  font-size:16px;
-  border-bottom:1px solid #eee;
-  padding-bottom:5px;
-}
-
-#dashboard{
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-start;
-}
-
-/* 🔥 FORMULÁRIO PERFEITO */
-.formGrid{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap:15px;
-  margin-top:20px;
-}
-
-.campo{
-  display:flex;
-  flex-direction:column;
-}
-
-.campo label{
-  font-size:12px;
-  color:#64748b;
-  margin-bottom:4px;
-  font-weight:600;
-}
-
-/* BOTÕES FORM */
-.botoes{
-  margin-top:20px;
-  display:flex;
-  gap:10px;
-}
-
-/* MOBILE AJUSTADO (SEM QUEBRAR TUDO) */
-@media(max-width:600px){
   .sidebar{
     display:none;
   }
 
-  .topbar{
+  .layout{
     flex-direction:column;
-    gap:10px;
-  }
-
-  .conteudo{
-    padding:15px;
   }
 
   .gridDashboard{
+    grid-template-columns:1fr;
+  }
+
+  .ladoDireito{
+    position:relative;
+    top:auto;
+  }
+
+  .areaGraficos{
+    grid-template-columns:1fr;
+  }
+
+  canvas{
+    width:100% !important;
+    height:auto !important;
+  }
+
+  .loginContainer{
     flex-direction:column;
   }
-}
 
-body{
-  background:#f1f5f9;
-  overflow-x:hidden;
+  .loginLeft{
+    display:none;
+  }
+
 }
 
 </style>
