@@ -1305,9 +1305,9 @@ async function listarInquilinos(){
 
     <br><br>
 
-    <button onclick="cobrarWhatsApp('${i?.nome || ""}', '${i?.whatsapp || ""}', '${i?.whatsapp_responsavel || ""}', ${i?.valor_aluguel || 0})">
-    📲 Cobrar
-    </button>
+    <button onclick="cobrarInquilinoCompleto('${i.id}')">
+📲 Cobrar
+</button>
 
     <button onclick="simularInquilino(${i?.valor_aluguel || 0}, ${i?.valor_agua || 0}, ${i?.dia_vencimento || 1})">
     💰 Simular
@@ -2111,7 +2111,7 @@ html += `
 Mês ${p.mes} atrasado<br>
 Divida: R$ ${p.valor}<br>
 
-<button onclick="cobrarWhatsApp('${inquilino.nome}','${inquilino.whatsapp}','',${p.valor})">
+<button onclick="cobrarInquilinoCompleto('${i.id}')">
 📲 Cobrar
 </button>
 </p>
@@ -2205,6 +2205,71 @@ backgroundColor: ['green','orange']
 })
 
 }
+
+async function cobrarInquilinoCompleto(inquilino_id){
+
+  // 🔥 buscar contrato
+  const { data: contratos } = await client
+    .from("contratos")
+    .select("*")
+    .eq("inquilino_id", inquilino_id)
+
+  if(!contratos || contratos.length === 0){
+    alert("Sem contrato")
+    return
+  }
+
+  const contrato = contratos[0]
+
+  // 🔥 buscar pagamentos
+  const { data: pagamentos } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("contrato_id", contrato.id)
+
+  if(!pagamentos || pagamentos.length === 0){
+    alert("Sem pagamentos")
+    return
+  }
+
+  // 🔥 pega o mais importante (atrasado ou pendente)
+  const pagamento = pagamentos.find(p => p.status !== "pago")
+
+  if(!pagamento){
+    alert("Nada em aberto")
+    return
+  }
+
+  // 🔥 calcular valores
+  const calc = calcularValorAtualizado(pagamento)
+
+  // 🔥 buscar inquilino
+  const { data: inquilino } = await client
+    .from("inquilinos")
+    .select("*")
+    .eq("id", contrato.inquilino_id)
+    .single()
+
+  const nome = inquilino?.nome || "Cliente"
+  const telefone = inquilino?.whatsapp || ""
+
+  // 🔥 calcular vencimento real
+  const dataVencimento = new Date(pagamento.data_vencimento)
+  const vencimentoFormatado = dataVencimento.toLocaleDateString()
+
+  // 🔥 mensagem COMPLETA
+  enviarWhatsApp(
+    nome,
+    telefone,
+    calc.valorFinal,
+    pagamento.mes,
+    calc.diasAtraso,
+    calc.multa,
+    calc.juros,
+    vencimentoFormatado
+  )
+}
+
 async function cobrarInadimplentesAutomatico(){
 
 const hoje = new Date()
@@ -2381,18 +2446,15 @@ ${i.nome} - ${i.telefone}
 document.getElementById("listaInquilinos").innerHTML = html
 
 }
-function enviarWhatsApp(nome, telefone, valor, mes, diasAtraso = 0, multa = 0, juros = 0){
+function enviarWhatsApp(nome, telefone, valor, mes, diasAtraso = 0, multa = 0, juros = 0, vencimento = ""){
 
-  let mensagem = ""
-
-  // 🔥 SE ESTÁ EM ATRASO → COBRANÇA COM MULTA
-  if(diasAtraso > 0){
-
-    mensagem = `Olá, ${nome}! 👋
+  let mensagem = `Olá, ${nome}! 👋
 
 Identificamos um pagamento em aberto.
 
-📅 Referente ao mês: ${mes}
+📅 Vencimento: ${vencimento}
+📆 Referente ao mês: ${mes}
+
 ⏰ Dias em atraso: ${diasAtraso}
 
 💸 Multa: R$ ${Number(multa).toFixed(2)}
@@ -2403,20 +2465,6 @@ Identificamos um pagamento em aberto.
 Pedimos por gentileza que realize o pagamento o quanto antes.
 
 Caso já tenha pago, desconsidere esta mensagem.`
-
-  } else {
-
-    // ✅ SE NÃO TEM ATRASO → MENSAGEM NORMAL
-    mensagem = `Olá ${nome} 👋
-
-Seu pagamento foi registrado com sucesso.
-
-📅 Mês: ${mes}
-💰 Valor: R$ ${Number(valor).toFixed(2)}
-
-Obrigado!`
-
-  }
 
   telefone = telefone.replace(/\D/g, "")
 
@@ -2454,7 +2502,7 @@ if(!inquilino) return
 html+=`
 <p>
 ${inquilino.nome} - R$${c.valor_aluguel}
-<button onclick="cobrarWhatsApp('${inquilino.whatsapp}','${inquilino.nome}',${c.valor_aluguel})">
+<button onclick="cobrarInquilinoCompleto('${i.id}')">
 📲 Cobrar
 </button>
 </p>
