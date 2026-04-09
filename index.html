@@ -20,6 +20,7 @@ display:none;
 .layout{
   display:none;
   height:100vh;
+  display:flex;
 }
 
 /* RESET */
@@ -37,7 +38,8 @@ body{
 
 /* SIDEBAR (estilo banco) */
 .sidebar{
-  width:240px;
+  width:220px;
+  min-width:220px;
   background:linear-gradient(180deg,#0f172a,#020617);
   color:white;
   padding:25px;
@@ -73,6 +75,7 @@ body{
   flex:1;
   padding:25px;
   overflow:auto;
+  width:100%;
 }
 
 /* TOPBAR */
@@ -108,7 +111,7 @@ button:hover{
 /* GRID DOS CARDS */
 .cards{
   display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+  grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
   gap:20px;
   margin-top:20px;
 }
@@ -247,6 +250,15 @@ input,select{
   justify-content:center;
   align-items:center;
   z-index:999;
+}
+
+body{
+  overflow:hidden;
+}
+
+.conteudo{
+  overflow-y:auto;
+  height:100vh;
 }
 
 .modalBox{
