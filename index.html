@@ -2089,10 +2089,12 @@ async function gerarReciboCompleto(pagamento_id){
       predio = res.data
     }
 
-    const aluguel = pagamento.valor || 0
-    const agua = pagamento.valor_agua || 0
-    const juros = 0
-    const total = aluguel + agua + juros
+const calc = calcularValorAtualizado(pagamento)
+
+const aluguel = calc.aluguel
+const agua = calc.agua
+const juros = calc.juros
+const total = calc.valorFinal
 
   gerarRecibo({
   nome: inquilino?.nome || "-",
