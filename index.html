@@ -1310,6 +1310,7 @@ async function salvarInquilino(event) {
 }
 
 async function excluirInquilino(id){
+
   if(window.nivelUsuario === "funcionario"){
     mostrarAlerta("Você não tem permissão!", "erro")
     return
@@ -1319,6 +1320,36 @@ async function excluirInquilino(id){
     return
   }
 
+  // 🔥 pegar contrato
+  const { data: contratos } = await client
+    .from("contratos")
+    .select("*")
+    .eq("inquilino_id", id)
+
+  if(contratos && contratos.length > 0){
+
+    const contrato = contratos[0]
+
+    // 🔥 apagar pagamentos
+    await client
+      .from("pagamentos")
+      .delete()
+      .eq("contrato_id", contrato.id)
+
+    // 🔥 liberar unidade
+    await client
+      .from("unidades")
+      .update({ status: "livre" })
+      .eq("id", contrato.unidade_id)
+
+    // 🔥 apagar contrato
+    await client
+      .from("contratos")
+      .delete()
+      .eq("id", contrato.id)
+  }
+
+  // 🔥 apagar inquilino
   const { error } = await client
     .from("inquilinos")
     .delete()
@@ -1329,7 +1360,7 @@ async function excluirInquilino(id){
     return
   }
 
-  alert("🔥 Inquilino excluído com sucesso!")
+  mostrarAlerta("🔥 Inquilino excluído com sucesso!")
 
   await listarInquilinos()
   await listarPagamentos()
