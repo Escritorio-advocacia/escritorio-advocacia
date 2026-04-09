@@ -348,7 +348,9 @@ body{
 <div id="dashboard" class="tela">
 
 <h2>Dashboard</h2>
-
+<div class="gridDashboard">
+<div class="ladoEsquerdo">
+  
 <div id="dashboardDados"></div>
   
 <div id="ocupacaoPredios"></div>
@@ -379,6 +381,20 @@ body{
 
 <div id="listaDevedores"></div>
 
+</div> <!-- fecha ladoEsquerdo -->
+
+<div class="ladoDireito">
+
+<h3>Histórico do Inquilino</h3>
+<div id="historicoPagamentos"></div>
+
+<h3>Recibo</h3>
+<div id="recibo"></div>
+
+</div>
+
+</div> 
+  
 </div>
   
  <div id="predios" class="tela">
@@ -540,9 +556,7 @@ body{
 <div id="relatorio"></div>
 </div>
   
-<h2>Recibo</h2>
-<div id="recibo"></div>
-    <div id="modalContrato" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999; justify-content:center; align-items:center;">
+<div id="modalContrato" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999; justify-content:center; align-items:center;">
 
   <div style="background:white; width:80%; height:80%; border-radius:10px; overflow:hidden; display:flex; flex-direction:column;">
 
