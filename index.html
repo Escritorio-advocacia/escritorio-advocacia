@@ -329,8 +329,17 @@ input,select{
 @media(max-width:900px){
 
   .sidebar{
-    display:none;
-  }
+  position:fixed;
+  left:0;
+  top:0;
+  height:100%;
+  z-index:9999;
+  transform:translateX(-100%);
+}
+
+.sidebar.ativo{
+  transform:translateX(0);
+}
 
   .layout{
     flex-direction:column;
@@ -374,6 +383,20 @@ input,select{
 
 }
 
+/* MENU MOBILE */
+.sidebar.mobile{
+  position:fixed;
+  top:0;
+  left:0;
+  height:100%;
+  z-index:9999;
+  transform:translateX(-100%);
+  transition:0.3s;
+}
+
+.sidebar.mobile.ativo{
+  transform:translateX(0);
+}
 
 </style>
 
@@ -425,6 +448,9 @@ input,select{
   <div class="conteudo">
 
 <div class="topbar">
+
+  <button onclick="toggleMenu()" style="width:auto;">☰</button>
+
   <div class="topbar-left">
     <h2>🏢 Sistema</h2>
   </div>
@@ -3586,6 +3612,10 @@ window.onload = async function() {
 }
 window.onerror = function(msg, url, line){
   console.error("ERRO:", msg, "Linha:", line)
+}
+
+function toggleMenu(){
+  document.querySelector(".sidebar").classList.toggle("ativo")
 }
 
 // 🔥 MODO PROFISSIONAL (sem auto update)
