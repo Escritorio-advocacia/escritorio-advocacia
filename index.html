@@ -29,10 +29,6 @@
   align-items:flex-start;
 }
 
-.layout{
-  display:none;
-}
-
 /* RESET */
 *{
   margin:0;
@@ -3026,20 +3022,24 @@ async function montarDadosRecibo(pagamento_id){
     .eq("id", unidade.predio_id)
     .single()
 
+const rua = predio?.rua || "-"
+const numero = predio?.numero || ""
+const bairro = predio?.bairro || "-"
+const cidade = predio?.cidade || "Fortaleza - CE"
+const cep = predio?.cep || "-"
+
   const calc = calcularValorAtualizado(pagamento)
 
-const aluguel = calc.valorOriginal
+const aluguel = pagamento.valor || 0
 const agua = pagamento.valor_agua || 0
 const juros = calc.juros
 const total = calc.valorFinal
 
   const dia = contrato?.dia_vencimento || 5
 
-  const vencimentoFormatado = new Date(
-    pagamento.ano,
-    pagamento.mes - 1,
-    dia
-  ).toLocaleDateString()
+  const vencimentoFormatado = pagamento.data_vencimento
+  ? new Date(pagamento.data_vencimento).toLocaleDateString()
+  : "-"
 const hoje = new Date()
 
 const dataVencimento = new Date(
@@ -3053,18 +3053,18 @@ const diasAtraso = Math.floor(
 )
 
   return {
-    nome: inquilino?.nome || "-",
+  nome: inquilino?.nome || "-",
 
-   rua: predio?.rua || "-",
-    numero: predio?.numero || "",
-    bairro: predio?.bairro || "-",
-    cidade: predio?.cidade || "Fortaleza - CE",
-    cep: predio?.cep || "-",
+  rua,
+  numero,
+  bairro,
+  cidade,
+  cep,
 
-    vencimento: vencimentoFormatado, // ✅ AGORA FUNCIONA
-
-    unidade: unidade?.numero || "-",
-    mes: pagamento.mes,
+  vencimento: vencimentoFormatado,
+  unidade: unidade?.numero || "-",
+  mes: pagamento.mes,
+}
 
     aluguel,
     agua,
