@@ -1549,9 +1549,10 @@ async function listarPagamentos(filtro = null, busca = "") {
   const anoAtual = hoje.getFullYear()
 
   const { data: pagamentos, error } = await client
-    .from("pagamentos")
-    .select("id, contrato_id, valor, valor_agua, status, data_vencimento, mes, ano")
-    .eq("mes", mesAtual)
+  .from("pagamentos")
+  .select("id, contrato_id, valor, valor_agua, status, data_vencimento, mes, ano")
+  .eq("mes", mesAtual)
+  .eq("ano", anoAtual)
 
 window.pagamentosCache = pagamentos
 
