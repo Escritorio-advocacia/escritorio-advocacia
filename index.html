@@ -37,11 +37,6 @@ body{
 
 /* LAYOUT PRINCIPAL */
 .layout{
-  display:flex;
-  min-height:100vh;
-}
-
-.layout{
   display:none; /* 👈 ESSENCIAL */
   flex-direction:row;
   min-height:100vh;
@@ -2438,17 +2433,20 @@ graficoFinanceiroChart.destroy()
 }
 
 graficoFinanceiroChart = new Chart(ctx, {
+  type: 'doughnut',
 
-type: 'doughnut',
+  data: {
+    labels: ['Recebido', 'Pendente'],
+    datasets: [{
+      data: [pago, pendente],
+      backgroundColor: ['green','orange']
+    }]
+  },
 
-data: {
-labels: ['Recebido', 'Pendente'],
-datasets: [{
-data: [pago, pendente],
-backgroundColor: ['green','orange']
-}]
-}
-
+  options: {
+    responsive: true,
+    maintainAspectRatio: false
+  }
 })
 
 }
@@ -2913,16 +2911,20 @@ graficoMensalChart.destroy()
 
 graficoMensalChart = new Chart(ctx,{
 
-type: "bar",
+  type: "bar",
 
-data: {
-labels: meses,
+  data: {
+    labels: meses,
+    datasets: [{
+      label: "Recebimentos",
+      data: valores
+    }]
+  },
 
-datasets: [{
-label: "Recebimentos",
-data: valores
-}]
-}
+  options:{
+    responsive:true,
+    maintainAspectRatio:false
+  }
 
 })
 
