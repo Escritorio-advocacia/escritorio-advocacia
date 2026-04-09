@@ -712,12 +712,13 @@ function calcularValorAtualizado(pagamento){
 
   if(diasAtraso > 0){
     multa = (aluguel + agua) * 0.10
-
     jurosAluguel = aluguel * 0.0033 * diasAtraso
     jurosAgua = agua * 0.0033 * diasAtraso
   }
 
-  const total = aluguel + agua + multa + jurosAluguel + jurosAgua
+  const juros = jurosAluguel + jurosAgua
+  const valorOriginal = aluguel + agua
+  const valorFinal = valorOriginal + multa + juros
 
   return {
     aluguel,
@@ -726,7 +727,10 @@ function calcularValorAtualizado(pagamento){
     multa,
     jurosAluguel,
     jurosAgua,
-    total
+    juros,
+    valorOriginal,
+    valorFinal,
+    total: valorFinal
   }
 }
 
@@ -1659,16 +1663,14 @@ window.pagamentosCache = pagamentos
               </button>
 
               <button onclick="enviarWhatsApp(
-               '${nome}',
-               '${telefone}',
-               ${calc.valorFinal},
-               ${pagamento.mes},
-               ${calc.diasAtraso},
-               ${calc.multa},
-               ${calc.juros}
-               )">
-              📲 WhatsApp
-              </button>
+  '${nome}',
+  '${telefone}',
+  ${JSON.stringify(calc)},
+  ${pagamento.mes},
+  '${new Date(pagamento.data_vencimento).toLocaleDateString()}'
+)">
+📲 WhatsApp
+</button>
 
               <button onclick="gerarReciboCompleto(${pagamento.id})">
                 📄 Recibo
@@ -2116,7 +2118,7 @@ html += `
 Mês ${p.mes} atrasado<br>
 Divida: R$ ${p.valor}<br>
 
-<button onclick="cobrarInquilinoCompleto('${i.id}')">
+<button onclick="cobrarInquilinoCompleto('${inquilino.id}')">
 📲 Cobrar
 </button>
 </p>
@@ -2300,39 +2302,41 @@ async function cobrarInadimplentesAutomatico(){
       return
     }
 
-    pagamentos.forEach(p => {
+    const lista = pagamentos.filter(p => 
+  p.status === "pendente" && p.mes < mesAtual
+)
 
-      // 🔥 apenas atrasados
-      if(p.status === "pendente" && p.mes < mesAtual){
+for (let i = 0; i < lista.length; i++) {
 
-        const contrato = contratos.find(c => c.id == p.contrato_id)
-        if(!contrato) return
+  const p = lista[i]
 
-        const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
-        if(!inquilino) return
+  const contrato = contratos.find(c => c.id == p.contrato_id)
+  if(!contrato) continue
 
-        const telefone = inquilino.whatsapp || ""
-        if(!telefone) return
+  const inquilino = inquilinos.find(iq => iq.id == contrato.inquilino_id)
+  if(!inquilino) continue
 
-        // 🔥 cálculo COMPLETO (novo padrão)
-        const calc = calcularValorAtualizado(p)
+  const telefone = inquilino.whatsapp || ""
+  if(!telefone) continue
 
-        // 🔥 vencimento formatado
-        const dataVencimento = new Date(p.data_vencimento)
-        const vencimentoFormatado = dataVencimento.toLocaleDateString()
+  const calc = calcularValorAtualizado(p)
 
-        // 🔥 envio correto (NOVO MODELO)
-        enviarWhatsApp(
-          inquilino.nome,
-          telefone,
-          calc,
-          p.mes,
-          vencimentoFormatado
-        )
+  const dataVencimento = new Date(p.data_vencimento)
+  const vencimentoFormatado = dataVencimento.toLocaleDateString()
 
-      }
+  setTimeout(() => {
 
-    })
+    enviarWhatsApp(
+      inquilino.nome,
+      telefone,
+      calc,
+      p.mes,
+      vencimentoFormatado
+    )
+
+  }, i * 1500) // 🔥 1.5 segundos entre cada envio
+
+}
 
     mostrarAlerta("📲 Cobrança enviada para inadimplentes!")
 
@@ -2534,7 +2538,7 @@ if(!inquilino) return
 html+=`
 <p>
 ${inquilino.nome} - R$${c.valor_aluguel}
-<button onclick="cobrarInquilinoCompleto('${i.id}')">
+<button onclick="cobrarInquilinoCompleto('${inquilino.id}')">
 📲 Cobrar
 </button>
 </p>
@@ -3114,9 +3118,15 @@ await client
   .update({ status: "livre" })
   .eq("id", unidade_id)
     
+const { error } = await client
+  .from("unidades")
+  .update({ status: "livre" })
+  .eq("id", unidade_id)
+
 if(error){
-  tratarErro(error, "Erro ao excluir inquilino")
+  tratarErro(error, "Erro ao encerrar contrato")
   return
+}
 }
 alert("Contrato encerrado e unidade liberada")
 
