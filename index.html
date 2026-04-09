@@ -428,6 +428,24 @@ input,select{
   transition:0.3s;
 }
 
+.overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.4);
+  opacity:0;
+  pointer-events:none;
+  transition:0.3s;
+  z-index:9998;
+}
+
+.overlay.ativo{
+  opacity:1;
+  pointer-events:all;
+}
+
 </style>
 
 
@@ -463,6 +481,8 @@ input,select{
 <div class="layout">
 
 <div class="sidebar">
+  
+  <div class="overlay" onclick="toggleMenu()"></div>
 
 <h2>🏢 Aluguel</h2>
 
@@ -3596,7 +3616,7 @@ function abrirTela(tela){
     listarPagamentos()
   }
   document.querySelector(".sidebar").classList.remove("ativo")
-  
+  document.querySelector(".overlay").classList.remove("ativo")
 }
 window.onload = async function() {
 
@@ -3650,7 +3670,10 @@ window.onerror = function(msg, url, line){
 
 function toggleMenu(){
   const menu = document.querySelector(".sidebar")
+  const overlay = document.querySelector(".overlay")
+
   menu.classList.toggle("ativo")
+  overlay.classList.toggle("ativo")
 }
 
 // 🔥 MODO PROFISSIONAL (sem auto update)
