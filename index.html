@@ -102,10 +102,6 @@ body{
   margin-bottom:20px;
 }
 
-.topbar{
-  gap:10px;
-}
-
 .topbar-right{
   display:flex;
   flex-wrap:wrap;
@@ -123,10 +119,14 @@ button{
   cursor:pointer;
   transition:0.2s;
   box-shadow:0 4px 10px rgba(0,0,0,0.15);
-  width:100%;
-  max-width:250px;
-  
+  width:auto; /* 👈 ESSENCIAL */
 }
+
+.botoes button{
+  flex:1;
+  min-width:120px;
+}
+
 
 button:hover{
   transform:translateY(-2px);
@@ -408,6 +408,17 @@ input,select{
   transform:translateX(0);
 }
 
+.menu-btn{
+  display:none;
+}
+
+/* só aparece no celular */
+@media(max-width:900px){
+  .menu-btn{
+    display:block;
+  }
+}
+
 </style>
 
 
@@ -459,7 +470,7 @@ input,select{
 
 <div class="topbar">
 
-  <button onclick="toggleMenu()" style="width:auto;">☰</button>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
 
   <div class="topbar-left">
     <h2>🏢 Sistema</h2>
