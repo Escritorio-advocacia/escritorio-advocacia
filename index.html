@@ -2,6 +2,8 @@
 <html>
 <head>
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Sistema de Aluguel</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -178,12 +180,12 @@ button:hover{
   box-shadow:0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* 🔥 INPUTS CORRIGIDO */
+/* INPUTS */
 input,select{
   padding:10px;
   border-radius:10px;
   border:1px solid #e5e7eb;
-  width:100%; /* 🔥 importante */
+  width:100%;
 }
 
 /* LOGIN */
@@ -296,9 +298,10 @@ input,select{
   justify-content:flex-start;
 }
 
+/* 🔥 FORMULÁRIO PERFEITO */
 .formGrid{
   display:grid;
-  grid-template-columns: repeat(4, 1fr); /* 🔥 4 colunas fixas */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap:15px;
   margin-top:20px;
 }
@@ -322,7 +325,7 @@ input,select{
   gap:10px;
 }
 
-/* MOBILE */
+/* MOBILE AJUSTADO (SEM QUEBRAR TUDO) */
 @media(max-width:600px){
   .sidebar{
     display:none;
@@ -342,20 +345,9 @@ input,select{
   }
 }
 
-@media(max-width:1000px){
-  .formGrid{
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media(max-width:600px){
-  .formGrid{
-    grid-template-columns: 1fr;
-  }
-}
-
 </style>
-  
+
+
 </head>
 
 <body>
