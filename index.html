@@ -328,6 +328,20 @@ input,select{
   }
 }
 
+.campo{
+  display:flex;
+  flex-direction:column;
+  margin:10px;
+  width:220px;
+}
+
+.campo label{
+  font-size:12px;
+  color:#64748b;
+  margin-bottom:4px;
+  font-weight:600;
+}
+  
 </style>
   
 </head>
@@ -469,56 +483,110 @@ input,select{
 
 <h3>Inquilinos</h3>
 
-<input id="dataInicioContrato" type="date" placeholder="Data início">
-<input id="dataFimContrato" type="date" placeholder="Data término">
+<div class="campo">
+  <label>Data início</label>
+  <input id="dataInicioContrato" type="date">
+</div>
 
-<input id="buscaInquilino" placeholder="Procurar inquilino" onkeyup="buscarInquilino()">
+<div class="campo">
+  <label>Data término</label>
+  <input id="dataFimContrato" type="date">
+</div>
 
-<br><br>
-
-<input id="nomeInquilino" placeholder="Nome do inquilino principal">
-
-<input id="cpfInquilino" placeholder="CPF do inquilino">
-
-<input id="rg" placeholder="RG do inquilino">
-
-<input id="telefoneInquilino" placeholder="WhatsApp do inquilino">
-
-<input id="emailInquilino" placeholder="Email">
+<div class="campo">
+  <label>Procurar inquilino</label>
+  <input id="buscaInquilino" onkeyup="buscarInquilino()">
+</div>
 
 <br><br>
 
-<input id="nomeResponsavel" placeholder="Nome do 2º responsável">
+<div class="campo">
+  <label>Nome do inquilino principal</label>
+  <input id="nomeInquilino">
+</div>
 
-<input id="cpfResponsavel" placeholder="CPF do responsável">
+<div class="campo">
+  <label>CPF do inquilino</label>
+  <input id="cpfInquilino">
+</div>
 
-<input id="rg_responsavel" placeholder="RG do responsável">
+<div class="campo">
+  <label>RG do inquilino</label>
+  <input id="rg">
+</div>
 
-<input id="whatsappResponsavel" placeholder="WhatsApp do responsável">
+<div class="campo">
+  <label>WhatsApp do inquilino</label>
+  <input id="telefoneInquilino">
+</div>
+
+<div class="campo">
+  <label>Email</label>
+  <input id="emailInquilino" type="email">
+</div>
 
 <br><br>
 
-<select id="unidadeSelect"></select>
+<div class="campo">
+  <label>Nome do 2º responsável</label>
+  <input id="nomeResponsavel">
+</div>
 
-<input id="valorAluguel" placeholder="Valor do aluguel">
+<div class="campo">
+  <label>CPF do responsável</label>
+  <input id="cpfResponsavel">
+</div>
 
-<input id="valorAgua" placeholder="Valor da água">
+<div class="campo">
+  <label>RG do responsável</label>
+  <input id="rg_responsavel">
+</div>
 
-<input 
-  id="diaVencimento" 
-  type="number" 
-  placeholder="Dia do vencimento"
-  min="1" 
-  max="31"
-  required
->
+<div class="campo">
+  <label>WhatsApp do responsável</label>
+  <input id="whatsappResponsavel">
+</div>
 
-<input type="file" id="contratoInquilino">
+<br><br>
 
-<select id="statusInquilino">
-  <option value="ativo">Ativo</option>
-  <option value="inativo">Inativo</option>
-</select>
+<div class="campo">
+  <label>Unidade</label>
+  <select id="unidadeSelect"></select>
+</div>
+
+<div class="campo">
+  <label>Valor do aluguel</label>
+  <input id="valorAluguel" type="number">
+</div>
+
+<div class="campo">
+  <label>Valor da água</label>
+  <input id="valorAgua" type="number">
+</div>
+
+<div class="campo">
+  <label>Dia do vencimento</label>
+  <input 
+    id="diaVencimento" 
+    type="number" 
+    min="1" 
+    max="31"
+    required
+  >
+</div>
+
+<div class="campo">
+  <label>Contrato (arquivo)</label>
+  <input type="file" id="contratoInquilino">
+</div>
+
+<div class="campo">
+  <label>Status</label>
+  <select id="statusInquilino">
+    <option value="ativo">Ativo</option>
+    <option value="inativo">Inativo</option>
+  </select>
+</div>
 
 <br><br>
 
