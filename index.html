@@ -428,6 +428,14 @@ input,select{
   transition:0.3s;
 }
 
+.sidebar{
+  transform: translateX(-100%);
+}
+
+.sidebar.ativo{
+  transform: translateX(0);
+}
+
 .overlay{
   position:fixed;
   top:0;
@@ -480,10 +488,11 @@ input,select{
 </div>
 <div class="layout">
 
-<div class="sidebar">
-  
-  <div class="overlay" onclick="toggleMenu()"></div>
 
+  
+<div class="overlay" onclick="toggleMenu()"></div>
+
+<div class="sidebar">
 <h2>🏢 Aluguel</h2>
 
 <button onclick="abrirTela('dashboard')">📊 Painel</button>
