@@ -1690,33 +1690,8 @@ window.pagamentosCache = pagamentos
   })
 }
  
-  async function buscarPagamentos(texto){
-
-const { data } = await client
-.from("pagamentos")
-.select("*")
-.limit(100)
-
-let filtrados = data.filter(p => 
-String(p.mes).includes(texto) ||
-String(p.valor).includes(texto) ||
-String(p.status).toLowerCase().includes(texto.toLowerCase())
-)
-
-let html = ""
-
-filtrados.forEach(p => {
-
-html += `
-<p>
-Mês ${p.mes} - R$ ${p.valor} - ${p.status}
-</p>
-`
-
-})
-
-document.getElementById("listaPagamentos").innerHTML = html
-
+  function buscarPagamentos(texto){
+  listarPagamentos(null, texto)
 }
 function abrirPagamento(id, valor){
 
@@ -3119,10 +3094,6 @@ await client
   .update({ status: "livre" })
   .eq("id", unidade_id)
     
-const { error } = await client
-  .from("unidades")
-  .update({ status: "livre" })
-  .eq("id", unidade_id)
 
 if(error){
   tratarErro(error, "Erro ao encerrar contrato")
