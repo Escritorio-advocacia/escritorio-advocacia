@@ -296,10 +296,9 @@ input,select{
   justify-content:flex-start;
 }
 
-/* 🔥 FORMULÁRIO BONITO */
 .formGrid{
   display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, 1fr); /* 🔥 4 colunas fixas */
   gap:15px;
   margin-top:20px;
 }
@@ -340,6 +339,18 @@ input,select{
 
   .gridDashboard{
     flex-direction:column;
+  }
+}
+
+@media(max-width:1000px){
+  .formGrid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width:600px){
+  .formGrid{
+    grid-template-columns: 1fr;
   }
 }
 
