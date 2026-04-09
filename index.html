@@ -2098,9 +2098,11 @@ const total = calc.valorFinal
 
   gerarRecibo({
   nome: inquilino?.nome || "-",
-  endereco: predio
-    ? `${predio.rua} Nº ${predio.numero}`
-    : "-",
+  rua: predio?.rua || "-",
+numero: predio?.numero || "",
+bairro: predio?.bairro || "-",
+cidade: predio?.cidade || "Fortaleza - CE",
+cep: predio?.cep || "-",
   unidade: unidade?.numero || "-",
   mes: pagamento.mes,
   aluguel,
