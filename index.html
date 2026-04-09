@@ -285,21 +285,24 @@ body{
   }
 }
 
-/* GRID DO DASHBOARD */
 .gridDashboard{
   display: flex;
   gap: 20px;
-  align-items: flex-start;
+  align-items: flex-start; /* 🔥 força alinhar no topo */
 }
 
-/* LADO ESQUERDO */
+/* ESQUERDA */
 .ladoEsquerdo{
   flex: 2;
+  min-width: 0;
 }
 
-/* LADO DIREITO */
+/* DIREITA */
 .ladoDireito{
   flex: 1;
+  position: sticky;   /* 🔥 FAZ FICAR FIXO NO TOPO */
+  top: 20px;          /* distância do topo */
+  
   background: white;
   padding: 15px;
   border-radius: 12px;
