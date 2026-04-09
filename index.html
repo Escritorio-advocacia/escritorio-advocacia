@@ -14,12 +14,16 @@
 
 
 <style>
+
+/* TELAS */
 .tela{
-display:none;
+  display:none;
 }
+
+/* LAYOUT */
 .layout{
   display:flex;
-  min-height:100vh; /* 🔥 ESSENCIAL */
+  min-height:100vh;
 }
 
 /* RESET */
@@ -33,9 +37,10 @@ display:none;
 /* BODY */
 body{
   background:#f1f5f9;
+  overflow:auto;
 }
 
-/* SIDEBAR (estilo banco) */
+/* SIDEBAR */
 .sidebar{
   width:220px;
   min-width:220px;
@@ -69,12 +74,16 @@ body{
   color:white;
 }
 
-/* CONTEÚDO */
+/* CONTEÚDO (CORRIGIDO) */
 .conteudo{
   flex:1;
   padding:25px;
-  overflow:auto;
   width:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  overflow:visible;
 }
 
 /* TOPBAR */
@@ -107,7 +116,7 @@ button:hover{
   box-shadow:0 8px 18px rgba(0,0,0,0.2);
 }
 
-/* GRID DOS CARDS */
+/* CARDS */
 .cards{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
@@ -115,7 +124,6 @@ button:hover{
   margin-top:20px;
 }
 
-/* CARD PREMIUM */
 .card{
   background:white;
   padding:20px;
@@ -129,7 +137,6 @@ button:hover{
   transform:translateY(-6px) scale(1.02);
 }
 
-/* LINHA COLORIDA */
 .card::before{
   content:"";
   position:absolute;
@@ -140,19 +147,16 @@ button:hover{
   border-radius:18px 18px 0 0;
 }
 
-/* CORES TIPO BANCO */
 .cardRecebido::before{ background:#22c55e; }
 .cardPendente::before{ background:#f59e0b; }
 .cardContrato::before{ background:#3b82f6; }
 .cardPredio::before{ background:#8b5cf6; }
 .cardInquilino::before{ background:#06b6d4; }
 
-/* TEXTO CARD */
 .card h3{
   font-size:13px;
   color:#64748b;
   margin-bottom:8px;
-  font-weight:500;
 }
 
 .card span{
@@ -161,7 +165,7 @@ button:hover{
   color:#0f172a;
 }
 
-/* GRAFICOS */
+/* GRÁFICOS */
 .areaGraficos{
   display:flex;
   flex-wrap:wrap;
@@ -251,21 +255,57 @@ input,select{
   z-index:999;
 }
 
-body{
-  overflow:auto; /* 🔥 libera o sticky */
-}
-
-.conteudo{
-  overflow:visible; /* 🔥 ESSENCIAL */
-  height:auto;
-}
-
 .modalBox{
   background:white;
   padding:25px;
   border-radius:14px;
   width:300px;
   text-align:center;
+}
+
+/* DASHBOARD GRID */
+.gridDashboard{
+  display:flex;
+  gap:20px;
+  align-items:flex-start;
+}
+
+/* ESQUERDA */
+.ladoEsquerdo{
+  flex:2;
+  min-width:0;
+}
+
+/* DIREITA (CORRIGIDO) */
+.ladoDireito{
+  flex:1;
+
+  position:sticky;
+  top:20px;
+
+  align-self:flex-start;
+
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+
+  height:auto;
+}
+
+/* TÍTULOS */
+.ladoDireito h3{
+  margin-bottom:10px;
+  font-size:16px;
+  border-bottom:1px solid #eee;
+  padding-bottom:5px;
+}
+
+/* DASHBOARD FORÇA TOPO */
+#dashboard{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
 }
 
 /* MOBILE */
@@ -282,40 +322,12 @@ body{
   .conteudo{
     padding:15px;
   }
+
+  .gridDashboard{
+    flex-direction:column;
+  }
 }
 
-.gridDashboard{
-  display: flex;
-  gap: 20px;
-  align-items: flex-start; /* 🔥 força alinhar no topo */
-}
-
-/* ESQUERDA */
-.ladoEsquerdo{
-  flex: 2;
-  min-width: 0;
-}
-
-.ladoDireito{
-  flex: 1;
-
-  position: sticky;
-  top: 10px; /* melhor que 0 */
-
-  align-self: flex-start;
-
-  background: white;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-
-  height: fit-content;
-}
-.conteudo{
-  display:flex;
-  flex-direction:column;
-}
-  
 </style>
   
 </head>
