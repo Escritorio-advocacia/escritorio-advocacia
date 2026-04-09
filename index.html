@@ -253,12 +253,12 @@ input,select{
 }
 
 body{
-  overflow:hidden;
+  overflow:auto; /* 🔥 libera o sticky */
 }
 
 .conteudo{
-  overflow-y:auto;
-  height:100vh;
+  overflow:visible; /* 🔥 ESSENCIAL */
+  height:auto;
 }
 
 .modalBox{
@@ -297,23 +297,21 @@ body{
   min-width: 0;
 }
 
-/* DIREITA */
 .ladoDireito{
   flex: 1;
-  position: sticky;   /* 🔥 FAZ FICAR FIXO NO TOPO */
-  top: 20px;          /* distância do topo */
-  
+
+  position: sticky;
+  top: 10px; /* melhor que 0 */
+
+  align-self: flex-start;
+
   background: white;
   padding: 15px;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+
   height: fit-content;
 }
-
-.ladoDireito h3{
-  margin-top: 0;
-}
-
 </style>
   
 </head>
