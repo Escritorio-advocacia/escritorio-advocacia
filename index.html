@@ -3142,39 +3142,36 @@ document.getElementById("relatorio").innerHTML = html
 }
 
   async function encerrarContrato(contrato_id, unidade_id){
-if(window.nivelUsuario === "funcionario"){
-  mostrarAlerta("Você não tem permissão!", "erro")
-  return
-}
 
+  if(window.nivelUsuario === "funcionario"){
+    mostrarAlerta("Você não tem permissão!", "erro")
+    return
+  }
 
-if(!confirm("Deseja realmente encerrar este contrato?")){
-return
-}
+  if(!confirm("Deseja realmente encerrar este contrato?")){
+    return
+  }
 
-// marcar contrato como encerrado
-await client
-  .from("contratos")
-  .update({ status: "encerrado" })
-  .eq("id", contrato_id)
+  const { error: erro1 } = await client
+    .from("contratos")
+    .update({ status: "encerrado" })
+    .eq("id", contrato_id)
 
-await client
-  .from("unidades")
-  .update({ status: "livre" })
-  .eq("id", unidade_id)
-    
+  const { error: erro2 } = await client
+    .from("unidades")
+    .update({ status: "livre" })
+    .eq("id", unidade_id)
 
-if(error){
-  tratarErro(error, "Erro ao encerrar contrato")
-  return
-}
-}
-alert("Contrato encerrado e unidade liberada")
+  if(erro1 || erro2){
+    tratarErro(erro1 || erro2, "Erro ao encerrar contrato")
+    return
+  }
 
-listarContratos()
-listarUnidades()
-mapaOcupacao()
+  mostrarAlerta("Contrato encerrado e unidade liberada")
 
+  listarContratos()
+  listarUnidades()
+  mapaOcupacao()
 }
 let contratoAtual = ""
 
