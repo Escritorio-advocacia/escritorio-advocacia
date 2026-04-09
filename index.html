@@ -3026,56 +3026,50 @@ async function montarDadosRecibo(pagamento_id){
     .eq("id", unidade.predio_id)
     .single()
 
-const rua = predio?.rua || "-"
-const numero = predio?.numero || ""
-const bairro = predio?.bairro || "-"
-const cidade = predio?.cidade || "Fortaleza - CE"
-const cep = predio?.cep || "-"
+  // 🔥 DADOS SEGUROS (NUNCA undefined)
+  const rua = predio?.rua || "-"
+  const numero = predio?.numero || ""
+  const bairro = predio?.bairro || "-"
+  const cidade = predio?.cidade || "Fortaleza - CE"
+  const cep = predio?.cep || "-"
 
   const calc = calcularValorAtualizado(pagamento)
 
-const aluguel = pagamento.valor || 0
-const agua = pagamento.valor_agua || 0
-const juros = calc.juros
-const total = calc.valorFinal
+  const aluguel = pagamento.valor || 0
+  const agua = pagamento.valor_agua || 0
+  const juros = calc.juros
+  const total = calc.valorFinal
 
-  const dia = contrato?.dia_vencimento || 5
+  // 🔥 CORREÇÃO DO VENCIMENTO
+  const vencimento = pagamento.data_vencimento
+    ? new Date(pagamento.data_vencimento).toLocaleDateString()
+    : "-"
 
-  const vencimentoFormatado = pagamento.data_vencimento
-  ? new Date(pagamento.data_vencimento).toLocaleDateString()
-  : "-"
-const hoje = new Date()
-
-const dataVencimento = new Date(
-  pagamento.ano,
-  pagamento.mes - 1,
-  dia
-)
-
-const diasAtraso = Math.floor(
-  (hoje - dataVencimento) / (1000 * 60 * 60 * 24)
-)
+  // 🔥 DIAS DE ATRASO
+  const diasAtraso = calc.diasAtraso || 0
 
   return {
-  nome: inquilino?.nome || "-",
+    nome: inquilino?.nome || "-",
 
-  rua,
-  numero,
-  bairro,
-  cidade,
-  cep,
+    rua,
+    numero,
+    bairro,
+    cidade,
+    cep,
 
-  vencimento: vencimentoFormatado,
-  unidade: unidade?.numero || "-",
-  mes: pagamento.mes,
+    vencimento,
+    unidade: unidade?.numero || "-",
+    mes: pagamento.mes,
 
-  aluguel,
-  agua,
-  juros,
-  total,
-  forma: pagamento.forma_pagamento || "PENDENTE",
+    aluguel,
+    agua,
+    juros,
+    total,
 
-  diasAtraso: diasAtraso > 0 ? diasAtraso : 0,
+    forma: pagamento.forma_pagamento || "PENDENTE",
+
+    diasAtraso
+  }
 }
 function gerarRecibo(dados) {
 
@@ -3086,7 +3080,7 @@ function gerarRecibo(dados) {
     "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
   ]
 
-  const nomeMes = nomesMeses[dados.mes - 1]
+  const nomeMes = nomesMeses[(dados.mes || 1) - 1]
 
   const numeroRecibo = "REC-" + Date.now()
 
@@ -3101,7 +3095,6 @@ function gerarRecibo(dados) {
     border:1px solid #ddd;
   ">
 
-    <!-- TOPO -->
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h2 style="color:#1e40af;">RECIBO</h2>
       <span style="font-size:12px; color:#555;">${numeroRecibo}</span>
@@ -3109,16 +3102,18 @@ function gerarRecibo(dados) {
 
     <hr>
 
-    <!-- DADOS -->
     <p><b>Recebemos de:</b> ${dados.nome}</p>
     <p><b>Referente ao mês:</b> ${nomeMes}</p>
     <p><b>Vencimento:</b> ${dados.vencimento}</p>
-    
-    ${dados.diasAtraso > 0 ? `<p style="color:red;"><b>⏰ ${dados.diasAtraso} dias em atraso</b></p>` : ""}
+
+    ${
+      dados.diasAtraso > 0
+      ? `<p style="color:red;"><b>⏰ ${dados.diasAtraso} dias em atraso</b></p>`
+      : ""
+    }
 
     <hr>
 
-    <!-- ENDEREÇO -->
     <p><b>Endereço do imóvel:</b><br>
     ${dados.rua}${dados.numero ? `, Nº ${dados.numero}` : ""}<br>
     ${dados.bairro}<br>
@@ -3129,14 +3124,13 @@ function gerarRecibo(dados) {
 
     <hr>
 
-    <!-- VALORES -->
     <div style="background:#f1f5f9; padding:15px; border-radius:10px;">
-      <p>Aluguel: R$ ${dados.aluguel.toFixed(2)}</p>
-      <p>Água: R$ ${dados.agua.toFixed(2)}</p>
-      <p>Juros: R$ ${dados.juros.toFixed(2)}</p>
+      <p>Aluguel: R$ ${Number(dados.aluguel).toFixed(2)}</p>
+      <p>Água: R$ ${Number(dados.agua).toFixed(2)}</p>
+      <p>Juros: R$ ${Number(dados.juros).toFixed(2)}</p>
 
       <h3 style="margin-top:10px; color:#16a34a;">
-        Total: R$ ${dados.total.toFixed(2)}
+        Total: R$ ${Number(dados.total).toFixed(2)}
       </h3>
     </div>
 
@@ -3153,7 +3147,6 @@ function gerarRecibo(dados) {
 
     <br>
 
-    <!-- RODAPÉ -->
     <div style="display:flex; justify-content:space-between; margin-top:40px;">
       <span>${dados.cidade}, ${dataAtual}</span>
     </div>
