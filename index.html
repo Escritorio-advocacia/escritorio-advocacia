@@ -1311,25 +1311,29 @@ async function salvarInquilino(event) {
 
 async function excluirInquilino(id){
   if(window.nivelUsuario === "funcionario"){
-  mostrarAlerta("Você não tem permissão!", "erro")
-  return
-}
-  
-  
+    mostrarAlerta("Você não tem permissão!", "erro")
+    return
+  }
+
   if(!confirm("Deseja realmente excluir este inquilino?")){
     return
   }
 
-const { error } = await client
-  .from("inquilinos")
-  .delete()
-  .eq("id", id)
+  const { error } = await client
+    .from("inquilinos")
+    .delete()
+    .eq("id", id)
 
-if(error){
-  tratarErro(error, "Erro ao excluir inquilino")
-  return
+  if(error){
+    tratarErro(error, "Erro ao excluir inquilino")
+    return
+  }
+
+  alert("🔥 Inquilino excluído com sucesso!")
+
+  await listarInquilinos()
+  await listarPagamentos()
 }
-
   alert("🔥 Inquilino excluído com sucesso!")
 }
 async function listarInquilinos(){
