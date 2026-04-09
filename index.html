@@ -1090,175 +1090,225 @@ listarUnidades()
 }
 async function salvarInquilino(event) {
 
- const btn = event.target
+  const btn = event.target
   btn.disabled = true
-  
-try{
-    
-if(window.nivelUsuario === "funcionario"){
-  mostrarAlerta("Você não tem permissão!", "erro")
-  return
-}
 
-  const nome = document.getElementById("nomeInquilino").value
-  const cpf = document.getElementById("cpfInquilino").value
-  const { data: existe } = await client
-  .from("inquilinos")
-  .select("*")
-  .eq("cpf", cpf)
-  .maybeSingle()
+  try{
 
-if(existe){
-  mostrarAlerta("CPF já cadastrado!", "erro")
-  btn.disabled = false
-  return
-}
-  
-  
-  const rg = document.getElementById("rg").value
-  const whatsapp = document.getElementById("telefoneInquilino").value
-  const email = document.getElementById("emailInquilino").value
-
-  const nome_responsavel = document.getElementById("nomeResponsavel").value
-  const cpf_responsavel = document.getElementById("cpfResponsavel").value
-  const rg_responsavel = document.getElementById("rg_responsavel").value
-  const whatsapp_responsavel = document.getElementById("whatsappResponsavel").value
-
-  const unidade_id = document.getElementById("unidadeSelect").value
-
-  const valor_aluguel = Number(document.getElementById("valorAluguel").value) || 0
-  const valor_agua = Number(document.getElementById("valorAgua").value) || 0
-  const dia_vencimento = Number(document.getElementById("diaVencimento").value) || 1
-
-  const data_inicio = document.getElementById("dataInicioContrato").value || null
-  const data_fim = document.getElementById("dataFimContrato").value || null
-  const status = document.getElementById("statusInquilino").value
-
-  const input = document.getElementById("contratoInquilino")
-
-let arquivo = null
-
-if(input && input.files.length > 0){
-  arquivo = input.files[0]
-}
-
-  let contrato_url = null
-
-  // 🔥 UPLOAD DO CONTRATO
-  if(arquivo){
-    const nomeArquivo = Date.now() + "_" + arquivo.name
-
-    const { error } = await client.storage
-      .from("contratos")
-      .upload(nomeArquivo, arquivo)
-
-    if(!error){
-      contrato_url = nomeArquivo
+    if(window.nivelUsuario === "funcionario"){
+      mostrarAlerta("Você não tem permissão!", "erro")
+      btn.disabled = false
+      return
     }
-  }
 
-  // 🔥 SALVA INQUILINO
-  const { data: inquilinoCriado, error } = await client
-    .from("inquilinos")
-    .insert([{
-      nome,
-      cpf,
-      rg,
-      whatsapp,
-      email,
-      nome_responsavel,
-      cpf_responsavel,
-      rg_responsavel,
-      whatsapp_responsavel,
-      unidade_id,
-      valor_aluguel,
-      valor_agua,
-      dia_vencimento,
-      status,
-      data_inicio,
-      data_fim,
-      contrato_url
-    }])
-    .select()
-    .single()
+    const nome = document.getElementById("nomeInquilino").value
+    const cpf = document.getElementById("cpfInquilino").value
+    const rg = document.getElementById("rg").value
+    const whatsapp = document.getElementById("telefoneInquilino").value
+    const email = document.getElementById("emailInquilino").value
 
-  if(error){
-    mostrarAlerta("Erro ao salvar inquilino", "erro")
-    console.log(error)
-    return
-  }
+    const nome_responsavel = document.getElementById("nomeResponsavel").value
+    const cpf_responsavel = document.getElementById("cpfResponsavel").value
+    const rg_responsavel = document.getElementById("rg_responsavel").value
+    const whatsapp_responsavel = document.getElementById("whatsappResponsavel").value
 
-  // 🔥 CRIA CONTRATO AUTOMÁTICO
- const { data: contratoCriado, error: erroContrato } = await client
-  .from("contratos")
- .insert({
-  inquilino_id: inquilinoCriado.id,
-  unidade_id,
-  valor_aluguel,
-  dia_vencimento, //
-  arquivo_contrato: contrato_url || "",
-  status: "ativo"
-})
-  .select()
-  .single()
+    const unidade_id = document.getElementById("unidadeSelect").value
 
-if (erroContrato || !contratoCriado) {
-  console.log("ERRO CONTRATO:", erroContrato)
-  alert("Erro ao criar contrato")
-  return
-}
+    const valor_aluguel = Number(document.getElementById("valorAluguel").value) || 0
+    const valor_agua = Number(document.getElementById("valorAgua").value) || 0
+    const dia_vencimento = Number(document.getElementById("diaVencimento").value) || 1
 
-  // 🔥 MARCA UNIDADE COMO OCUPADA
-  await client
-    .from("unidades")
-    .update({ status: "ocupada" })
-    .eq("id", unidade_id)
+    const data_inicio = document.getElementById("dataInicioContrato").value || null
+    const data_fim = document.getElementById("dataFimContrato").value || null
+    const status = document.getElementById("statusInquilino").value
 
-  // 🔥 GERA 12 PAGAMENTOS
-  const ano = new Date().getFullYear()
+    const input = document.getElementById("contratoInquilino")
 
-  for(let mes = 1; mes <= 12; mes++){
+    let arquivo = null
+    if(input && input.files.length > 0){
+      arquivo = input.files[0]
+    }
 
-  const dataPagamento = new Date(
-    new Date().getFullYear(), // ano atual
-    mes - 1,                  // mês (0 a 11)
-    dia_vencimento            // dia do vencimento
-  )
+    let contrato_url = null
 
-  await client.from("pagamentos").insert({
-    contrato_id: contratoCriado.id,
-    mes,
-    ano: new Date().getFullYear(),
-    valor: valor_aluguel,
-    valor_agua: valor_agua,
-    status: "pendente",
+    // 🔥 upload contrato
+    if(arquivo){
+      const nomeArquivo = Date.now() + "_" + arquivo.name
 
-    // 🔥 NOVA COLUNA
-    data_vencimento: dataPagamento.toISOString()
-  })
+      const { error } = await client.storage
+        .from("contratos")
+        .upload(nomeArquivo, arquivo)
 
-}
+      if(!error){
+        contrato_url = nomeArquivo
+      }
+    }
 
-  mostrarAlerta("Inquilino cadastrado com sucesso!")
+    // 🔥 VALIDA CPF (CRIAÇÃO + EDIÇÃO)
+    const { data: existe } = await client
+      .from("inquilinos")
+      .select("*")
+      .eq("cpf", cpf)
+      .maybeSingle()
 
-  await listarInquilinos()
-  await listarPagamentos()
-  await carregarDashboard()
-document.getElementById("nomeInquilino").value = ""
-document.getElementById("cpfInquilino").value = ""
-document.getElementById("telefoneInquilino").value = ""
-document.getElementById("emailInquilino").value = ""
-document.getElementById("valorAluguel").value = ""
-document.getElementById("valorAgua").value = ""
-document.getElementById("diaVencimento").value = ""
-document.getElementById("nomeInquilino").focus()
-  
-  btn.disabled = false
+    if(existe && existe.id !== window.idEditando){
+      mostrarAlerta("CPF já cadastrado!", "erro")
+      btn.disabled = false
+      return
+    }
+
+    // =====================================================
+    // 🔥 MODO EDIÇÃO
+    // =====================================================
+    if(window.idEditando){
+
+      const { error } = await client
+        .from("inquilinos")
+        .update({
+          nome,
+          cpf,
+          rg,
+          whatsapp,
+          email,
+          nome_responsavel,
+          cpf_responsavel,
+          rg_responsavel,
+          whatsapp_responsavel,
+          unidade_id,
+          valor_aluguel,
+          valor_agua,
+          dia_vencimento,
+          status,
+          data_inicio,
+          data_fim,
+          ...(contrato_url && { contrato_url })
+        })
+        .eq("id", window.idEditando)
+
+      if(error){
+        mostrarAlerta("Erro ao atualizar inquilino", "erro")
+        btn.disabled = false
+        return
+      }
+
+      mostrarAlerta("Inquilino atualizado com sucesso!")
+
+      window.idEditando = null
+
+      await listarInquilinos()
+      await listarPagamentos()
+      await carregarDashboard()
+
+      btn.disabled = false
+      return
+    }
+
+    // =====================================================
+    // 🔥 CRIAÇÃO NORMAL
+    // =====================================================
+
+    const { data: inquilinoCriado, error } = await client
+      .from("inquilinos")
+      .insert([{
+        nome,
+        cpf,
+        rg,
+        whatsapp,
+        email,
+        nome_responsavel,
+        cpf_responsavel,
+        rg_responsavel,
+        whatsapp_responsavel,
+        unidade_id,
+        valor_aluguel,
+        valor_agua,
+        dia_vencimento,
+        status,
+        data_inicio,
+        data_fim,
+        contrato_url
+      }])
+      .select()
+      .single()
+
+    if(error){
+      mostrarAlerta("Erro ao salvar inquilino", "erro")
+      console.log(error)
+      btn.disabled = false
+      return
+    }
+
+    // 🔥 cria contrato
+    const { data: contratoCriado, error: erroContrato } = await client
+      .from("contratos")
+      .insert({
+        inquilino_id: inquilinoCriado.id,
+        unidade_id,
+        valor_aluguel,
+        dia_vencimento,
+        arquivo_contrato: contrato_url || "",
+        status: "ativo"
+      })
+      .select()
+      .single()
+
+    if(erroContrato || !contratoCriado){
+      alert("Erro ao criar contrato")
+      btn.disabled = false
+      return
+    }
+
+    // 🔥 marca unidade ocupada
+    await client
+      .from("unidades")
+      .update({ status: "ocupada" })
+      .eq("id", unidade_id)
+
+    // 🔥 gera pagamentos
+    for(let mes = 1; mes <= 12; mes++){
+
+      const dataPagamento = new Date(
+        new Date().getFullYear(),
+        mes - 1,
+        dia_vencimento
+      )
+
+      await client.from("pagamentos").insert({
+        contrato_id: contratoCriado.id,
+        mes,
+        ano: new Date().getFullYear(),
+        valor: valor_aluguel,
+        valor_agua: valor_agua,
+        status: "pendente",
+        data_vencimento: dataPagamento.toISOString()
+      })
+    }
+
+    mostrarAlerta("Inquilino cadastrado com sucesso!")
+
+    await listarInquilinos()
+    await listarPagamentos()
+    await carregarDashboard()
+
+    // 🔥 limpa campos
+    document.getElementById("nomeInquilino").value = ""
+    document.getElementById("cpfInquilino").value = ""
+    document.getElementById("telefoneInquilino").value = ""
+    document.getElementById("emailInquilino").value = ""
+    document.getElementById("valorAluguel").value = ""
+    document.getElementById("valorAgua").value = ""
+    document.getElementById("diaVencimento").value = ""
+
+    document.getElementById("nomeInquilino").focus()
+
+    btn.disabled = false
+
   }catch(e){
-  tratarErro(e, "Erro ao salvar inquilino")
- }
-  
+    tratarErro(e, "Erro ao salvar inquilino")
+    btn.disabled = false
+  }
 }
+
 async function excluirInquilino(id){
   if(window.nivelUsuario === "funcionario"){
   mostrarAlerta("Você não tem permissão!", "erro")
