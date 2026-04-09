@@ -118,7 +118,9 @@ button{
   cursor:pointer;
   transition:0.2s;
   box-shadow:0 4px 10px rgba(0,0,0,0.15);
-  width:auto;
+  width:100%;
+  max-width:250px;
+  
 }
 
 button:hover{
@@ -197,6 +199,11 @@ button:hover{
   grid-template-columns:1fr 1fr;
   gap:20px;
   margin-top:20px;
+}
+
+canvas{
+  width:100% !important;
+  height:250px !important;
 }
 
 .graficoBox{
@@ -359,8 +366,17 @@ input,select{
     display:none;
   }
 
-}
+  /* 👇 ADICIONA ISSO AQUI */
+  .cards{
+    grid-template-columns:1fr;
+  }
 
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+}
 
 
 </style>
