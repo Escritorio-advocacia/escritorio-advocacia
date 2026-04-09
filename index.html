@@ -701,27 +701,32 @@ function calcularValorAtualizado(pagamento){
   const vencimento = new Date(pagamento.data_vencimento)
 
   let diasAtraso = Math.floor((hoje - vencimento) / (1000 * 60 * 60 * 24))
-
   if(diasAtraso < 0) diasAtraso = 0
 
-  const valorOriginal = Number(pagamento.valor)
+  const aluguel = Number(pagamento.valor) || 0
+  const agua = Number(pagamento.valor_agua) || 0
 
   let multa = 0
-  let juros = 0
-  let valorFinal = valorOriginal
+  let jurosAluguel = 0
+  let jurosAgua = 0
 
   if(diasAtraso > 0){
-    multa = valorOriginal * 0.10
-    juros = valorOriginal * 0.0033 * diasAtraso
-    valorFinal = valorOriginal + multa + juros
+    multa = (aluguel + agua) * 0.10
+
+    jurosAluguel = aluguel * 0.0033 * diasAtraso
+    jurosAgua = agua * 0.0033 * diasAtraso
   }
 
+  const total = aluguel + agua + multa + jurosAluguel + jurosAgua
+
   return {
-    valorOriginal,
+    aluguel,
+    agua,
     diasAtraso,
     multa,
-    juros,
-    valorFinal
+    jurosAluguel,
+    jurosAgua,
+    total
   }
 }
 
@@ -2208,117 +2213,133 @@ backgroundColor: ['green','orange']
 
 async function cobrarInquilinoCompleto(inquilino_id){
 
-  // 🔥 buscar contrato
-  const { data: contratos } = await client
-    .from("contratos")
-    .select("*")
-    .eq("inquilino_id", inquilino_id)
+  try{
 
-  if(!contratos || contratos.length === 0){
-    alert("Sem contrato")
-    return
+    // 🔥 buscar contrato
+    const { data: contratos } = await client
+      .from("contratos")
+      .select("*")
+      .eq("inquilino_id", inquilino_id)
+
+    if(!contratos || contratos.length === 0){
+      alert("Sem contrato")
+      return
+    }
+
+    const contrato = contratos[0]
+
+    // 🔥 buscar pagamentos
+    const { data: pagamentos } = await client
+      .from("pagamentos")
+      .select("*")
+      .eq("contrato_id", contrato.id)
+
+    if(!pagamentos || pagamentos.length === 0){
+      alert("Sem pagamentos")
+      return
+    }
+
+    // 🔥 pega o primeiro em aberto (prioriza atrasado)
+    const pagamento = pagamentos.find(p => p.status !== "pago")
+
+    if(!pagamento){
+      alert("Nada em aberto")
+      return
+    }
+
+    // 🔥 calcular valores COMPLETO
+    const calc = calcularValorAtualizado(pagamento)
+
+    // 🔥 buscar inquilino
+    const { data: inquilino } = await client
+      .from("inquilinos")
+      .select("*")
+      .eq("id", contrato.inquilino_id)
+      .single()
+
+    const nome = inquilino?.nome || "Cliente"
+    const telefone = inquilino?.whatsapp || ""
+
+    if(!telefone){
+      alert("Inquilino sem telefone")
+      return
+    }
+
+    // 🔥 data de vencimento formatada
+    const dataVencimento = new Date(pagamento.data_vencimento)
+    const vencimentoFormatado = dataVencimento.toLocaleDateString()
+
+    // 🔥 ENVIO CORRETO (NOVO PADRÃO)
+    enviarWhatsApp(
+      nome,
+      telefone,
+      calc,
+      pagamento.mes,
+      vencimentoFormatado
+    )
+
+  }catch(e){
+    console.error("Erro cobrar inquilino:", e)
+    alert("Erro ao cobrar inquilino")
   }
-
-  const contrato = contratos[0]
-
-  // 🔥 buscar pagamentos
-  const { data: pagamentos } = await client
-    .from("pagamentos")
-    .select("*")
-    .eq("contrato_id", contrato.id)
-
-  if(!pagamentos || pagamentos.length === 0){
-    alert("Sem pagamentos")
-    return
-  }
-
-  // 🔥 pega o mais importante (atrasado ou pendente)
-  const pagamento = pagamentos.find(p => p.status !== "pago")
-
-  if(!pagamento){
-    alert("Nada em aberto")
-    return
-  }
-
-  // 🔥 calcular valores
-  const calc = calcularValorAtualizado(pagamento)
-
-  // 🔥 buscar inquilino
-  const { data: inquilino } = await client
-    .from("inquilinos")
-    .select("*")
-    .eq("id", contrato.inquilino_id)
-    .single()
-
-  const nome = inquilino?.nome || "Cliente"
-  const telefone = inquilino?.whatsapp || ""
-
-  // 🔥 calcular vencimento real
-  const dataVencimento = new Date(pagamento.data_vencimento)
-  const vencimentoFormatado = dataVencimento.toLocaleDateString()
-
-  // 🔥 mensagem COMPLETA
-  enviarWhatsApp(
-    nome,
-    telefone,
-    calc.valorFinal,
-    pagamento.mes,
-    calc.diasAtraso,
-    calc.multa,
-    calc.juros,
-    vencimentoFormatado
-  )
 }
 
 async function cobrarInadimplentesAutomatico(){
 
-const hoje = new Date()
-const mesAtual = hoje.getMonth() + 1
+  try{
 
-const { data: pagamentos } = await client.from("pagamentos").select("*")
-const { data: contratos } = await client.from("contratos").select("*")
-const { data: inquilinos } = await client.from("inquilinos").select("*")
+    const hoje = new Date()
+    const mesAtual = hoje.getMonth() + 1
 
-let lista = []
+    const { data: pagamentos } = await client.from("pagamentos").select("*")
+    const { data: contratos } = await client.from("contratos").select("*")
+    const { data: inquilinos } = await client.from("inquilinos").select("*")
 
-pagamentos.forEach(p=>{
+    if(!pagamentos || pagamentos.length === 0){
+      alert("Sem pagamentos")
+      return
+    }
 
-if(p.status=="pendente" && p.mes < mesAtual){
+    pagamentos.forEach(p => {
 
-const contrato = contratos.find(c=>c.id==p.contrato_id)
-if(!contrato) return
+      // 🔥 apenas atrasados
+      if(p.status === "pendente" && p.mes < mesAtual){
 
-const inquilino = inquilinos.find(i=>i.id==contrato.inquilino_id)
-if(!inquilino) return
+        const contrato = contratos.find(c => c.id == p.contrato_id)
+        if(!contrato) return
 
-const calc = calcularValorAtualizado(p)
+        const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
+        if(!inquilino) return
 
-lista.push({
-  nome: inquilino.nome,
-  telefone: inquilino.whatsapp,
-  valor: calc.valorFinal,
-  diasAtraso: calc.diasAtraso,
-  multa: calc.multa,
-  juros: calc.juros,
-  mes: p.mes
-})
+        const telefone = inquilino.whatsapp || ""
+        if(!telefone) return
 
-}
+        // 🔥 cálculo COMPLETO (novo padrão)
+        const calc = calcularValorAtualizado(p)
 
-})
+        // 🔥 vencimento formatado
+        const dataVencimento = new Date(p.data_vencimento)
+        const vencimentoFormatado = dataVencimento.toLocaleDateString()
 
-lista.forEach(i=>{
-  enviarWhatsApp(
-    i.nome,
-    i.telefone,
-    i.valor,
-    i.mes,
-    i.diasAtraso,
-    i.multa,
-    i.juros
-  )
-})
+        // 🔥 envio correto (NOVO MODELO)
+        enviarWhatsApp(
+          inquilino.nome,
+          telefone,
+          calc,
+          p.mes,
+          vencimentoFormatado
+        )
 
+      }
+
+    })
+
+    mostrarAlerta("📲 Cobrança enviada para inadimplentes!")
+
+  }catch(e){
+    console.error("Erro cobrança automática:", e)
+    alert("Erro ao cobrar inadimplentes")
+  }
 }
 async function mapaOcupacao(){
 
@@ -2446,7 +2467,13 @@ ${i.nome} - ${i.telefone}
 document.getElementById("listaInquilinos").innerHTML = html
 
 }
-function enviarWhatsApp(nome, telefone, valor, mes, diasAtraso = 0, multa = 0, juros = 0, vencimento = ""){
+function enviarWhatsApp(
+  nome,
+  telefone,
+  dados,
+  mes,
+  vencimento
+){
 
   let mensagem = `Olá, ${nome}! 👋
 
@@ -2455,12 +2482,17 @@ Identificamos um pagamento em aberto.
 📅 Vencimento: ${vencimento}
 📆 Referente ao mês: ${mes}
 
-⏰ Dias em atraso: ${diasAtraso}
+⏰ Dias em atraso: ${dados.diasAtraso}
 
-💸 Multa: R$ ${Number(multa).toFixed(2)}
-📈 Juros: R$ ${Number(juros).toFixed(2)}
+🏠 Aluguel: R$ ${dados.aluguel.toFixed(2)}
+🚿 Água: R$ ${dados.agua.toFixed(2)}
 
-💰 Valor atualizado: R$ ${Number(valor).toFixed(2)}
+📈 Juros aluguel: R$ ${dados.jurosAluguel.toFixed(2)}
+💧 Juros água: R$ ${dados.jurosAgua.toFixed(2)}
+
+💸 Multa: R$ ${dados.multa.toFixed(2)}
+
+💰 TOTAL: R$ ${dados.total.toFixed(2)}
 
 Pedimos por gentileza que realize o pagamento o quanto antes.
 
