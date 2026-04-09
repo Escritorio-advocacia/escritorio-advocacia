@@ -326,8 +326,13 @@ input,select{
   </div>
 
   <div class="topbar-right">
-    <span id="usuarioTopo"></span>
-    <button onclick="logout()">Sair</button>
+  <span id="usuarioTopo"></span>
+
+  <button onclick="atualizarSistema()">🔄 Atualizar</button>
+
+  <button onclick="logout()">Sair</button>
+</div>
+    
   </div>
 </div>
 
@@ -2108,6 +2113,20 @@ div.innerHTML = html
 
 }
 
+async function atualizarSistema(){
+
+  mostrarAlerta("Atualizando...")
+
+  await Promise.all([
+    listarPagamentos(),
+    listarInquilinos(),
+    listarPredios(),
+    carregarDashboard()
+  ])
+
+  mostrarAlerta("Sistema atualizado!")
+}
+
 async function alertaInadimplentes(){
 
 const div = document.getElementById("alertaInadimplentes")
@@ -3329,18 +3348,8 @@ window.onerror = function(msg, url, line){
   console.error("ERRO:", msg, "Linha:", line)
 }
 
-setInterval(async () => {
-  try {
-    await Promise.all([
-      listarPagamentos(),
-      listarInquilinos(),
-      listarPredios(),
-      carregarDashboard()
-    ])
-  } catch (e) {
-    console.log("Erro atualização automática")
-  }
-}, 60000)
+// 🔥 MODO PROFISSIONAL (sem auto update)
+// setInterval removido
 </script>
     
 </div>
