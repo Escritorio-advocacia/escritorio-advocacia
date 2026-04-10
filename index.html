@@ -1979,8 +1979,8 @@ function abrirPagamento(id, valor){
           <p style="color:red;">
             ${calc.diasAtraso} dias em atraso
           </p>
-          <p>Multa: R$ ${calc.multa.toFixed(2)}</p>
-          <p>Juros: R$ ${calc.juros.toFixed(2)}</p>
+          <p>Juros aluguel: R$ ${calc.jurosAluguel.toFixed(2)}</p>
+          <p>Multa água: R$ ${calc.multaAgua.toFixed(2)}</p>
         `
         : `<p style="color:green;">Em dia</p>`
       }
@@ -2135,8 +2135,8 @@ async function gerarReciboCompleto(pagamento_id){
 const calc = calcularValorAtualizado(pagamento)
 
 const aluguel = calc.aluguel
-const agua = calc.agua
-const juros = calc.juros
+const juros = calc.jurosAluguel
+const multaAgua = calc.multaAgua
 const total = calc.valorFinal
 const vencimento = pagamento.data_vencimento
   ? new Date(pagamento.data_vencimento).toLocaleDateString()
@@ -2760,7 +2760,7 @@ Identificamos um pagamento em aberto.
 🚿 Água: R$ ${dados.agua.toFixed(2)}
 
 📈 Juros aluguel: R$ ${dados.jurosAluguel.toFixed(2)}
-💧 Juros água: R$ ${dados.jurosAgua.toFixed(2)}
+🚿 Multa água: R$ ${dados.multaAgua.toFixed(2)}
 
 💸 Multa: R$ ${dados.multa.toFixed(2)}
 
@@ -3091,8 +3091,8 @@ async function montarDadosRecibo(pagamento_id){
   const calc = calcularValorAtualizado(pagamento)
 
   const aluguel = pagamento.valor || 0
-  const agua = pagamento.valor_agua || 0
-  const juros = calc.juros
+ const juros = calc.jurosAluguel
+const multaAgua = calc.multaAgua
   const total = calc.valorFinal
 
   // 🔥 CORREÇÃO DO VENCIMENTO
@@ -3117,7 +3117,7 @@ async function montarDadosRecibo(pagamento_id){
     mes: pagamento.mes,
 
     aluguel,
-    agua,
+    multaAgua,
     juros,
     total,
 
@@ -3181,8 +3181,8 @@ function gerarRecibo(dados) {
 
     <div style="background:#f1f5f9; padding:15px; border-radius:10px;">
       <p>Aluguel: R$ ${Number(dados.aluguel).toFixed(2)}</p>
-      <p>Água: R$ ${Number(dados.agua).toFixed(2)}</p>
-      <p>Juros: R$ ${Number(dados.juros).toFixed(2)}</p>
+      <p>Juros aluguel: R$ ${Number(dados.juros).toFixed(2)}</p>
+      <p>Multa água: R$ ${Number(dados.multaAgua).toFixed(2)}</p>
 
       <h3 style="margin-top:10px; color:#16a34a;">
         Total: R$ ${Number(dados.total).toFixed(2)}
