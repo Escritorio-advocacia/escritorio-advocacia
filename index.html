@@ -2043,21 +2043,26 @@ const aluguel = calc.aluguel
 const agua = calc.agua
 const juros = calc.juros
 const total = calc.valorFinal
+const vencimento = pagamento.data_vencimento
+  ? new Date(pagamento.data_vencimento).toLocaleDateString()
+  : "-"
+
 
   gerarRecibo({
   nome: inquilino?.nome || "-",
   rua: predio?.rua || "-",
-numero: predio?.numero || "",
-bairro: predio?.bairro || "-",
-cidade: predio?.cidade || "Fortaleza - CE",
-cep: predio?.cep || "-",
+  numero: predio?.numero || "",
+  bairro: predio?.bairro || "-",
+  cidade: predio?.cidade || "Fortaleza - CE",
+  cep: predio?.cep || "-",
   unidade: unidade?.numero || "-",
   mes: pagamento.mes,
   aluguel,
   agua,
   juros,
   total,
-  forma: pagamento.forma_pagamento || "-"
+  forma: pagamento.forma_pagamento || "-",
+  vencimento // 👈 ESSA LINHA NOVA
 })
 
   }catch(e){
