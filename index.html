@@ -282,6 +282,19 @@ input, select{
 
 }
 
+.sidebar{
+  z-index: 1001;
+}
+
+.overlay{
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.overlay.ativo{
+  pointer-events: all;
+}
+
 </style>
 
 
@@ -3411,11 +3424,22 @@ function controlarPermissoes(){
 }
 function abrirTela(tela){
 
+  console.log("Abrindo:", tela) // 👈 ajuda ver no F12 depois
+
   document.querySelectorAll(".tela").forEach(div => {
     div.style.display = "none"
   })
 
-  document.getElementById(tela).style.display = "block"
+  const el = document.getElementById(tela)
+
+  if(el){
+    el.style.display = "block"
+  }else{
+    console.error("Tela não encontrada:", tela)
+    return
+  }
+
+  // ================= FUNÇÕES =================
 
   if(tela === "dashboard"){
     carregarDashboard()
@@ -3451,8 +3475,15 @@ function abrirTela(tela){
   if(tela === "pagamentos"){
     listarPagamentos()
   }
-  document.querySelector(".sidebar").classList.remove("ativo")
-  document.querySelector(".overlay").classList.remove("ativo")
+
+  // ================= CORREÇÃO MOBILE =================
+
+  const sidebar = document.querySelector(".sidebar")
+  const overlay = document.querySelector(".overlay")
+
+  if(sidebar) sidebar.classList.remove("ativo")
+  if(overlay) overlay.classList.remove("ativo")
+
 }
 window.onload = async function() {
 
