@@ -820,34 +820,43 @@ function calcularValorAtualizado(pagamento){
   const aluguel = Number(pagamento.valor) || 0
   const agua = Number(pagamento.valor_agua) || 0
 
-  let multa = 0
   let jurosAluguel = 0
-  let jurosAgua = 0
+  let multaAgua = 0
 
-  if(diasAtraso > 0){
-    multa = (aluguel + agua) * 0.10
-    jurosAluguel = aluguel * 0.0033 * diasAtraso
-    jurosAgua = agua * 0.0033 * diasAtraso
+  // 🔥 REGRA: só após 5 dias
+  if(diasAtraso > 5){
+
+    const diasComJuros = diasAtraso - 5
+
+    // 🏠 juros aluguel → 0,5% ao dia
+    jurosAluguel = aluguel * 0.005 * diasComJuros
+
+    // 🚿 multa água → 10% FIXO (uma vez só)
+    multaAgua = agua * 0.10
   }
 
-  const juros = jurosAluguel + jurosAgua
   const valorOriginal = aluguel + agua
-  const valorFinal = valorOriginal + multa + juros
+
+  const valorFinal =
+    aluguel +
+    jurosAluguel +
+    agua +
+    multaAgua
 
   return {
     aluguel,
     agua,
     diasAtraso,
-    multa,
+
+    // 🔥 separados (novo padrão correto)
     jurosAluguel,
-    jurosAgua,
-    juros,
+    multaAgua,
+
     valorOriginal,
     valorFinal,
     total: valorFinal
   }
 }
-
 async function ocupacaoPorPredio(){
 
 const { data: predios } = await client
