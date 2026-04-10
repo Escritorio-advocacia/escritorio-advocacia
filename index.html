@@ -1485,6 +1485,7 @@ async function listarInquilinos(){
   whatsapp,
   cpf,
   rg,
+  unidade_id,
   valor_aluguel,
   valor_agua,
   dia_vencimento,
@@ -1494,7 +1495,14 @@ async function listarInquilinos(){
   cpf_responsavel,
   rg_responsavel
 `)
+const { data: unidades } = await client
+  .from("unidades")
+  .select("*")
 
+const { data: predios } = await client
+  .from("predios")
+  .select("*")
+  
   if(error){
     console.log("Erro ao buscar inquilinos:", error)
     return
@@ -1507,10 +1515,17 @@ async function listarInquilinos(){
 
   lista.forEach(i => {
 
+   const unidade = unidades.find(u => u.id == i.unidade_id)
+   const predio = predios.find(p => p.id == unidade?.predio_id)
+    
     html += `
     <p>
 
     <b>${i?.nome || "Sem nome"}</b>
+
+    <br>📍 ${predio ? predio.rua + " Nº " + predio.numero : "-"}
+    <br>🚪 Unidade: ${unidade ? unidade.numero : "-"}
+    
     ${i?.nome_responsavel ? `<br><b>${i.nome_responsavel}</b>` : ""}
 
     <br>📞 WhatsApp: ${i?.whatsapp || "-"}
