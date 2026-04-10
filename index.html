@@ -336,8 +336,7 @@ input, select{
 
 <div class="topbar">
 
-  <button class="menu-btn" onclick="toggleMenu()">☰</button>
-
+  <button class="menu-btn" id="btnMenu">☰</button>
   <div class="topbar-left">
     <h2>🏢 Sistema</h2>
   </div>
@@ -3509,12 +3508,27 @@ function toggleMenu(){
   const menu = document.querySelector(".sidebar")
   const overlay = document.querySelector(".overlay")
 
-  menu.classList.toggle("ativo")
-  overlay.classList.toggle("ativo")
+  if(menu.classList.contains("ativo")){
+    menu.classList.remove("ativo")
+    overlay.classList.remove("ativo")
+  } else {
+    menu.classList.add("ativo")
+    overlay.classList.add("ativo")
+  }
 }
 
-// 🔥 MODO PROFISSIONAL (sem auto update)
-// setInterval removido
+document.addEventListener("DOMContentLoaded", function(){
+
+  const btn = document.getElementById("btnMenu")
+
+  if(btn){
+    btn.addEventListener("click", function(){
+      toggleMenu()
+    })
+  }
+
+})
+
 </script>
 
 </div>
