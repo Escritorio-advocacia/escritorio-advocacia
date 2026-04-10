@@ -1891,8 +1891,8 @@ if(status === "atrasado"){
           calc.diasAtraso > 0
           ? `
             <span style="color:red;">⏰ ${calc.diasAtraso} dias em atraso</span><br>
-            💸 Multa: R$ ${calc.multa.toFixed(2)}<br>
-            📈 Juros: R$ ${calc.juros.toFixed(2)}<br>
+            📈 Juros aluguel: R$ ${calc.jurosAluguel.toFixed(2)}
+            🚿 Multa água: R$ ${calc.multaAgua.toFixed(2)}
           `
           : `<span style="color:green;">Em dia</span><br>`
         }
