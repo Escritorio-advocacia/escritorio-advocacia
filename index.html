@@ -1935,9 +1935,14 @@ function abrirPagamento(id, valor){
       <br><br>
 
       <button onclick="fecharModal()">Cancelar</button>
-
     </div>
   `
+
+modal.onclick = function(e){
+  if(e.target === modal){
+    fecharModal()
+  }
+}
 
   document.body.appendChild(modal)
 }
