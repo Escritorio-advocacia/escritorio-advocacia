@@ -2135,6 +2135,7 @@ async function gerarReciboCompleto(pagamento_id){
 const calc = calcularValorAtualizado(pagamento)
 
 const aluguel = calc.aluguel
+const agua = calc.agua
 const juros = calc.jurosAluguel
 const multaAgua = calc.multaAgua
 const total = calc.valorFinal
@@ -2762,7 +2763,7 @@ Identificamos um pagamento em aberto.
 📈 Juros aluguel: R$ ${dados.jurosAluguel.toFixed(2)}
 🚿 Multa água: R$ ${dados.multaAgua.toFixed(2)}
 
-💸 Multa: R$ ${dados.multa.toFixed(2)}
+🚿 Multa água: R$ ${dados.multaAgua.toFixed(2)}
 
 💰 TOTAL: R$ ${dados.total.toFixed(2)}
 
