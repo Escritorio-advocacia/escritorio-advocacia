@@ -3421,30 +3421,33 @@ function verContrato(arquivo){
 }
 async function atualizarStatusAtrasados(){
 
-const hoje = new Date()
-const mesAtual = hoje.getMonth() + 1
+  const hoje = new Date()
 
-const { data } = await client
-.from("pagamentos")
-.select("*")
+  const { data } = await client
+    .from("pagamentos")
+    .select("*")
 
-for(const p of data){
+  for(const p of data){
 
-if(p.status === "pendente" && p.mes < mesAtual){
+    const vencimento = new Date(p.data_vencimento)
 
-const { error } = await client
-  .from("pagamentos")
-  .update({ status: "atrasado" })
-  .eq("id", p.id)
+    // 🔥 SÓ ATUALIZA SE REALMENTE ESTIVER ATRASADO
+    if(p.status === "pendente" && vencimento < hoje){
 
-if(error){
-  tratarErro(error, "Erro ao atualizar pagamento")
-}
+      const { error } = await client
+        .from("pagamentos")
+        .update({ status: "atrasado" })
+        .eq("id", p.id)
 
-}
+      if(error){
+        tratarErro(error, "Erro ao atualizar pagamento")
+      }
 
-}
+    }
 
+  }
+
+  mostrarAlerta("Atrasos atualizados corretamente!")
 }
 function filtrarPagamentos(status) {
 
