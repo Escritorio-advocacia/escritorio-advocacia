@@ -1647,6 +1647,8 @@ const { data: pagamentos, error } = await client
 .from("pagamentos")
 .select("*")
 .eq("contrato_id", contrato_id)
+.order("ano", { ascending: true })
+.order("mes", { ascending: true })
 
 if (error || !pagamentos || pagamentos.length === 0) {
   console.log("Erro ao buscar pagamentos", error)
