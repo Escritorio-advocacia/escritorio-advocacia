@@ -1954,13 +1954,19 @@ function fecharModal(){
 }
 async function confirmarPagamento(id, forma){
 
+  // 🔒 CONTROLE DE ACESSO
+  if(window.nivelUsuario !== "admin" && window.nivelUsuario !== "funcionario"){
+    mostrarAlerta("Sem permissão", "erro")
+    return
+  }
+
   const { data: pagamento } = await client
     .from("pagamentos")
     .select("*")
     .eq("id", id)
     .single()
 
-const calc = calcularValorAtualizado(pagamento)
+  const calc = calcularValorAtualizado(pagamento)
 
   if(pagamento.status === "pago"){
     alert("Esse pagamento já foi realizado!")
@@ -1970,28 +1976,26 @@ const calc = calcularValorAtualizado(pagamento)
 
   const hoje = new Date()
 
-const { error } = await client
-  .from("pagamentos")
-  .update({
-  status: "pago",
-  forma_pagamento: forma,
-  data_pagamento: new Date(),
-  valor_pago: calc.valorFinal // 👈 ESSA LINHA NOVA
-})
-  .eq("id", id)
+  const { error } = await client
+    .from("pagamentos")
+    .update({
+      status: "pago",
+      forma_pagamento: forma,
+      data_pagamento: new Date(),
+      valor_pago: calc.valorFinal
+    })
+    .eq("id", id)
 
-if(error){
-  tratarErro(error, "Erro ao atualizar pagamento")
-  return
-}
-   
+  if(error){
+    tratarErro(error, "Erro ao atualizar pagamento")
+    return
+  }
 
   fecharModal()
   listarPagamentos()
 
   mostrarAlerta("Pagamento registrado com sucesso!")
 
-  // 🔥 busca nome separado (SEM ERRO DE RELAÇÃO)
   const { data: contrato } = await client
     .from("contratos")
     .select("*")
@@ -2006,27 +2010,25 @@ if(error){
 
   const nome = inquilino?.nome || "Inquilino"
 
- const aluguel = pagamento.valor || 0
-const agua = pagamento.valor_agua || 0
-const juros = 0
-const total = aluguel + agua + juros
+  const aluguel = pagamento.valor || 0
+  const agua = pagamento.valor_agua || 0
+  const juros = 0
+  const total = aluguel + agua + juros
 
-// 🔥 unidade
-const { data: unidade } = await client
-  .from("unidades")
-  .select("*")
-  .eq("id", contrato.unidade_id)
-  .single()
+  const { data: unidade } = await client
+    .from("unidades")
+    .select("*")
+    .eq("id", contrato.unidade_id)
+    .single()
 
-// 🔥 prédio
-const { data: predio } = await client
-  .from("predios")
-  .select("*")
-  .eq("id", unidade.predio_id)
-  .single()
+  const { data: predio } = await client
+    .from("predios")
+    .select("*")
+    .eq("id", unidade.predio_id)
+    .single()
 
-const dados = await montarDadosRecibo(id)
-gerarRecibo(dados)
+  const dados = await montarDadosRecibo(id)
+  gerarRecibo(dados)
 
 }
 async function gerarReciboCompleto(pagamento_id){
