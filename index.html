@@ -1845,10 +1845,7 @@ window.pagamentosCache = pagamentos
 
     const atrasado = calc.diasAtraso > 0 && status !== "pago"
 
-    if(atrasado){
-    status = "atrasado"
-    }
-    
+   
     // filtro
     if (filtro && status !== filtro) return
     if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
