@@ -1916,13 +1916,19 @@ if(status === "atrasado"){
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
 
 
-            <button onclick="marcarAtrasado(${pagamento.id})">
-            ⚠ Marcar atrasado
-            </button>
+          ${
+  window.nivelUsuario === "admin"
+  ? `
+    <button onclick="marcarAtrasado(${pagamento.id})">
+    ⚠ Marcar atrasado
+    </button>
 
-            <button onclick="marcarPendente(${pagamento.id})">
-            🔄 Pendentes
-            </button>
+    <button onclick="marcarPendente(${pagamento.id})">
+    🔄 Pendentes
+    </button>
+  `
+  : ""
+}
 
               <button onclick="abrirPagamento(${pagamento.id}, ${calc.valorFinal})" class="btnReceber">
                 💳 Pagar
@@ -2021,6 +2027,12 @@ function fecharModal(){
 }
 
 async function marcarAtrasado(id){
+
+  if(window.nivelUsuario !== "admin"){
+    mostrarAlerta("Sem permissão", "erro")
+    return
+  }
+
   await client
     .from("pagamentos")
     .update({ status: "atrasado" })
@@ -2031,6 +2043,12 @@ async function marcarAtrasado(id){
 }
 
 async function marcarPendente(id){
+
+  if(window.nivelUsuario !== "admin"){
+    mostrarAlerta("Sem permissão", "erro")
+    return
+  }
+
   await client
     .from("pagamentos")
     .update({ status: "pendente" })
@@ -2039,7 +2057,6 @@ async function marcarPendente(id){
   mostrarAlerta("Voltou para pendente")
   listarPagamentos()
 }
-
   
 async function confirmarPagamento(id, forma){
 
