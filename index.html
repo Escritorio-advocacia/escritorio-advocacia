@@ -624,7 +624,9 @@ input, select{
 <button onclick="filtrarPagamentos('pago')">Pagos</button>
 <button onclick="filtrarPagamentos('pendente')">Pendentes</button>
 <button onclick="filtrarPagamentos('atrasado')">Atrasados</button>
-<button onclick="atualizarStatusAtrasados()">Atualizar atrasos</button>
+<button id="btnAtualizarAtrasos" onclick="atualizarStatusAtrasados()">
+  Atualizar atrasos
+</button>
 </div>
 
 <div id="listaPagamentos"></div>
@@ -3472,7 +3474,14 @@ function verContrato(arquivo){
 
  async function atualizarStatusAtrasados(){
 
+  if(window.nivelUsuario !== "admin"){
+    alert("🚫 Apenas ADMIN pode fazer isso")
+    return
+  }
+
   const hoje = new Date()
+  ...
+}
 
   const { data } = await client
     .from("pagamentos")
@@ -3575,6 +3584,11 @@ function controlarPermissoes(){
       }
 
     })
+    
+    const btn = document.getElementById("btnAtualizarAtrasos")
+if(btn){
+  btn.style.display = "none"
+}
 
   }
 
