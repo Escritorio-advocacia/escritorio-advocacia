@@ -1918,6 +1918,15 @@ if(status === "atrasado"){
           ? `
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
 
+
+            <button onclick="marcarAtrasado(${pagamento.id})">
+            ⚠ Marcar atrasado
+            </button>
+
+            <button onclick="marcarPendente(${pagamento.id})">
+            🔄 Pendentes
+            </button>
+
               <button onclick="abrirPagamento(${pagamento.id}, ${calc.valorFinal})" class="btnReceber">
                 💳 Pagar
               </button>
@@ -2013,6 +2022,28 @@ function fecharModal(){
     modal.remove()
   }
 }
+
+async function marcarAtrasado(id){
+  await client
+    .from("pagamentos")
+    .update({ status: "atrasado" })
+    .eq("id", id)
+
+  mostrarAlerta("Marcado como atrasado")
+  listarPagamentos()
+}
+
+async function marcarPendente(id){
+  await client
+    .from("pagamentos")
+    .update({ status: "pendente" })
+    .eq("id", id)
+
+  mostrarAlerta("Voltou para pendente")
+  listarPagamentos()
+}
+
+  
 async function confirmarPagamento(id, forma){
 
   // 🔒 CONTROLE DE ACESSO
@@ -3419,7 +3450,8 @@ function verContrato(arquivo){
   a.click()
 
 }
-async function atualizarStatusAtrasados(){
+
+ async function atualizarStatusAtrasados(){
 
   const hoje = new Date()
 
@@ -3429,10 +3461,12 @@ async function atualizarStatusAtrasados(){
 
   for(const p of data){
 
+    // 🔒 NÃO mexe em quem já pagou
+    if(p.status === "pago") continue
+
     const vencimento = new Date(p.data_vencimento)
 
-    // 🔥 SÓ ATUALIZA SE REALMENTE ESTIVER ATRASADO
-    if(p.status === "pendente" && vencimento < hoje){
+    if(vencimento < hoje){
 
       const { error } = await client
         .from("pagamentos")
