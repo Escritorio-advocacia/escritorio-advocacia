@@ -1779,6 +1779,12 @@ document.getElementById("listaContratos").innerHTML = html
 }
 async function listarPagamentos(filtro = null, busca = "") {
 
+if(!window.nivelUsuario){
+  await pegarNivelUsuario(
+    (await client.auth.getUser()).data.user.email
+  )
+}
+  
   const lista = document.getElementById("listaPagamentos")
   lista.innerHTML = ""
 
@@ -2029,7 +2035,7 @@ function fecharModal(){
 async function marcarAtrasado(id){
 
   if(window.nivelUsuario !== "admin"){
-    mostrarAlerta("Sem permissão", "erro")
+    alert("🚫 Apenas ADMIN pode fazer isso")
     return
   }
 
@@ -2041,11 +2047,11 @@ async function marcarAtrasado(id){
   mostrarAlerta("Marcado como atrasado")
   listarPagamentos()
 }
-
+  
 async function marcarPendente(id){
 
   if(window.nivelUsuario !== "admin"){
-    mostrarAlerta("Sem permissão", "erro")
+    alert("🚫 Apenas ADMIN pode fazer isso")
     return
   }
 
@@ -2057,7 +2063,6 @@ async function marcarPendente(id){
   mostrarAlerta("Voltou para pendente")
   listarPagamentos()
 }
-  
 async function confirmarPagamento(id, forma){
 
   // 🔒 CONTROLE DE ACESSO
@@ -3305,8 +3310,8 @@ async function login(){
 
     document.getElementById("usuarioTopo").innerText = data.session.user.email
 
-    await pegarNivelUsuario(data.session.user.email)
-    controlarPermissoes()
+   await pegarNivelUsuario(data.session.user.email)
+controlarPermissoes()
 
     // 🔥 CARREGA SISTEMA AO LOGAR
     await carregarSelects()
