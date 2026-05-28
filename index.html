@@ -814,10 +814,11 @@ listarPredios()
 function calcularValorAtualizado(pagamento){
 
   const hoje = new Date()
+  hoje.setHours(0,0,0,0)
 
   const vencimento = new Date(pagamento.data_vencimento)
+  vencimento.setHours(0,0,0,0)
 
-  // 🔥 diferença em dias
   let diasAtraso = Math.floor(
     (hoje - vencimento) / (1000 * 60 * 60 * 24)
   )
@@ -832,13 +833,13 @@ function calcularValorAtualizado(pagamento){
   let jurosAluguel = 0
   let multaAgua = 0
 
-  // 🔥 PASSOU DE 5 DIAS → cobra tudo
+  // passou dos 5 dias
   if(diasAtraso > 5){
 
-    // 🔥 0,5% AO DIA SOBRE TODOS OS DIAS
+    // 0,5% ao dia contando desde o vencimento
     jurosAluguel = aluguel * (0.005 * diasAtraso)
 
-    // 🔥 multa única de 10% na água
+    // multa única de 10% na água
     multaAgua = agua * 0.10
   }
 
