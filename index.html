@@ -814,10 +814,17 @@ listarPredios()
 function calcularValorAtualizado(pagamento){
 
   const hoje = new Date()
+
   const vencimento = new Date(pagamento.data_vencimento)
 
-  let diasAtraso = Math.floor((hoje - vencimento) / (1000 * 60 * 60 * 24))
-  if(diasAtraso < 0) diasAtraso = 0
+  // 🔥 diferença em dias
+  let diasAtraso = Math.floor(
+    (hoje - vencimento) / (1000 * 60 * 60 * 24)
+  )
+
+  if(diasAtraso < 0){
+    diasAtraso = 0
+  }
 
   const aluguel = Number(pagamento.valor) || 0
   const agua = Number(pagamento.valor_agua) || 0
@@ -825,15 +832,13 @@ function calcularValorAtualizado(pagamento){
   let jurosAluguel = 0
   let multaAgua = 0
 
-  // 🔥 REGRA: só após 5 dias
+  // 🔥 PASSOU DE 5 DIAS → cobra tudo
   if(diasAtraso > 5){
 
-    const diasComJuros = diasAtraso - 5
+    // 🔥 0,5% AO DIA SOBRE TODOS OS DIAS
+    jurosAluguel = aluguel * (0.005 * diasAtraso)
 
-    // 🏠 juros aluguel → 0,5% ao dia
-    jurosAluguel = aluguel * 0.005 * diasComJuros
-
-    // 🚿 multa água → 10% FIXO (uma vez só)
+    // 🔥 multa única de 10% na água
     multaAgua = agua * 0.10
   }
 
@@ -850,7 +855,6 @@ function calcularValorAtualizado(pagamento){
     agua,
     diasAtraso,
 
-    // 🔥 separados (novo padrão correto)
     jurosAluguel,
     multaAgua,
 
