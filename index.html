@@ -2182,15 +2182,7 @@ predios.forEach(predio => {
 📄 Recibo
 </button>
 
-<button onclick="
-enviarWhatsApp(
-'${nome}',
-'${telefone}',
-${JSON.stringify(calc)},
-${pagamento.mes},
-'${new Date(pagamento.data_vencimento).toLocaleDateString()}'
-)
-">
+<button onclick="cobrarInquilinoCompleto('${inquilino.id}')">
 📲 WhatsApp
 </button>
 
@@ -2202,7 +2194,7 @@ ${pagamento.mes},
 🔄 Pendente
 </button>
 
-<button onclick="verMeses('${contrato.id}')">
+<button onclick="abrirMesesPagamento('${contrato.id}')">
 📅 Meses
 </button>
 
