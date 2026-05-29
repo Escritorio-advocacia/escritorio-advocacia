@@ -1634,9 +1634,17 @@ async function listarInquilinos(){
           📲 Cobrar
         </button>
 
+          <button onclick="abrirMesesInquilino('${i.id}')">
+           📅 Meses
+           </button>
+
         <button onclick="editarInquilino('${i.id}')">
           ✏️ Editar
         </button>
+
+         <button onclick="abrirMesesInquilino('${i.id}')">
+          📅 Meses
+          </button>
 
         <button onclick="excluirInquilino('${i.id}')">
           🗑 Excluir
@@ -1875,6 +1883,95 @@ Contrato ${c.id}
 document.getElementById("listaContratos").innerHTML = html
 
 }
+function fecharMeses(){
+  document.getElementById("modalMeses").style.display = "none"
+}
+
+async function abrirMesesInquilino(inquilino_id){
+
+  const { data: contrato } = await client
+    .from("contratos")
+    .select("*")
+    .eq("inquilino_id", inquilino_id)
+    .single()
+
+  if(!contrato){
+    alert("Contrato não encontrado")
+    return
+  }
+
+  const { data: pagamentos } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("contrato_id", contrato.id)
+    .order("mes")
+
+  const meses = [
+    "Janeiro","Fevereiro","Março","Abril",
+    "Maio","Junho","Julho","Agosto",
+    "Setembro","Outubro","Novembro","Dezembro"
+  ]
+
+  let html = ""
+
+  pagamentos.forEach(p => {
+
+    html += `
+    <div style="
+      border:1px solid #ddd;
+      padding:10px;
+      margin-bottom:10px;
+      border-radius:8px;
+    ">
+
+      <b>${meses[p.mes - 1]}/${p.ano}</b>
+
+      <br>
+
+      Status atual:
+      <b>${p.status}</b>
+
+      <br><br>
+
+      <button onclick="alterarStatusMes('${p.id}','pago')">
+      ✔ Pago
+      </button>
+
+      <button onclick="alterarStatusMes('${p.id}','pendente')">
+      ⏳ Pendente
+      </button>
+
+      <button onclick="alterarStatusMes('${p.id}','atrasado')">
+      ⚠ Atrasado
+      </button>
+
+    </div>
+    `
+  })
+
+  document.getElementById("listaMesesInquilino").innerHTML = html
+
+  document.getElementById("modalMeses").style.display = "flex"
+}
+
+async function alterarStatusMes(id, status){
+
+  await client
+    .from("pagamentos")
+    .update({ status })
+    .eq("id", id)
+
+  mostrarAlerta("Status atualizado!")
+
+  const modal = document.getElementById("modalMeses")
+
+  if(modal.style.display === "flex"){
+    modal.style.display = "none"
+  }
+
+  listarPagamentos()
+}
+  
 async function listarPagamentos(filtro = null, busca = "") {
 
   if(!window.nivelUsuario){
@@ -1886,22 +1983,24 @@ async function listarPagamentos(filtro = null, busca = "") {
   const lista = document.getElementById("listaPagamentos")
   lista.innerHTML = ""
 
-  // 🔥 AGORA BUSCA TODOS OS MESES
-  const { data: pagamentos, error } = await client
-    .from("pagamentos")
-    .select(`
-      id,
-      contrato_id,
-      valor,
-      valor_agua,
-      status,
-      data_vencimento,
-      mes,
-      ano
-    `)
-    .order("ano", { ascending: false })
-    .order("mes", { ascending: true })
+ const hoje = new Date()
+const mesAtual = hoje.getMonth() + 1
+const anoAtual = hoje.getFullYear()
 
+const { data: pagamentos, error } = await client
+  .from("pagamentos")
+  .select(`
+    id,
+    contrato_id,
+    valor,
+    valor_agua,
+    status,
+    data_vencimento,
+    mes,
+    ano
+  `)
+  .eq("mes", mesAtual)
+  .eq("ano", anoAtual)
   window.pagamentosCache = pagamentos
 
   if(error || !pagamentos){
@@ -3932,7 +4031,42 @@ document.addEventListener("DOMContentLoaded", function(){
 })
 
 </script>
+<div id="modalMeses" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+z-index:9999;
+justify-content:center;
+align-items:center;
+">
 
+<div style="
+background:white;
+padding:20px;
+width:90%;
+max-width:600px;
+max-height:80vh;
+overflow:auto;
+border-radius:12px;
+">
+
+<h3>📅 Controle de Meses</h3>
+
+<div id="listaMesesInquilino"></div>
+
+<br>
+
+<button onclick="fecharMeses()">
+Fechar
+</button>
+
+</div>
+</div>
+    
 </div>
 </div>
 </body>
