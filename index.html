@@ -1306,7 +1306,7 @@ async function salvarInquilino(event) {
           status,
           data_inicio,
           data_fim,
-        (contrato_url && { contrato_url })
+        ...(contrato_url && { contrato_url })
         })
         .eq("id", window.idEditando)
 
