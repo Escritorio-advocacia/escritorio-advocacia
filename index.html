@@ -1966,6 +1966,16 @@ async function alterarStatusMes(id, status){
 
   listarPagamentos()
 }
+
+function togglePredioPagamento(id){
+  const div = document.getElementById(id)
+
+  if(div.style.display === "none"){
+    div.style.display = "block"
+  }else{
+    div.style.display = "none"
+  }
+}
   
 async function listarPagamentos(filtro = null, busca = "") {
 
@@ -1996,7 +2006,9 @@ const { data: pagamentos, error } = await client
   `)
   .eq("mes", mesAtual)
   .eq("ano", anoAtual)
-  window.pagamentosCache = pagamentos
+  .order("id", { ascending: true })
+
+window.pagamentosCache = pagamentos
 
   if(error || !pagamentos){
     console.log("Erro ao carregar pagamentos", error)
@@ -2025,54 +2037,81 @@ const { data: pagamentos, error } = await client
     return
   }
 
-  pagamentos.forEach(pagamento => {
+  let html = ""
 
-    // 🔥 CALCULA JUROS E MULTAS
+predios.forEach(predio => {
+
+  const unidadesPredio = unidades.filter(
+    u => u.predio_id == predio.id
+  )
+
+  const idsUnidades = unidadesPredio.map(
+    u => String(u.id)
+  )
+
+  const pagamentosPredio = pagamentos.filter(p => {
+
+    const contrato = contratos.find(
+      c => c.id == p.contrato_id
+    )
+
+    return idsUnidades.includes(
+      String(contrato?.unidade_id)
+    )
+
+  })
+
+  if(!pagamentosPredio.length){
+    return
+  }
+
+  html += `
+    <div
+      onclick="togglePredioPagamento('predioPag_${predio.id}')"
+      style="
+        background:#1e293b;
+        color:white;
+        padding:14px;
+        border-radius:12px;
+        margin-top:20px;
+        margin-bottom:10px;
+        cursor:pointer;
+        font-weight:bold;
+        font-size:18px;
+      "
+    >
+      🏢 ${predio.rua} Nº ${predio.numero}
+      (${pagamentosPredio.length} pagamentos)
+    </div>
+
+    <div id="predioPag_${predio.id}" style="display:none;">
+  `
+
+  pagamentosPredio.forEach(pagamento => {
+
     const calc = calcularValorAtualizado(pagamento)
 
-    // CONTRATO
     const contrato = contratos.find(
       c => c.id == pagamento.contrato_id
     )
 
-    // INQUILINO
     const inquilino = inquilinos.find(
       i => i.id == contrato?.inquilino_id
+    )
+
+    const unidade = unidades.find(
+      u => String(u.id) === String(contrato?.unidade_id)
     )
 
     const nome = inquilino?.nome || "Inquilino"
     const telefone = inquilino?.whatsapp || ""
 
-    // UNIDADE
-    const unidade = unidades.find(
-      u => String(u.id) === String(contrato?.unidade_id)
-    )
-
-    // PRÉDIO
-    const predio = predios.find(
-      p => p.id == unidade?.predio_id
-    )
-
-    const enderecoCompleto = predio
-      ? `${predio.rua} Nº ${predio.numero}`
-      : "Não informado"
-
     const numeroUnidade = unidade?.numero || "-"
 
-    // NOMES DOS MESES
     const nomesMeses = [
-      "Janeiro",
-      "Fevereiro",
-      "Março",
-      "Abril",
-      "Maio",
-      "Junho",
-      "Julho",
-      "Agosto",
-      "Setembro",
-      "Outubro",
-      "Novembro",
-      "Dezembro"
+      "Janeiro","Fevereiro","Março","Abril",
+      "Maio","Junho","Julho","Agosto",
+      "Setembro","Outubro","Novembro","Dezembro"
     ]
 
     const nomeMes = nomesMeses[pagamento.mes - 1]
@@ -2081,16 +2120,10 @@ const { data: pagamentos, error } = await client
       .toLowerCase()
       .trim()
 
-    // 🔥 DETECTA ATRASO AUTOMATICAMENTE
-    const atrasado =
-      calc.diasAtraso > 0 &&
-      status !== "pago"
-
-    if(atrasado){
+    if(calc.diasAtraso > 0 && status !== "pago"){
       status = "atrasado"
     }
 
-    // FILTRO
     if(filtro && status !== filtro) return
 
     if(
@@ -2102,7 +2135,6 @@ const { data: pagamentos, error } = await client
       return
     }
 
-    // CORES
     let cor = "#ccc"
     let fundo = "#fff"
 
@@ -2121,9 +2153,7 @@ const { data: pagamentos, error } = await client
       fundo = "#fee2e2"
     }
 
-    const div = document.createElement("div")
-
-    div.innerHTML = `
+    html += `
       <div style="
         border:1px solid ${cor};
         background:${fundo};
@@ -2132,140 +2162,43 @@ const { data: pagamentos, error } = await client
         border-radius:10px;
       ">
 
-        <b style="font-size:16px;">
-          ${nome}
-        </b><br>
+        <b>${nome}</b><br>
 
-        📍 ${enderecoCompleto}
-        - Unidade ${numeroUnidade}<br><br>
+        🚪 Unidade ${numeroUnidade}<br><br>
 
-        📅 Mês:
-        ${nomeMes}/${pagamento.ano}<br>
-
-        ${
-          calc.diasAtraso > 0
-          ? `
-            <span style="color:red;">
-              ⏰ ${calc.diasAtraso} dias em atraso
-            </span><br><br>
-
-            📈 Juros aluguel:
-            R$ ${calc.jurosAluguel.toFixed(2)}<br>
-
-            🚿 Multa água:
-            R$ ${calc.multaAgua.toFixed(2)}<br><br>
-          `
-          : `
-            <span style="color:green;">
-              Em dia
-            </span><br><br>
-          `
-        }
+        📅 ${nomeMes}/${pagamento.ano}<br>
 
         🏠 Valor original:
-        R$ ${calc.valorOriginal.toFixed(2)}<br><br>
+        R$ ${calc.valorOriginal.toFixed(2)}<br>
 
-        <b style="font-size:18px;">
-          💰 Total:
-          R$ ${calc.valorFinal.toFixed(2)}
-        </b><br><br>
+        💰 Total:
+        R$ ${calc.valorFinal.toFixed(2)}<br><br>
 
-        <span style="
-          color:${cor};
-          font-weight:bold;
-        ">
-          ${
-            status === "pago"
-            ? "✔ PAGO"
-            : status === "atrasado"
-            ? "⚠ ATRASADO"
-            : "⏳ PENDENTE"
-          }
-        </span>
+        <button onclick="abrirPagamento(${pagamento.id})">
+          💳 Pagar
+        </button>
 
-        <br><br>
+        <button onclick="gerarReciboCompleto(${pagamento.id})">
+          📄 Recibo
+        </button>
 
-        ${
-          status !== "pago"
-          ? `
-            <div style="
-              display:flex;
-              gap:10px;
-              flex-wrap:wrap;
-            ">
+        <button onclick="abrirMesesPagamento(${pagamento.contrato_id})">
+          📅 Meses
+        </button>
 
-              ${
-                window.nivelUsuario === "admin"
-                ? `
-                  <button onclick="
-                    marcarAtrasado(${pagamento.id})
-                  ">
-                    ⚠ Marcar atrasado
-                  </button>
-
-                  <button onclick="
-                    marcarPendente(${pagamento.id})
-                  ">
-                    🔄 Pendente
-                  </button>
-                `
-                : ""
-              }
-
-              <button onclick="
-                abrirPagamento(${pagamento.id})
-              " class="btnReceber">
-                💳 Pagar
-              </button>
-
-              <button onclick="
-                enviarWhatsApp(
-                  '${nome}',
-                  '${telefone}',
-                  ${JSON.stringify(calc)},
-                  ${pagamento.mes},
-                  '${new Date(
-                    pagamento.data_vencimento
-                  ).toLocaleDateString()}'
-                )
-              ">
-                📲 WhatsApp
-              </button>
-
-              <button onclick="
-                gerarReciboCompleto(${pagamento.id})
-              ">
-                📄 Recibo
-              </button>
-
-            <button onclick="abrirMesesPagamento(${pagamento.contrato_id})">
-            📅 Meses
-           </button>
- 
-           <button onclick="quitarAtrasados(${pagamento.contrato_id})">
-            💰 Quitar atrasados
-           </button>
-
-
-            </div>
-          `
-          : `
-            <span style="
-              color:green;
-              font-weight:bold;
-            ">
-              ✔ Pago
-            </span>
-          `
-        }
+        <button onclick="quitarAtrasados(${pagamento.contrato_id})">
+          💰 Quitar atrasados
+        </button>
 
       </div>
     `
-
-    lista.appendChild(div)
-
   })
 
+  html += "</div>"
+
+})
+
+lista.innerHTML = html
 }
   function buscarPagamentos(texto){
   listarPagamentos(null, texto)
