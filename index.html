@@ -1658,28 +1658,47 @@ Caso já tenha pago, desconsidere esta mensagem.`
 
 }
 async function editarInquilino(id){
-if(window.nivelUsuario === "funcionario"){
-  mostrarAlerta("Você não tem permissão!", "erro")
-  return
-}
 
+  if(window.nivelUsuario === "funcionario"){
+    mostrarAlerta("Você não tem permissão!", "erro")
+    return
+  }
 
-const { data } = await client
-.from("inquilinos")
-.select("*")
-.eq("id", id)
-.single()
+  const { data } = await client
+    .from("inquilinos")
+    .select("*")
+    .eq("id", id)
+    .single()
 
-document.getElementById("nomeInquilino").value = data.nome
-document.getElementById("cpfInquilino").value = data.cpf
-document.getElementById("telefoneInquilino").value = data.whatsapp
-document.getElementById("emailInquilino").value = data.email
-document.getElementById("valorAluguel").value = data.valor_aluguel
-document.getElementById("valorAgua").value = data.valor_agua
-document.getElementById("diaVencimento").value = data.dia_vencimento
+  document.getElementById("nomeInquilino").value = data.nome || ""
+  document.getElementById("cpfInquilino").value = data.cpf || ""
+  document.getElementById("rg").value = data.rg || ""
 
-window.idEditando = id
+  document.getElementById("telefoneInquilino").value = data.whatsapp || ""
+  document.getElementById("emailInquilino").value = data.email || ""
 
+  document.getElementById("nomeResponsavel").value = data.nome_responsavel || ""
+  document.getElementById("cpfResponsavel").value = data.cpf_responsavel || ""
+  document.getElementById("rg_responsavel").value = data.rg_responsavel || ""
+  document.getElementById("whatsappResponsavel").value = data.whatsapp_responsavel || ""
+
+  document.getElementById("unidadeSelect").value = data.unidade_id || ""
+
+  document.getElementById("valorAluguel").value = data.valor_aluguel || ""
+  document.getElementById("valorAgua").value = data.valor_agua || ""
+
+  document.getElementById("diaVencimento").value = data.dia_vencimento || ""
+
+  document.getElementById("dataInicioContrato").value = data.data_inicio || ""
+  document.getElementById("dataFimContrato").value = data.data_fim || ""
+
+  document.getElementById("statusInquilino").value = data.status || "ativo"
+
+  window.idEditando = id
+
+  abrirTela("inquilinos")
+
+  mostrarAlerta("Inquilino carregado para edição")
 }
 async function verHistoricoInquilino(id){
 
