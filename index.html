@@ -1634,6 +1634,10 @@ async function listarInquilinos(){
           📲 Cobrar
         </button>
 
+        <button onclick="receberTodosAtrasados('${i.id}')">
+        💰 Receber atrasados
+        </button>
+
           <button onclick="abrirMesesInquilino('${i.id}')">
            📅 Meses
            </button>
@@ -2828,6 +2832,84 @@ graficoFinanceiroChart = new Chart(ctx, {
 
 }
 
+async function receberTodosAtrasados(inquilino_id){
+
+  const { data: contrato } = await client
+    .from("contratos")
+    .select("*")
+    .eq("inquilino_id", inquilino_id)
+    .single()
+
+  if(!contrato){
+    alert("Contrato não encontrado")
+    return
+  }
+
+  const { data: pagamentos } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("contrato_id", contrato.id)
+
+  const atrasados = pagamentos.filter(
+    p => p.status === "atrasado"
+  )
+
+  if(atrasados.length === 0){
+    alert("Nenhum mês atrasado")
+    return
+  }
+
+  let total = 0
+  let resumo = ""
+
+  atrasados.forEach(p => {
+
+    const calc = calcularValorAtualizado(p)
+
+    total += calc.total
+
+    resumo += `
+Mês ${p.mes}/${p.ano}
+R$ ${calc.total.toFixed(2)}
+
+`
+  })
+
+  const confirmar = confirm(
+`Meses atrasados:
+
+${resumo}
+
+TOTAL: R$ ${total.toFixed(2)}
+
+Deseja receber tudo?`
+  )
+
+  if(!confirmar){
+    return
+  }
+
+  for(const p of atrasados){
+
+    await client
+      .from("pagamentos")
+      .update({
+        status:"pago",
+        data_pagamento:new Date(),
+        forma_pagamento:"QUITAÇÃO"
+      })
+      .eq("id", p.id)
+
+  }
+
+  mostrarAlerta(
+    `Recebido R$ ${total.toFixed(2)}`
+  )
+
+  listarPagamentos()
+}
+
+  
 async function cobrarInquilinoCompleto(inquilino_id){
 
   try{
