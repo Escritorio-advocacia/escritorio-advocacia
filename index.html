@@ -3282,9 +3282,10 @@ async function montarDadosRecibo(pagamento_id){
   const calc = calcularValorAtualizado(pagamento)
 
   const aluguel = pagamento.valor || 0
- const juros = calc.jurosAluguel
+const agua = pagamento.valor_agua || 0
+const juros = calc.jurosAluguel
 const multaAgua = calc.multaAgua
-  const total = calc.valorFinal
+const total = calc.valorFinal
 
   // 🔥 CORREÇÃO DO VENCIMENTO
   const vencimento = pagamento.data_vencimento
@@ -3295,27 +3296,29 @@ const multaAgua = calc.multaAgua
   const diasAtraso = calc.diasAtraso || 0
 
   return {
-    nome: inquilino?.nome || "-",
+  nome: inquilino?.nome || "-",
 
-    rua,
-    numero,
-    bairro,
-    cidade,
-    cep,
+  rua,
+  numero,
+  bairro,
+  cidade,
+  cep,
 
-    vencimento,
-    unidade: unidade?.numero || "-",
-    mes: pagamento.mes,
+  vencimento,
+  unidade: unidade?.numero || "-",
+  mes: pagamento.mes,
 
-    aluguel,
-    multaAgua,
-    juros,
-    total,
+  aluguel,
+  agua, // <- adicionar
 
-    forma: pagamento.forma_pagamento || "PENDENTE",
+  multaAgua,
+  juros,
+  total,
 
-    diasAtraso
-  }
+  forma: pagamento.forma_pagamento || "PENDENTE",
+
+  diasAtraso
+}
 }
 function gerarRecibo(dados) {
 
@@ -3371,14 +3374,18 @@ function gerarRecibo(dados) {
     <hr>
 
     <div style="background:#f1f5f9; padding:15px; border-radius:10px;">
-      <p>Aluguel: R$ ${Number(dados.aluguel).toFixed(2)}</p>
-      <p>Juros aluguel: R$ ${Number(dados.juros).toFixed(2)}</p>
-      <p>Multa água: R$ ${Number(dados.multaAgua).toFixed(2)}</p>
+  <p>Aluguel: R$ ${Number(dados.aluguel || 0).toFixed(2)}</p>
 
-      <h3 style="margin-top:10px; color:#16a34a;">
-        Total: R$ ${Number(dados.total).toFixed(2)}
-      </h3>
-    </div>
+  <p>Água: R$ ${Number(dados.agua || 0).toFixed(2)}</p>
+
+  <p>Juros aluguel: R$ ${Number(dados.juros || 0).toFixed(2)}</p>
+
+  <p>Multa água: R$ ${Number(dados.multaAgua || 0).toFixed(2)}</p>
+
+  <h3 style="margin-top:10px; color:#16a34a;">
+    Total: R$ ${Number(dados.total || 0).toFixed(2)}
+  </h3>
+</div>
 
     <br>
 
