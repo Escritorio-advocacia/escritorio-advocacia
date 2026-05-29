@@ -616,7 +616,7 @@ input, select{
 
 <h3>Pagamentos</h3>
 
-<input type="text" placeholder="Buscar pagamento..." onkeyup="buscarPagamentos(this.value)">
+<input type="text" placeholder="Buscar pagamento" onkeyup="buscarPagamentos(this.value)">
 
 <div>
 
@@ -1306,7 +1306,7 @@ async function salvarInquilino(event) {
           status,
           data_inicio,
           data_fim,
-          ...(contrato_url && { contrato_url })
+          (contrato_url && { contrato_url })
         })
         .eq("id", window.idEditando)
 
@@ -2479,7 +2479,7 @@ div.innerHTML = html
 
 async function atualizarSistema(){
 
-  mostrarAlerta("Atualizando...")
+  mostrarAlerta("Atualizando")
 
   await Promise.all([
     listarPagamentos(),
@@ -3521,7 +3521,7 @@ function verContrato(arquivo){
   }
 
   const hoje = new Date()
-  ...
+
 }
 
   const { data } = await client
