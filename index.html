@@ -2174,22 +2174,41 @@ predios.forEach(predio => {
         💰 Total:
         R$ ${calc.valorFinal.toFixed(2)}<br><br>
 
-        <button onclick="abrirPagamento(${pagamento.id})">
-          💳 Pagar
-        </button>
+       <button onclick="abrirPagamento(${pagamento.id})">
+💳 Pagar
+</button>
 
-        <button onclick="gerarReciboCompleto(${pagamento.id})">
-          📄 Recibo
-        </button>
+<button onclick="gerarReciboCompleto(${pagamento.id})">
+📄 Recibo
+</button>
 
-        <button onclick="abrirMesesPagamento(${pagamento.contrato_id})">
-          📅 Meses
-        </button>
+<button onclick="
+enviarWhatsApp(
+'${nome}',
+'${telefone}',
+${JSON.stringify(calc)},
+${pagamento.mes},
+'${new Date(pagamento.data_vencimento).toLocaleDateString()}'
+)
+">
+📲 WhatsApp
+</button>
 
-        <button onclick="quitarAtrasados(${pagamento.contrato_id})">
-          💰 Quitar atrasados
-        </button>
+<button onclick="marcarAtrasado(${pagamento.id})">
+⚠️ Marcar atrasado
+</button>
 
+<button onclick="marcarPendente(${pagamento.id})">
+🔄 Pendente
+</button>
+
+<button onclick="verMeses('${contrato.id}')">
+📅 Meses
+</button>
+
+<button onclick="quitarAtrasados('${contrato.id}')">
+💰 Quitar atrasados
+</button>
       </div>
     `
   })
