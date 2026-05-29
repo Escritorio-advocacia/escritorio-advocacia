@@ -2247,6 +2247,15 @@ const { data: pagamentos, error } = await client
                 📄 Recibo
               </button>
 
+            <button onclick="abrirMesesPagamento(${pagamento.contrato_id})">
+            📅 Meses
+           </button>
+ 
+           <button onclick="quitarAtrasados(${pagamento.contrato_id})">
+            💰 Quitar atrasados
+           </button>
+
+
             </div>
           `
           : `
@@ -2270,6 +2279,133 @@ const { data: pagamentos, error } = await client
   function buscarPagamentos(texto){
   listarPagamentos(null, texto)
 }
+
+async function abrirMesesPagamento(contrato_id){
+
+  document.getElementById("modalMeses").style.display = "flex"
+
+  const { data: pagamentos } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("contrato_id", contrato_id)
+    .order("ano")
+    .order("mes")
+
+  let html = ""
+
+  const meses = [
+    "Janeiro","Fevereiro","Março","Abril",
+    "Maio","Junho","Julho","Agosto",
+    "Setembro","Outubro","Novembro","Dezembro"
+  ]
+
+  pagamentos.forEach(p => {
+
+    html += `
+      <div style="
+        border-bottom:1px solid #ddd;
+        padding:10px;
+      ">
+
+        <b>${meses[p.mes-1]}/${p.ano}</b>
+
+        <br>
+
+        Status atual:
+        <b>${p.status}</b>
+
+        <br><br>
+
+        <button onclick="alterarStatusMes('${p.id}','pago')">
+          ✔ Pago
+        </button>
+
+        <button onclick="alterarStatusMes('${p.id}','pendente')">
+          ⏳ Pendente
+        </button>
+
+        <button onclick="alterarStatusMes('${p.id}','atrasado')">
+          ⚠ Atrasado
+        </button>
+
+      </div>
+    `
+  })
+
+  document.getElementById("listaMesesInquilino").innerHTML = html
+}
+
+async function alterarStatusMes(id,status){
+
+  await client
+    .from("pagamentos")
+    .update({status})
+    .eq("id",id)
+
+  mostrarAlerta("Status atualizado")
+}
+
+async function quitarAtrasados(contrato_id){
+
+  const { data: pagamentos } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("contrato_id", contrato_id)
+
+  const atrasados = pagamentos.filter(
+    p => p.status === "atrasado"
+  )
+
+  if(atrasados.length === 0){
+    alert("Nenhum atraso encontrado")
+    return
+  }
+
+  let total = 0
+  let resumo = ""
+
+  atrasados.forEach(p=>{
+
+    const calc = calcularValorAtualizado(p)
+
+    total += calc.total
+
+    resumo +=
+      "Mês " + p.mes +
+      "/" + p.ano +
+      " = R$ " +
+      calc.total.toFixed(2) +
+      "\n"
+  })
+
+  if(!confirm(
+    resumo +
+    "\n\nTOTAL = R$ " +
+    total.toFixed(2)
+  )){
+    return
+  }
+
+  for(const p of atrasados){
+
+    await client
+      .from("pagamentos")
+      .update({
+        status:"pago",
+        data_pagamento:new Date(),
+        forma_pagamento:"QUITAÇÃO"
+      })
+      .eq("id",p.id)
+  }
+
+  mostrarAlerta(
+    "Quitado R$ " +
+    total.toFixed(2)
+  )
+
+  listarPagamentos()
+}
+  
 function abrirPagamento(id, valor){
 
   const pagamento = window.pagamentosCache?.find(p => p.id == id)
