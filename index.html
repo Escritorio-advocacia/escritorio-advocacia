@@ -1822,60 +1822,87 @@ document.getElementById("listaContratos").innerHTML = html
 }
 async function listarPagamentos(filtro = null, busca = "") {
 
-if(!window.nivelUsuario){
-  await pegarNivelUsuario(
-    (await client.auth.getUser()).data.user.email
-  )
-}
-  
+  if(!window.nivelUsuario){
+    await pegarNivelUsuario(
+      (await client.auth.getUser()).data.user.email
+    )
+  }
+
   const lista = document.getElementById("listaPagamentos")
   lista.innerHTML = ""
 
-  const hoje = new Date()
-  const mesAtual = hoje.getMonth() + 1
-  const anoAtual = hoje.getFullYear()
-
+  // 🔥 AGORA BUSCA TODOS OS MESES
   const { data: pagamentos, error } = await client
-  .from("pagamentos")
-  .select("id, contrato_id, valor, valor_agua, status, data_vencimento, mes, ano")
-  .eq("mes", mesAtual)
-  .eq("ano", anoAtual)
+    .from("pagamentos")
+    .select(`
+      id,
+      contrato_id,
+      valor,
+      valor_agua,
+      status,
+      data_vencimento,
+      mes,
+      ano
+    `)
+    .order("ano", { ascending: false })
+    .order("mes", { ascending: false })
 
-window.pagamentosCache = pagamentos
+  window.pagamentosCache = pagamentos
 
-  if (error || !pagamentos) {
+  if(error || !pagamentos){
     console.log("Erro ao carregar pagamentos", error)
     lista.innerHTML = "Erro ao carregar pagamentos"
     return
   }
 
-  const { data: contratos } = await client.from("contratos").select("*")
-  const { data: inquilinos } = await client.from("inquilinos").select("*")
-  const { data: unidades } = await client.from("unidades").select("*")
-  const { data: predios } = await client.from("predios").select("*")
+  const { data: contratos } = await client
+    .from("contratos")
+    .select("*")
 
-  if (!pagamentos.length) {
+  const { data: inquilinos } = await client
+    .from("inquilinos")
+    .select("*")
+
+  const { data: unidades } = await client
+    .from("unidades")
+    .select("*")
+
+  const { data: predios } = await client
+    .from("predios")
+    .select("*")
+
+  if(!pagamentos.length){
     lista.innerHTML = "Nenhum pagamento encontrado"
     return
   }
 
   pagamentos.forEach(pagamento => {
 
-    // 🔥 cálculo PROFISSIONAL
+    // 🔥 CALCULA JUROS E MULTAS
     const calc = calcularValorAtualizado(pagamento)
 
-    // contrato
-    const contrato = contratos.find(c => c.id == pagamento.contrato_id)
+    // CONTRATO
+    const contrato = contratos.find(
+      c => c.id == pagamento.contrato_id
+    )
 
-    // inquilino
-    const inquilino = inquilinos.find(i => i.id == contrato?.inquilino_id)
+    // INQUILINO
+    const inquilino = inquilinos.find(
+      i => i.id == contrato?.inquilino_id
+    )
 
     const nome = inquilino?.nome || "Inquilino"
     const telefone = inquilino?.whatsapp || ""
 
-    // unidade e prédio
-    const unidade = unidades.find(u => String(u.id) === String(contrato?.unidade_id))
-    const predio = predios.find(p => p.id == unidade?.predio_id)
+    // UNIDADE
+    const unidade = unidades.find(
+      u => String(u.id) === String(contrato?.unidade_id)
+    )
+
+    // PRÉDIO
+    const predio = predios.find(
+      p => p.id == unidade?.predio_id
+    )
 
     const enderecoCompleto = predio
       ? `${predio.rua} Nº ${predio.numero}`
@@ -1883,123 +1910,195 @@ window.pagamentosCache = pagamentos
 
     const numeroUnidade = unidade?.numero || "-"
 
+    // NOMES DOS MESES
     const nomesMeses = [
-      "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-      "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro"
     ]
 
     const nomeMes = nomesMeses[pagamento.mes - 1]
 
-    let status = (pagamento.status || "").toLowerCase().trim()
+    let status = (pagamento.status || "")
+      .toLowerCase()
+      .trim()
 
-    const atrasado = calc.diasAtraso > 0 && status !== "pago"
+    // 🔥 DETECTA ATRASO AUTOMATICAMENTE
+    const atrasado =
+      calc.diasAtraso > 0 &&
+      status !== "pago"
 
-   
-    // filtro
-    if (filtro && status !== filtro) return
-    if (busca && !nome.toLowerCase().includes(busca.toLowerCase())) return
+    if(atrasado){
+      status = "atrasado"
+    }
 
-  let cor = "#ccc"
-let fundo = "#fff"
+    // FILTRO
+    if(filtro && status !== filtro) return
 
-if(status === "pago"){
-  cor = "#16a34a"
-  fundo = "#dcfce7"
-}
+    if(
+      busca &&
+      !nome.toLowerCase().includes(
+        busca.toLowerCase()
+      )
+    ){
+      return
+    }
 
-if(status === "pendente"){
-  cor = "#f59e0b"
-  fundo = "#fef3c7"
-}
+    // CORES
+    let cor = "#ccc"
+    let fundo = "#fff"
 
-if(status === "atrasado"){
-  cor = "#dc2626"
-  fundo = "#fee2e2"
-}
+    if(status === "pago"){
+      cor = "#16a34a"
+      fundo = "#dcfce7"
+    }
+
+    if(status === "pendente"){
+      cor = "#f59e0b"
+      fundo = "#fef3c7"
+    }
+
+    if(status === "atrasado"){
+      cor = "#dc2626"
+      fundo = "#fee2e2"
+    }
 
     const div = document.createElement("div")
 
     div.innerHTML = `
-     <div style="
-  border:1px solid ${cor};
-  background:${fundo};
-  padding:15px;
-  margin:10px;
-  border-radius:10px;
-">
-        
-        <b style="font-size:16px;">${nome}</b><br>
-        📍 ${enderecoCompleto} - Unidade ${numeroUnidade}<br><br>
+      <div style="
+        border:1px solid ${cor};
+        background:${fundo};
+        padding:15px;
+        margin:10px;
+        border-radius:10px;
+      ">
 
-        📅 Mês: ${nomeMes}<br>
+        <b style="font-size:16px;">
+          ${nome}
+        </b><br>
+
+        📍 ${enderecoCompleto}
+        - Unidade ${numeroUnidade}<br><br>
+
+        📅 Mês:
+        ${nomeMes}/${pagamento.ano}<br>
 
         ${
           calc.diasAtraso > 0
           ? `
-            <span style="color:red;">⏰ ${calc.diasAtraso} dias em atraso</span><br>
-            📈 Juros aluguel: R$ ${calc.jurosAluguel.toFixed(2)}
-            🚿 Multa água: R$ ${calc.multaAgua.toFixed(2)}
+            <span style="color:red;">
+              ⏰ ${calc.diasAtraso} dias em atraso
+            </span><br><br>
+
+            📈 Juros aluguel:
+            R$ ${calc.jurosAluguel.toFixed(2)}<br>
+
+            🚿 Multa água:
+            R$ ${calc.multaAgua.toFixed(2)}<br><br>
           `
-          : `<span style="color:green;">Em dia</span><br>`
+          : `
+            <span style="color:green;">
+              Em dia
+            </span><br><br>
+          `
         }
 
-        🏠 Valor original: R$ ${calc.valorOriginal.toFixed(2)}<br>
+        🏠 Valor original:
+        R$ ${calc.valorOriginal.toFixed(2)}<br><br>
 
-        <br>
         <b style="font-size:18px;">
-          💰 Total: R$ ${calc.valorFinal.toFixed(2)}
-        </b><br>
+          💰 Total:
+          R$ ${calc.valorFinal.toFixed(2)}
+        </b><br><br>
 
-        <span style="color:${cor}; font-weight:bold;">
-       <span style="font-weight:bold; color:${cor}">
-  ${status === "pago" ? "✔ PAGO" :
-    status === "atrasado" ? "⚠ ATRASADO" :
-    "⏳ PENDENTE"}
-</span>
+        <span style="
+          color:${cor};
+          font-weight:bold;
+        ">
+          ${
+            status === "pago"
+            ? "✔ PAGO"
+            : status === "atrasado"
+            ? "⚠ ATRASADO"
+            : "⏳ PENDENTE"
+          }
+        </span>
 
         <br><br>
 
         ${
           status !== "pago"
           ? `
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <div style="
+              display:flex;
+              gap:10px;
+              flex-wrap:wrap;
+            ">
 
+              ${
+                window.nivelUsuario === "admin"
+                ? `
+                  <button onclick="
+                    marcarAtrasado(${pagamento.id})
+                  ">
+                    ⚠ Marcar atrasado
+                  </button>
 
-          ${
-  window.nivelUsuario === "admin"
-  ? `
-    <button onclick="marcarAtrasado(${pagamento.id})">
-    ⚠ Marcar atrasado
-    </button>
+                  <button onclick="
+                    marcarPendente(${pagamento.id})
+                  ">
+                    🔄 Pendente
+                  </button>
+                `
+                : ""
+              }
 
-    <button onclick="marcarPendente(${pagamento.id})">
-    🔄 Pendentes
-    </button>
-  `
-  : ""
-}
-
-              <button onclick="abrirPagamento(${pagamento.id}, ${calc.valorFinal})" class="btnReceber">
+              <button onclick="
+                abrirPagamento(${pagamento.id})
+              " class="btnReceber">
                 💳 Pagar
               </button>
 
-              <button onclick="enviarWhatsApp(
-  '${nome}',
-  '${telefone}',
-  ${JSON.stringify(calc)},
-  ${pagamento.mes},
-  '${new Date(pagamento.data_vencimento).toLocaleDateString()}'
-)">
-📲 WhatsApp
-</button>
+              <button onclick="
+                enviarWhatsApp(
+                  '${nome}',
+                  '${telefone}',
+                  ${JSON.stringify(calc)},
+                  ${pagamento.mes},
+                  '${new Date(
+                    pagamento.data_vencimento
+                  ).toLocaleDateString()}'
+                )
+              ">
+                📲 WhatsApp
+              </button>
 
-              <button onclick="gerarReciboCompleto(${pagamento.id})">
+              <button onclick="
+                gerarReciboCompleto(${pagamento.id})
+              ">
                 📄 Recibo
               </button>
 
             </div>
           `
-          : `<span style="color:green; font-weight:bold;">✔ Pago</span>`
+          : `
+            <span style="
+              color:green;
+              font-weight:bold;
+            ">
+              ✔ Pago
+            </span>
+          `
         }
 
       </div>
@@ -2008,8 +2107,8 @@ if(status === "atrasado"){
     lista.appendChild(div)
 
   })
+
 }
- 
   function buscarPagamentos(texto){
   listarPagamentos(null, texto)
 }
