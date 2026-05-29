@@ -1491,6 +1491,20 @@ async function excluirInquilino(id){
   await listarPagamentos()
 }
   
+  function togglePredio(id){
+
+  const div = document.getElementById(id)
+
+  if(!div) return
+
+  if(div.style.display === "none"){
+    div.style.display = "block"
+  }else{
+    div.style.display = "none"
+  }
+
+}
+  
 async function listarInquilinos(){
 
   const { data, error } = await client
@@ -1529,42 +1543,46 @@ async function listarInquilinos(){
 
   let html = ""
 
-  // 🔥 LOOP DOS PRÉDIOS
   predios.forEach(predio => {
 
-    // pega unidades do prédio
     const unidadesPredio = unidades.filter(
       u => u.predio_id == predio.id
     )
 
-    // pega IDs das unidades
-    const idsUnidades = unidadesPredio.map(u => u.id)
+    const idsUnidades = unidadesPredio.map(
+      u => u.id
+    )
 
-    // pega inquilinos do prédio
     const inquilinosPredio = lista.filter(
       i => idsUnidades.includes(i.unidade_id)
     )
 
-    // se não tiver inquilino, ignora
     if(inquilinosPredio.length === 0){
       return
     }
 
-    // 🔥 TÍTULO DO PRÉDIO
     html += `
-      <div style="
-        background:#1e293b;
-        color:white;
-        padding:12px;
-        border-radius:10px;
-        margin-top:20px;
-        margin-bottom:10px;
-      ">
+      <div
+        onclick="togglePredio('predio_${predio.id}')"
+        style="
+          background:#1e293b;
+          color:white;
+          padding:14px;
+          border-radius:12px;
+          margin-top:20px;
+          margin-bottom:10px;
+          cursor:pointer;
+          font-weight:bold;
+          font-size:18px;
+        "
+      >
         🏢 ${predio.rua} Nº ${predio.numero}
+        (${inquilinosPredio.length} inquilinos)
       </div>
+
+      <div id="predio_${predio.id}" style="display:none;">
     `
 
-    // 🔥 INQUILINOS DO PRÉDIO
     inquilinosPredio.forEach(i => {
 
       const unidade = unidades.find(
@@ -1580,21 +1598,37 @@ async function listarInquilinos(){
         box-shadow:0 2px 10px rgba(0,0,0,0.08);
       ">
 
-        <b>${i.nome || "Sem nome"}</b>
+        <h2 style="margin-bottom:10px;">
+          ${i.nome || "Sem nome"}
+        </h2>
 
-        <br>🚪 Unidade: ${unidade ? unidade.numero : "-"}
-        
-        ${i.nome_responsavel ? `<br><b>👤 Resp:</b> ${i.nome_responsavel}` : ""}
+        <p>🚪 Unidade: ${unidade ? unidade.numero : "-"}</p>
 
-        <br>📞 ${i.whatsapp || "-"}
-        ${i.whatsapp_responsavel ? `<br>👤 Resp: ${i.whatsapp_responsavel}` : ""}
+        ${
+          i.nome_responsavel
+          ? `<p><b>👤 Resp:</b> ${i.nome_responsavel}</p>`
+          : ""
+        }
 
-        <br>🪪 CPF: ${i.cpf || "-"}
-        ${i.cpf_responsavel ? `<br>👤 CPF Resp: ${i.cpf_responsavel}` : ""}
+        <p>📞 ${i.whatsapp || "-"}</p>
 
-        <br>💰 Aluguel: R$ ${i.valor_aluguel || 0}
+        ${
+          i.whatsapp_responsavel
+          ? `<p>👤 Resp: ${i.whatsapp_responsavel}</p>`
+          : ""
+        }
 
-        <br><br>
+        <p>🪪 CPF: ${i.cpf || "-"}</p>
+
+        ${
+          i.cpf_responsavel
+          ? `<p>👤 CPF Resp: ${i.cpf_responsavel}</p>`
+          : ""
+        }
+
+        <p>💰 Aluguel: R$ ${i.valor_aluguel || 0}</p>
+
+        <br>
 
         <button onclick="cobrarInquilinoCompleto('${i.id}')">
           📲 Cobrar
@@ -1611,9 +1645,9 @@ async function listarInquilinos(){
         ${
           i.contrato_url
           ? `
-            <button onclick="verContrato('${i.contrato_url}')">
-              📄 Contrato
-            </button>
+          <button onclick="verContrato('${i.contrato_url}')">
+            📄 Contrato
+          </button>
           `
           : ""
         }
@@ -1621,6 +1655,8 @@ async function listarInquilinos(){
       </div>
       `
     })
+
+    html += `</div>`
 
   })
 
