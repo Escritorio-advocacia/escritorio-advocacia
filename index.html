@@ -1900,7 +1900,7 @@ async function listarPagamentos(filtro = null, busca = "") {
       ano
     `)
     .order("ano", { ascending: false })
-    .order("mes", { ascending: false })
+    .order("mes", { ascending: true })
 
   window.pagamentosCache = pagamentos
 
