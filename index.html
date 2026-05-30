@@ -2268,89 +2268,90 @@ predios.forEach(predio => {
       fundo = "#fee2e2"
     }
 
-    html += `
-      <div style="
-        border-left:6px solid ${cor};
-        background:white;
-        padding:18px;
-        margin:12px;
-        border-radius:16px;
-        box-shadow:0 8px 20px rgba(0,0,0,.08);
-      ">
+   html += `
+<div style="
+  border-left:6px solid ${cor};
+  background:white;
+  padding:18px;
+  margin:12px;
+  border-radius:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+">
 
-        <div style="
-          font-size:20px;
-          font-weight:700;
-          color:#0f172a;
-          margin-bottom:8px;
-        ">
-          ${nome}
-        </div>
+  <div style="
+    font-size:20px;
+    font-weight:700;
+    color:#0f172a;
+    margin-bottom:8px;
+  ">
+    ${nome}
+  </div>
+
+  🚪 Unidade ${numeroUnidade}<br><br>
+
+  📅 ${nomeMes}/${pagamento.ano}<br>
+
+  🏠 Valor original:
+  R$ ${calc.valorOriginal.toFixed(2)}<br>
+
+  <div style="
+    margin-top:10px;
+    margin-bottom:12px;
+    padding:12px;
+    background:#f8fafc;
+    border-radius:12px;
+  ">
+
+    <div style="
+      font-size:13px;
+      color:#64748b;
+    ">
+      VALOR TOTAL
+    </div>
+
+    <div style="
+      font-size:28px;
+      font-weight:700;
+      color:${cor};
+    ">
+      R$ ${calc.valorFinal.toFixed(2)}
+    </div>
+
+  </div>
+
+  <button class="btnSalvar"
+    onclick="abrirPagamento(${pagamento.id})">
+    💳 Pagar
+  </button>
+
+  <button class="btnRecibo"
+    onclick="gerarReciboCompleto(${pagamento.id})">
+    📄 Recibo
+  </button>
+
+  <button onclick="cobrarInquilinoCompleto('${inquilino.id}')">
+    📲 WhatsApp
+  </button>
+
+  <button onclick="marcarAtrasado(${pagamento.id})">
+    ⚠️ Marcar atrasado
+  </button>
+
+  <button onclick="marcarPendente(${pagamento.id})">
+    🔄 Pendente
+  </button>
+
+  <button class="btnMeses"
+    onclick="abrirMesesPagamento('${contrato.id}')">
+    📅 Meses
+  </button>
+
+  <button onclick="quitarAtrasados('${contrato.id}')">
+    💰 Quitar atrasados
+  </button>
+
+</div>
 `
-
-        🚪 Unidade ${numeroUnidade}<br><br>
-
-        📅 ${nomeMes}/${pagamento.ano}<br>
-
-        🏠 Valor original:
-        R$ ${calc.valorOriginal.toFixed(2)}<br>
-
-        <div style="
-margin-top:10px;
-margin-bottom:12px;
-padding:12px;
-background:#f8fafc;
-border-radius:12px;
-">
-
-<div style="
-font-size:13px;
-color:#64748b;
-">
-VALOR TOTAL
-</div>
-
-<div style="
-font-size:28px;
-font-weight:700;
-color:${cor};
-">
-R$ ${calc.valorFinal.toFixed(2)}
-</div>
-
-</div>
-       <button class="btnSalvar"
-onclick="abrirPagamento(${pagamento.id})">
-💳 Pagar
-</button>
-
-<button class="btnRecibo"
-onclick="gerarReciboCompleto(${pagamento.id})">
-📄 Recibo
-</button>
-
-<button onclick="cobrarInquilinoCompleto('${inquilino.id}')">
-📲 WhatsApp
-</button>
-
-<button onclick="marcarAtrasado(${pagamento.id})">
-⚠️ Marcar atrasado
-</button>
-
-<button onclick="marcarPendente(${pagamento.id})">
-🔄 Pendente
-</button>
-
-<button class="btnMeses"
-onclick="abrirMesesPagamento('${contrato.id}')">
-📅 Meses
-</button>
-
-<button onclick="quitarAtrasados('${contrato.id}')">
-💰 Quitar atrasados
-</button>
-      </div>
-    `
   })
 
   html += "</div>"
