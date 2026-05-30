@@ -2248,6 +2248,28 @@ predios.forEach(predio => {
 
     const numeroUnidade = unidade?.numero || "-"
 
+    const pagamentosContrato = pagamentos.filter(
+  p => p.contrato_id == contrato.id
+)
+
+const mesesAtrasados = pagamentosContrato
+  .filter(p => {
+    const calcMes = calcularValorAtualizado(p)
+
+    return (
+      p.status === "atrasado" ||
+      (calcMes.diasAtraso > 0 && p.status !== "pago")
+    )
+  })
+  .map(p => nomesMeses[p.mes - 1])
+
+const textoAtrasos =
+  mesesAtrasados.length > 0
+    ? mesesAtrasados.join(", ")
+    : ""
+
+
+
     const nomesMeses = [
       "Janeiro","Fevereiro","Março","Abril",
       "Maio","Junho","Julho","Agosto",
@@ -2314,10 +2336,30 @@ predios.forEach(predio => {
 
   🚪 Unidade ${numeroUnidade}<br><br>
 
-  📅 ${nomeMes}/${pagamento.ano}<br>
+📅 ${nomeMes}/${pagamento.ano}<br>
 
-  🏠 Valor original:
-  R$ ${calc.valorOriginal.toFixed(2)}<br>
+${
+  textoAtrasos
+  ? `
+    <div style="
+      margin-top:8px;
+      margin-bottom:8px;
+      padding:8px;
+      background:#fef2f2;
+      border-left:4px solid #dc2626;
+      border-radius:8px;
+      color:#991b1b;
+      font-weight:600;
+    ">
+      ⚠️ Meses em atraso:<br>
+      ${textoAtrasos}
+    </div>
+  `
+  : ""
+}
+
+🏠 Valor original:
+R$ ${calc.valorOriginal.toFixed(2)}<br>
 
   <div style="
     margin-top:10px;
