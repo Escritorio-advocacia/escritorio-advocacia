@@ -2254,9 +2254,10 @@ const nomesMeses = [
   "Setembro","Outubro","Novembro","Dezembro"
 ]
 
-    const pagamentosContrato = pagamentos.filter(
-  p => p.contrato_id == contrato.id
-)
+    const { data: pagamentosContrato } = await client
+  .from("pagamentos")
+  .select("*")
+  .eq("contrato_id", contrato.id)
 
 const mesesAtrasados = pagamentosContrato
   .filter(p => {
