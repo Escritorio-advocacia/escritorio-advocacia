@@ -6,6 +6,8 @@
 
 <title>Sistema de Aluguel</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -98,13 +100,19 @@ body{
 
 /* BOTÕES */
 button{
-  padding:10px 14px;
+  padding:10px 16px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   background:#2563eb;
   color:white;
   font-weight:600;
   cursor:pointer;
+  transition:.2s;
+  box-shadow:0 3px 10px rgba(37,99,235,.25);
+}
+
+button:hover{
+  transform:translateY(-1px);
 }
 
 button:hover{
@@ -1565,16 +1573,19 @@ async function listarInquilinos(){
       <div
         onclick="togglePredio('predio_${predio.id}')"
         style="
-          background:#1e293b;
-          color:white;
-          padding:14px;
-          border-radius:12px;
-          margin-top:20px;
-          margin-bottom:10px;
-          cursor:pointer;
-          font-weight:bold;
-          font-size:18px;
-        "
+  background:linear-gradient(135deg,#0f172a,#1e3a8a);
+  border-left:5px solid #60a5fa;
+  color:white;
+  padding:12px 18px;
+  border-radius:16px;
+  margin-top:15px;
+  margin-bottom:10px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:15px;
+  letter-spacing:.3px;
+  box-shadow:0 8px 20px rgba(15,23,42,.25);
+"
       >
         🏢 ${predio.rua} Nº ${predio.numero}
         (${inquilinosPredio.length} inquilinos)
@@ -2069,16 +2080,19 @@ predios.forEach(predio => {
     <div
       onclick="togglePredioPagamento('predioPag_${predio.id}')"
       style="
-        background:#1e293b;
-        color:white;
-        padding:14px;
-        border-radius:12px;
-        margin-top:20px;
-        margin-bottom:10px;
-        cursor:pointer;
-        font-weight:bold;
-        font-size:18px;
-      "
+  background:linear-gradient(135deg,#0f172a,#1e3a8a);
+  border-left:5px solid #60a5fa;
+  color:white;
+  padding:12px 18px;
+  border-radius:16px;
+  margin-top:15px;
+  margin-bottom:10px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:15px;
+  letter-spacing:.3px;
+  box-shadow:0 8px 20px rgba(15,23,42,.25);
+"
     >
       🏢 ${predio.rua} Nº ${predio.numero}
       (${pagamentosPredio.length} pagamentos)
