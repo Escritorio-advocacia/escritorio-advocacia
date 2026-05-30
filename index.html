@@ -117,17 +117,22 @@ button{
   padding:10px 16px;
   border:none;
   border-radius:14px;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
   color:white;
   font-weight:600;
   cursor:pointer;
   transition:.25s;
-  box-shadow:0 6px 18px rgba(0,0,0,.15);
-  background:#2563eb;
+  box-shadow:0 5px 15px rgba(37,99,235,.25);
 }
 
 button:hover{
   transform:translateY(-3px);
   box-shadow:0 12px 25px rgba(0,0,0,.20);
+}
+
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 20px rgba(37,99,235,.30);
 }
 
 button:hover{
@@ -2265,14 +2270,23 @@ predios.forEach(predio => {
 
     html += `
       <div style="
-        border:1px solid ${cor};
-        background:${fundo};
-        padding:15px;
-        margin:10px;
-        border-radius:10px;
+        border-left:6px solid ${cor};
+        background:white;
+        padding:18px;
+        margin:12px;
+        border-radius:16px;
+        box-shadow:0 8px 20px rgba(0,0,0,.08);
       ">
+`
 
-        <b>${nome}</b><br>
+        <div style="
+font-size:20px;
+font-weight:700;
+color:#0f172a;
+margin-bottom:8px;
+">
+${nome}
+</div>
 
         🚪 Unidade ${numeroUnidade}<br><br>
 
@@ -2281,9 +2295,30 @@ predios.forEach(predio => {
         🏠 Valor original:
         R$ ${calc.valorOriginal.toFixed(2)}<br>
 
-        💰 Total:
-        R$ ${calc.valorFinal.toFixed(2)}<br><br>
+        <div style="
+margin-top:10px;
+margin-bottom:12px;
+padding:12px;
+background:#f8fafc;
+border-radius:12px;
+">
 
+<div style="
+font-size:13px;
+color:#64748b;
+">
+VALOR TOTAL
+</div>
+
+<div style="
+font-size:28px;
+font-weight:700;
+color:${cor};
+">
+R$ ${calc.valorFinal.toFixed(2)}
+</div>
+
+</div>
        <button class="btnSalvar"
 onclick="abrirPagamento(${pagamento.id})">
 💳 Pagar
