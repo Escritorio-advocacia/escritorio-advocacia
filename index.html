@@ -2169,6 +2169,16 @@ window.pagamentosCache = pagamentos
     .from("predios")
     .select("*")
 
+    const pagamentosAtrasados = todosPagamentos.filter(p => {
+
+  const calc = calcularValorAtualizado(p)
+
+  return (
+    p.status === "atrasado" ||
+    (calc.diasAtraso > 0 && p.status !== "pago")
+  )
+})
+
 const { data: todosPagamentos } = await client
   .from("pagamentos")
   .select("*")
@@ -2203,6 +2213,29 @@ predios.forEach(predio => {
 
   })
 
+  const atrasadosPredio = pagamentosAtrasados.filter(p => {
+
+  const contrato = contratos.find(
+    c => c.id == p.contrato_id
+  )
+
+  return idsUnidades.includes(
+    String(contrato?.unidade_id)
+  )
+
+})
+
+const quantidadeAtrasados = atrasadosPredio.length
+
+const totalEmAberto = atrasadosPredio.reduce((total, p) => {
+
+  const calc = calcularValorAtualizado(p)
+
+  return total + calc.total
+
+}, 0)
+
+
   if(!pagamentosPredio.length){
     return
   }
@@ -2225,8 +2258,14 @@ predios.forEach(predio => {
   box-shadow:0 8px 20px rgba(15,23,42,.25);
 "
     >
-      🏢 ${predio.rua} Nº ${predio.numero}
-      (${pagamentosPredio.length} pagamentos)
+     🏢 ${predio.rua} Nº ${predio.numero}
+
+<br>
+
+${pagamentosPredio.length} pagamentos •
+${quantidadeAtrasados} atrasados •
+
+R$ ${totalEmAberto.toFixed(2)}
     </div>
 
     <div id="predioPag_${predio.id}" style="display:none;">
