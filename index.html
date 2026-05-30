@@ -116,13 +116,18 @@ h3{
 button{
   padding:10px 16px;
   border:none;
-  border-radius:12px;
-  background:#2563eb;
+  border-radius:14px;
   color:white;
   font-weight:600;
   cursor:pointer;
-  transition:.2s;
-  box-shadow:0 3px 10px rgba(37,99,235,.25);
+  transition:.25s;
+  box-shadow:0 6px 18px rgba(0,0,0,.15);
+  background:#2563eb;
+}
+
+button:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 25px rgba(0,0,0,.20);
 }
 
 button:hover{
@@ -131,6 +136,34 @@ button:hover{
 
 button:hover{
   opacity:0.9;
+}
+
+.btnSalvar{
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+}
+
+.btnEditar{
+  background:linear-gradient(135deg,#2563eb,#3b82f6);
+}
+
+.btnExcluir{
+  background:linear-gradient(135deg,#dc2626,#ef4444);
+}
+
+.btnCobrar{
+  background:linear-gradient(135deg,#059669,#10b981);
+}
+
+.btnContrato{
+  background:linear-gradient(135deg,#7c3aed,#8b5cf6);
+}
+
+.btnMeses{
+  background:linear-gradient(135deg,#f59e0b,#fbbf24);
+}
+
+.btnRecibo{
+  background:linear-gradient(135deg,#0f172a,#334155);
 }
 
 /* CARDS */
@@ -1685,27 +1718,28 @@ async function listarInquilinos(){
 
         <br>
 
-        <button onclick="cobrarInquilinoCompleto('${i.id}')">
-          📲 Cobrar
-        </button>
+        <button class="btnCobrar"
+onclick="cobrarInquilinoCompleto('${i.id}')">
+📲 Cobrar
+</button>
 
-  
-      
-        <button onclick="editarInquilino('${i.id}')">
-          ✏️ Editar
-        </button>
+<button class="btnEditar"
+onclick="editarInquilino('${i.id}')">
+✏️ Editar
+</button>
 
-         
-        <button onclick="excluirInquilino('${i.id}')">
-          🗑 Excluir
-        </button>
+<button class="btnExcluir"
+onclick="excluirInquilino('${i.id}')">
+🗑 Excluir
+</button>
 
         ${
           i.contrato_url
           ? `
-          <button onclick="verContrato('${i.contrato_url}')">
-            📄 Contrato
-          </button>
+          <button class="btnContrato"
+onclick="verContrato('${i.contrato_url}')">
+📄 Contrato
+</button>
           `
           : ""
         }
@@ -2232,11 +2266,13 @@ predios.forEach(predio => {
         💰 Total:
         R$ ${calc.valorFinal.toFixed(2)}<br><br>
 
-       <button onclick="abrirPagamento(${pagamento.id})">
+       <button class="btnSalvar"
+onclick="abrirPagamento(${pagamento.id})">
 💳 Pagar
 </button>
 
-<button onclick="gerarReciboCompleto(${pagamento.id})">
+<button class="btnRecibo"
+onclick="gerarReciboCompleto(${pagamento.id})">
 📄 Recibo
 </button>
 
@@ -2252,7 +2288,8 @@ predios.forEach(predio => {
 🔄 Pendente
 </button>
 
-<button onclick="abrirMesesPagamento('${contrato.id}')">
+<button class="btnMeses"
+onclick="abrirMesesPagamento('${contrato.id}')">
 📅 Meses
 </button>
 
