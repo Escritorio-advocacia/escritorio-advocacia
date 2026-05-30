@@ -32,6 +32,20 @@ body{
   overflow-x:hidden;
 }
 
+h2{
+  font-size:26px;
+  font-weight:700;
+  color:#0f172a;
+  margin-bottom:12px;
+}
+
+h3{
+  font-size:18px;
+  font-weight:600;
+  color:#334155;
+  margin-bottom:10px;
+}
+
 /* TELAS */
 .tela{
   display:none;
@@ -134,6 +148,26 @@ button:hover{
   box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
+.cardRecebido{
+  border-left:6px solid #16a34a;
+}
+
+.cardPendente{
+  border-left:6px solid #f59e0b;
+}
+
+.cardContrato{
+  border-left:6px solid #2563eb;
+}
+
+.cardPredio{
+  border-left:6px solid #7c3aed;
+}
+
+.cardInquilino{
+  border-left:6px solid #ec4899;
+}
+
 .card span{
   font-size:22px;
   font-weight:bold;
@@ -181,9 +215,19 @@ canvas{
 
 input, select{
   width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #ddd;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid #cbd5e1;
+  background:white;
+  font-size:15px;
+  transition:.2s;
+}
+
+input:focus,
+select:focus{
+  outline:none;
+  border-color:#2563eb;
+  box-shadow:0 0 0 4px rgba(37,99,235,.15);
 }
 
 /* LOGIN */
