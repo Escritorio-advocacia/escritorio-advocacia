@@ -2248,6 +2248,12 @@ predios.forEach(predio => {
 
     const numeroUnidade = unidade?.numero || "-"
 
+const nomesMeses = [
+  "Janeiro","Fevereiro","Março","Abril",
+  "Maio","Junho","Julho","Agosto",
+  "Setembro","Outubro","Novembro","Dezembro"
+]
+
     const pagamentosContrato = pagamentos.filter(
   p => p.contrato_id == contrato.id
 )
@@ -2269,12 +2275,6 @@ const textoAtrasos =
     : ""
 
 
-
-    const nomesMeses = [
-      "Janeiro","Fevereiro","Março","Abril",
-      "Maio","Junho","Julho","Agosto",
-      "Setembro","Outubro","Novembro","Dezembro"
-    ]
 
     const nomeMes = nomesMeses[pagamento.mes - 1]
 
