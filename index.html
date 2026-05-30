@@ -2169,6 +2169,11 @@ window.pagamentosCache = pagamentos
     .from("predios")
     .select("*")
 
+const { data: todosPagamentos } = await client
+  .from("pagamentos")
+  .select("*")
+
+
   if(!pagamentos.length){
     lista.innerHTML = "Nenhum pagamento encontrado"
     return
@@ -2254,7 +2259,7 @@ const nomesMeses = [
   "Setembro","Outubro","Novembro","Dezembro"
 ]
 
-   const pagamentosContrato = pagamentos.filter(
+   const pagamentosContrato = todosPagamentos.filter(
   p => p.contrato_id == contrato.id
 )
 
