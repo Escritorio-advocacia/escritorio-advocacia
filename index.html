@@ -2166,10 +2166,14 @@ window.pagamentosCache = pagamentos
     .select("*")
 
   const { data: predios } = await client
-    .from("predios")
-    .select("*")
+  .from("predios")
+  .select("*")
 
-    const pagamentosAtrasados = todosPagamentos.filter(p => {
+const { data: todosPagamentos } = await client
+  .from("pagamentos")
+  .select("*")
+
+const pagamentosAtrasados = todosPagamentos.filter(p => {
 
   const calc = calcularValorAtualizado(p)
 
@@ -2177,19 +2181,10 @@ window.pagamentosCache = pagamentos
     p.status === "atrasado" ||
     (calc.diasAtraso > 0 && p.status !== "pago")
   )
+
 })
 
-const { data: todosPagamentos } = await client
-  .from("pagamentos")
-  .select("*")
-
-
-  if(!pagamentos.length){
-    lista.innerHTML = "Nenhum pagamento encontrado"
-    return
-  }
-
-  let html = ""
+if(!pagamentos.length){
 
 predios.forEach(predio => {
 
