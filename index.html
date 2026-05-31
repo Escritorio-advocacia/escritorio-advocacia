@@ -2173,16 +2173,6 @@ const { data: todosPagamentos } = await client
   .from("pagamentos")
   .select("*")
 
-const pagamentosAtrasados = (todosPagamentos || []).filter(p => {
-
-  const calc = calcularValorAtualizado(p)
-
-  return (
-    p.status === "atrasado" ||
-    (calc.diasAtraso > 0 && p.status !== "pago")
-  )
-
-})
 
   const calc = calcularValorAtualizado(p)
 
@@ -2222,28 +2212,7 @@ predios.forEach(predio => {
 
   })
 
-  const atrasadosPredio = pagamentosAtrasados.filter(p => {
-
-  const contrato = contratos.find(
-    c => c.id == p.contrato_id
-  )
-
-  return idsUnidades.includes(
-    String(contrato?.unidade_id)
-  )
-
-})
-
-const quantidadeAtrasados = atrasadosPredio.length
-
-const totalEmAberto = atrasadosPredio.reduce((total, p) => {
-
-  const calc = calcularValorAtualizado(p)
-
-  return total + calc.valorFinal
-
-}, 0)
-
+  
 
   if(!pagamentosPredio.length){
     return
@@ -2268,12 +2237,7 @@ const totalEmAberto = atrasadosPredio.reduce((total, p) => {
 "
     >
      🏢 ${predio.rua} Nº ${predio.numero}
-
-<br>
-
-${pagamentosPredio.length} pagamentos •
-${quantidadeAtrasados} atrasados •
-
+(${pagamentosPredio.length} pagamentos)
 R$ ${totalEmAberto.toFixed(2)}
     </div>
 
