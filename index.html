@@ -2174,14 +2174,7 @@ const { data: todosPagamentos } = await client
   .select("*")
 
 
-  const calc = calcularValorAtualizado(p)
-
-  return (
-    p.status === "atrasado" ||
-    (calc.diasAtraso > 0 && p.status !== "pago")
-  )
-
-})
+  
 
 if(!pagamentos.length){
   lista.innerHTML = "Nenhum pagamento encontrado"
@@ -2238,7 +2231,6 @@ predios.forEach(predio => {
     >
      🏢 ${predio.rua} Nº ${predio.numero}
 (${pagamentosPredio.length} pagamentos)
-R$ ${totalEmAberto.toFixed(2)}
     </div>
 
     <div id="predioPag_${predio.id}" style="display:none;">
