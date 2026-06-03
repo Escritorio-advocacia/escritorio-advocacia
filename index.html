@@ -2487,6 +2487,8 @@ async function abrirMesesPagamento(contrato_id){
 
   pagamentos.forEach(p => {
 
+const calc = calcularValorAtualizado(p)
+    
     html += `
       <div style="
         border-bottom:1px solid #ddd;
@@ -2498,9 +2500,21 @@ async function abrirMesesPagamento(contrato_id){
         <br>
 
         Status atual:
-        <b>${p.status}</b>
+<b>${p.status}</b>
 
-        <br><br>
+<br><br>
+
+🏠 Aluguel: R$ ${calc.aluguel.toFixed(2)}<br>
+
+💧 Água: R$ ${calc.agua.toFixed(2)}<br>
+
+⚠️ Juros/Multa:
+R$ ${(calc.valorFinal - calc.valorOriginal).toFixed(2)}<br>
+
+💰 Total Atualizado:
+R$ ${calc.valorFinal.toFixed(2)}
+
+<br><br>
 
         <button onclick="alterarStatusMes('${p.id}','pago')">
           ✔ Pago
