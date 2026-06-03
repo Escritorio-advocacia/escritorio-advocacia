@@ -2384,24 +2384,31 @@ R$ ${calc.valorOriginal.toFixed(2)}<br>
   border-radius:12px;
 ">
 
-  <div style="
-    font-size:14px;
-    color:#475569;
-    margin-bottom:10px;
-    line-height:1.7;
-  ">
-    🏠 Aluguel: R$ ${((pagamento.valor || 0) - (pagamento.valor_agua || 0)).toFixed(2)}<br>
+ <div style="
+  font-size:14px;
+  color:#475569;
+  margin-bottom:10px;
+  line-height:1.7;
+">
+  🏠 Aluguel: R$ ${((pagamento.valor || 0) - (pagamento.valor_agua || 0)).toFixed(2)}<br>
 
-    💧 Água: R$ ${(pagamento.valor_agua || 0).toFixed(2)}<br>
+  💧 Água: R$ ${(pagamento.valor_agua || 0).toFixed(2)}<br>
 
-    📄 Subtotal: R$ ${calc.valorOriginal.toFixed(2)}
-  </div>
+  📄 Subtotal: R$ ${calc.valorOriginal.toFixed(2)}<br>
+
+  ⚠️ Juros/Multa: R$ ${(calc.valorFinal - calc.valorOriginal).toFixed(2)}
+</div>
+
+<div style="
+  border-top:1px solid #e2e8f0;
+  margin:10px 0;
+"></div>
 
   <div style="
     font-size:13px;
     color:#64748b;
   ">
-    VALOR TOTAL
+   💰 VALOR TOTAL
   </div>
 
   <div style="
@@ -2409,7 +2416,7 @@ R$ ${calc.valorOriginal.toFixed(2)}<br>
     font-weight:700;
     color:${cor};
   ">
-    R$ ${calc.valorFinal.toFixed(2)}
+   💰 R$ ${calc.valorFinal.toFixed(2)}
   </div>
 
 </div>
