@@ -2830,7 +2830,7 @@ const vencimento = pagamento.data_vencimento
   : "-"
 
 
-  gerarRecibo({
+ gerarRecibo({
   nome: inquilino?.nome || "-",
   rua: predio?.rua || "-",
   numero: predio?.numero || "",
@@ -2839,12 +2839,18 @@ const vencimento = pagamento.data_vencimento
   cep: predio?.cep || "-",
   unidade: unidade?.numero || "-",
   mes: pagamento.mes,
+
   aluguel,
   agua,
   juros,
+  multaAgua,
+
   total,
+
+  diasAtraso: calc.diasAtraso,
+
   forma: pagamento.forma_pagamento || "-",
-  vencimento // 👈 ESSA LINHA NOVA
+  vencimento
 })
 
   }catch(e){
