@@ -2367,33 +2367,52 @@ ${
   : ""
 }
 
-🏠 Valor original:
+🏠 Aluguel:
+R$ ${((pagamento.valor || 0) - (pagamento.valor_agua || 0)).toFixed(2)}<br>
+
+💧 Água:
+R$ ${(pagamento.valor_agua || 0).toFixed(2)}<br>
+
+📄 Subtotal:
 R$ ${calc.valorOriginal.toFixed(2)}<br>
 
   <div style="
-    margin-top:10px;
-    margin-bottom:12px;
-    padding:12px;
-    background:#f8fafc;
-    border-radius:12px;
+  margin-top:10px;
+  margin-bottom:12px;
+  padding:12px;
+  background:#f8fafc;
+  border-radius:12px;
+">
+
+  <div style="
+    font-size:14px;
+    color:#475569;
+    margin-bottom:10px;
+    line-height:1.7;
   ">
+    🏠 Aluguel: R$ ${((pagamento.valor || 0) - (pagamento.valor_agua || 0)).toFixed(2)}<br>
 
-    <div style="
-      font-size:13px;
-      color:#64748b;
-    ">
-      VALOR TOTAL
-    </div>
+    💧 Água: R$ ${(pagamento.valor_agua || 0).toFixed(2)}<br>
 
-    <div style="
-      font-size:28px;
-      font-weight:700;
-      color:${cor};
-    ">
-      R$ ${calc.valorFinal.toFixed(2)}
-    </div>
-
+    📄 Subtotal: R$ ${calc.valorOriginal.toFixed(2)}
   </div>
+
+  <div style="
+    font-size:13px;
+    color:#64748b;
+  ">
+    VALOR TOTAL
+  </div>
+
+  <div style="
+    font-size:28px;
+    font-weight:700;
+    color:${cor};
+  ">
+    R$ ${calc.valorFinal.toFixed(2)}
+  </div>
+
+</div>
 
   <button class="btnSalvar"
     onclick="abrirPagamento(${pagamento.id})">
