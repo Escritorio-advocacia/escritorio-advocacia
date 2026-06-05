@@ -2990,10 +2990,31 @@ document.getElementById("relatorio").innerHTML = html
 
 async function carregarDashboard(){
 
-const { data } = await client
-.from("pagamentos")
-.select("*")
-.limit(100)
+const [
+  { data },
+  { count: totalPredios },
+  { count: totalInquilinos },
+  { count }
+] = await Promise.all([
+
+  client
+    .from("pagamentos")
+    .select("*")
+    .limit(100),
+
+  client
+    .from("predios")
+    .select("*", { count: "exact", head: true }),
+
+  client
+    .from("inquilinos")
+    .select("*", { count: "exact", head: true }),
+
+  client
+    .from("contratos")
+    .select("*", { count: "exact", head: true })
+
+])
 
 let recebido = 0
 let pendente = 0
@@ -3009,17 +3030,6 @@ pendente += Number(p.valor)
 }
 
 })
-const { count: totalPredios } = await client
-.from("predios")
-.select("*", { count: "exact", head: true })
-
-const { count: totalInquilinos } = await client
-.from("inquilinos")
-.select("*", { count: "exact", head: true })
-  
-const { count } = await client
-.from("contratos")
-.select("*", { count: "exact", head: true })
 
 document.getElementById("dashboardDados").innerHTML = `
 <div class="cards">
