@@ -2137,25 +2137,25 @@ window.pagamentosCache = pagamentos
     return
   }
 
-  const { data: contratos } = await client
-    .from("contratos")
-    .select("*")
+  const [
+  { data: contratos },
+  { data: inquilinos },
+  { data: unidades },
+  { data: predios },
+  { data: todosPagamentos }
+] = await Promise.all([
 
-  const { data: inquilinos } = await client
-    .from("inquilinos")
-    .select("*")
+  client.from("contratos").select("*"),
 
-  const { data: unidades } = await client
-    .from("unidades")
-    .select("*")
+  client.from("inquilinos").select("*"),
 
-  const { data: predios } = await client
-  .from("predios")
-  .select("*")
+  client.from("unidades").select("*"),
 
-const { data: todosPagamentos } = await client
-  .from("pagamentos")
-  .select("*")
+  client.from("predios").select("*"),
+
+  client.from("pagamentos").select("*")
+
+])
 
 
   
