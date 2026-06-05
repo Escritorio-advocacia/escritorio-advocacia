@@ -1615,7 +1615,13 @@ async function excluirInquilino(id){
   
 async function listarInquilinos(){
 
-  const { data, error } = await client
+  const [
+  { data, error },
+  { data: unidades },
+  { data: predios }
+] = await Promise.all([
+
+  client
     .from("inquilinos")
     .select(`
       id,
@@ -1632,15 +1638,13 @@ async function listarInquilinos(){
       whatsapp_responsavel,
       cpf_responsavel,
       rg_responsavel
-    `)
+    `),
 
-  const { data: unidades } = await client
-    .from("unidades")
-    .select("*")
+  client.from("unidades").select("*"),
 
-  const { data: predios } = await client
-    .from("predios")
-    .select("*")
+  client.from("predios").select("*")
+
+])
 
   if(error){
     console.log("Erro ao buscar inquilinos:", error)
@@ -1648,6 +1652,12 @@ async function listarInquilinos(){
   }
 
   const lista = Array.isArray(data) ? data : []
+
+const unidadesMap = {}
+
+unidades.forEach(u => {
+  unidadesMap[u.id] = u
+})
 
   let html = ""
 
@@ -1696,9 +1706,7 @@ async function listarInquilinos(){
 
     inquilinosPredio.forEach(i => {
 
-      const unidade = unidades.find(
-        u => u.id == i.unidade_id
-      )
+     const unidade = unidadesMap[i.unidade_id]
 
       html += `
       <div style="
