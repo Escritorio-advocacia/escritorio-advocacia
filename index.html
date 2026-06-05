@@ -3125,9 +3125,20 @@ if(!div) return
 const hoje = new Date()
 const mesAtual = hoje.getMonth() + 1
 
-const { data: pagamentos } = await client.from("pagamentos").select("*")
-const { data: contratos } = await client.from("contratos").select("*")
-const { data: inquilinos } = await client.from("inquilinos").select("*")
+const { data: pagamentos } =
+  await client
+    .from("pagamentos")
+    .select("contrato_id, status, mes, valor")
+    
+const { data: contratos } =
+  await client
+    .from("contratos")
+    .select("id, inquilino_id")
+    
+const { data: inquilinos } =
+  await client
+    .from("inquilinos")
+    .select("id, nome")
 
 const contratosMap = {}
 
