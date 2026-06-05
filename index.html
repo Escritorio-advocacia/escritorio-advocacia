@@ -3108,16 +3108,28 @@ const { data: pagamentos } = await client.from("pagamentos").select("*")
 const { data: contratos } = await client.from("contratos").select("*")
 const { data: inquilinos } = await client.from("inquilinos").select("*")
 
+const contratosMap = {}
+
+contratos.forEach(c => {
+  contratosMap[c.id] = c
+})
+
+const inquilinosMap = {}
+
+inquilinos.forEach(i => {
+  inquilinosMap[i.id] = i
+})
+
 let html = ""
 
 pagamentos.forEach(p => {
 
 if(p.status == "pendente" && p.mes < mesAtual){
 
-const contrato = contratos.find(c => c.id == p.contrato_id)
+const contrato = contratosMap[p.contrato_id]
 if(!contrato) return
 
-const inquilino = inquilinos.find(i => i.id == contrato.inquilino_id)
+const inquilino = inquilinosMap[contrato.inquilino_id]
 if(!inquilino) return
 
 html += `
