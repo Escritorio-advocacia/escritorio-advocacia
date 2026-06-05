@@ -2661,12 +2661,6 @@ async function alterarStatusMes(id,status){
     return
   }
 
-  const statusEl = document.getElementById(`status_${id}`)
-
-  if(statusEl){
-    statusEl.innerHTML = status
-  }
-
   mostrarAlerta("Status atualizado")
 }
 
