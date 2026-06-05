@@ -2252,6 +2252,18 @@ const inquilino =
 
 const unidade =
   unidadesMap[contrato?.unidade_id]
+  
+  const pagamentosPorContrato = {}
+
+todosPagamentos.forEach(p => {
+
+  if(!pagamentosPorContrato[p.contrato_id]){
+    pagamentosPorContrato[p.contrato_id] = []
+  }
+
+  pagamentosPorContrato[p.contrato_id].push(p)
+
+})
 
     const nome = inquilino?.nome || "Inquilino"
     const telefone = inquilino?.whatsapp || ""
@@ -2260,9 +2272,8 @@ const unidade =
 
 
 
-   const pagamentosContrato = todosPagamentos.filter(
-  p => p.contrato_id == contrato.id
-)
+   const pagamentosContrato =
+  pagamentosPorContrato[contrato.id] || []
 
 const mesesAtrasados = pagamentosContrato
   .filter(p => {
