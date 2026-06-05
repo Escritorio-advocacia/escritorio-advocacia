@@ -2163,7 +2163,21 @@ window.pagamentosCache = pagamentos
 
 ])
 
+const contratosMap = {}
+const inquilinosMap = {}
+const unidadesMap = {}
 
+contratos.forEach(c => {
+  contratosMap[c.id] = c
+})
+
+inquilinos.forEach(i => {
+  inquilinosMap[i.id] = i
+})
+
+unidades.forEach(u => {
+  unidadesMap[u.id] = u
+})
   
 
 if(!pagamentos.length){
@@ -2230,17 +2244,14 @@ predios.forEach(predio => {
 
     const calc = calcularValorAtualizado(pagamento)
 
-    const contrato = contratos.find(
-      c => c.id == pagamento.contrato_id
-    )
+    const contrato =
+  contratosMap[pagamento.contrato_id]
 
-    const inquilino = inquilinos.find(
-      i => i.id == contrato?.inquilino_id
-    )
+const inquilino =
+  inquilinosMap[contrato?.inquilino_id]
 
-    const unidade = unidades.find(
-      u => String(u.id) === String(contrato?.unidade_id)
-    )
+const unidade =
+  unidadesMap[contrato?.unidade_id]
 
     const nome = inquilino?.nome || "Inquilino"
     const telefone = inquilino?.whatsapp || ""
