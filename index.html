@@ -3638,13 +3638,20 @@ const { data: inquilinos } = await client
 .from("inquilinos")
 .select("*")
 
+const inquilinosMap = {}
+
+inquilinos.forEach(i => {
+  inquilinosMap[i.id] = i
+})
+
 let html=""
 
 contratos.forEach(c=>{
 
 if(c.dia_vencimento==diaHoje){
 
-const inquilino = inquilinos.find(i=>i.id==c.inquilino_id)
+const inquilino =
+  inquilinosMap[c.inquilino_id]
 
 if(!inquilino) return
 
