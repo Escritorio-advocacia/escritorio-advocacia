@@ -735,6 +735,11 @@ margin-bottom:20px;
 <button id="btnAtualizarAtrasos" onclick="atualizarStatusAtrasados()">
   Atualizar atrasos
 </button>
+
+<button onclick="corrigirValoresAgua()">
+🔧 Corrigir Valores
+</button>
+
 </div>
 
 <div id="listaPagamentos"></div>
@@ -1323,6 +1328,41 @@ if(error){
 listarUnidades()
 
 }
+
+async function corrigirValoresAgua(){
+
+  const { data: contratos } = await client
+    .from("contratos")
+    .select("*")
+
+  const { data: inquilinos } = await client
+    .from("inquilinos")
+    .select("*")
+
+  for(const contrato of contratos){
+
+    const inquilino = inquilinos.find(
+      i => i.id == contrato.inquilino_id
+    )
+
+    if(!inquilino) continue
+
+    await client
+      .from("pagamentos")
+      .update({
+        valor: Number(inquilino.valor_aluguel || 0),
+        valor_agua: Number(inquilino.valor_agua || 0)
+      })
+      .eq("contrato_id", contrato.id)
+      .neq("status", "pago")
+
+  }
+
+  mostrarAlerta("Todos os pagamentos foram corrigidos!")
+
+  await listarPagamentos()
+}
+
 async function salvarInquilino(event) {
 
   const btn = event.target
