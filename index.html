@@ -3791,8 +3791,10 @@ async function graficoMensal(){
 
 const { data } = await client
 .from("pagamentos")
-.select("*")
+.select("mes, status, valor")
 .limit(100)
+
+if(!data?.length) return
 
 let meses = []
 let valores = []
