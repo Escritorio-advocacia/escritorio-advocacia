@@ -3227,8 +3227,10 @@ async function graficoFinanceiro(){
 
 const { data } = await client
 .from("pagamentos")
-.select("*")
+.select("status, valor")
 .limit(100)
+
+if(!data?.length) return
 
 let pago = 0
 let pendente = 0
