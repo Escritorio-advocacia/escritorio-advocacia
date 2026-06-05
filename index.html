@@ -2607,6 +2607,11 @@ async function alterarStatusMes(id,status){
 
 async function quitarAtrasados(contrato_id){
 
+if(window.nivelUsuario !== "admin"){
+  mostrarAlerta("Apenas administrador", "erro")
+  return
+}
+
   const { data: pagamentos } = await client
     .from("pagamentos")
     .select("*")
@@ -3285,6 +3290,11 @@ graficoFinanceiroChart = new Chart(ctx, {
 }
 
 async function receberTodosAtrasados(inquilino_id){
+
+if(window.nivelUsuario !== "admin"){
+  mostrarAlerta("Apenas administrador", "erro")
+  return
+}
 
   const { data: contrato } = await client
     .from("contratos")
@@ -4212,6 +4222,11 @@ XLSX.writeFile(wb, "relatorio_aluguel.xlsx")
 
 }
 async function backupSistema(){
+
+if(window.nivelUsuario !== "admin"){
+  mostrarAlerta("Apenas administrador", "erro")
+  return
+}
 
 const { data: predios } = await client.from("predios").select("*")
 const { data: unidades } = await client.from("unidades").select("*")
