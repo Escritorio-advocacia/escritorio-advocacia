@@ -2628,20 +2628,24 @@ R$ ${calc.valorFinal.toFixed(2)}
 
 
         <button onclick="gerarReciboCompleto('${p.id}')">
-         📄 Recibo
-        </button>
-        <button onclick="alterarStatusMes('${p.id}','pago')">
-          ✔ Pago
-        </button>
+ 📄 Recibo
+</button>
 
-        <button onclick="alterarStatusMes('${p.id}','pendente')">
-          ⏳ Pendente
-        </button>
+<button onclick="alterarStatusMes('${p.id}','pago')">
+ ✔ Pago
+</button>
 
-        <button onclick="alterarStatusMes('${p.id}','atrasado')">
-          ⚠ Atrasado
-        </button>
+${window.nivelUsuario === "admin" ? `
 
+<button onclick="alterarStatusMes('${p.id}','pendente')">
+ ⏳ Pendente
+</button>
+
+<button onclick="alterarStatusMes('${p.id}','atrasado')">
+ ⚠️ Atrasado
+</button>
+
+` : ""}
       </div>
     `
   })
@@ -2650,6 +2654,14 @@ R$ ${calc.valorFinal.toFixed(2)}
 }
 
 async function alterarStatusMes(id,status){
+
+  if(
+    window.nivelUsuario !== "admin" &&
+    status !== "pago"
+  ){
+    mostrarAlerta("Sem permissão", "erro")
+    return
+  }
 
   const { error } = await client
     .from("pagamentos")
