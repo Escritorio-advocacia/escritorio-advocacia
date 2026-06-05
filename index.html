@@ -1253,6 +1253,8 @@ async function listarUnidades(){
     // 🔥 GARANTE ARRAY REAL (ESSA LINHA RESOLVE O ERRO)
     const lista = Array.isArray(data) ? data : []
 
+
+
     if(lista.length === 0){
       document.getElementById("listaUnidades").innerHTML = "Nenhuma unidade cadastrada"
       return
@@ -1653,6 +1655,29 @@ async function listarInquilinos(){
 
   const lista = Array.isArray(data) ? data : []
 
+const unidadePredioMap = {}
+
+unidades.forEach(u => {
+  unidadePredioMap[u.id] = u.predio_id
+})
+
+const inquilinosPorPredio = {}
+
+lista.forEach(i => {
+
+  const predioId =
+    unidadePredioMap[i.unidade_id]
+
+  if(!predioId) return
+
+  if(!inquilinosPorPredio[predioId]){
+    inquilinosPorPredio[predioId] = []
+  }
+
+  inquilinosPorPredio[predioId].push(i)
+
+})
+
 const unidadesMap = {}
 
 unidades.forEach(u => {
@@ -1663,17 +1688,8 @@ unidades.forEach(u => {
 
   predios.forEach(predio => {
 
-    const unidadesPredio = unidades.filter(
-      u => u.predio_id == predio.id
-    )
-
-    const idsUnidades = unidadesPredio.map(
-      u => u.id
-    )
-
-    const inquilinosPredio = lista.filter(
-      i => idsUnidades.includes(i.unidade_id)
-    )
+   const inquilinosPredio =
+  inquilinosPorPredio[predio.id] || []
 
     if(inquilinosPredio.length === 0){
       return
