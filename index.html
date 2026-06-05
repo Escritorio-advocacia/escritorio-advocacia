@@ -2109,6 +2109,12 @@ async function listarPagamentos(filtro = null, busca = "") {
   const lista = document.getElementById("listaPagamentos")
   lista.innerHTML = ""
 
+const nomesMeses = [
+  "Janeiro","Fevereiro","Março","Abril",
+  "Maio","Junho","Julho","Agosto",
+  "Setembro","Outubro","Novembro","Dezembro"
+]
+
  const hoje = new Date()
 const mesAtual = hoje.getMonth() + 1
 const anoAtual = hoje.getFullYear()
@@ -2241,11 +2247,7 @@ predios.forEach(predio => {
 
     const numeroUnidade = unidade?.numero || "-"
 
-const nomesMeses = [
-  "Janeiro","Fevereiro","Março","Abril",
-  "Maio","Junho","Julho","Agosto",
-  "Setembro","Outubro","Novembro","Dezembro"
-]
+
 
    const pagamentosContrato = todosPagamentos.filter(
   p => p.contrato_id == contrato.id
