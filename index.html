@@ -1816,6 +1816,11 @@ onclick="excluirInquilino('${i.id}')">
 🗑 Excluir
 </button>
 
+<button
+onclick="trocarInquilino('${i.id}')">
+🔄 Trocar Inquilino
+</button>
+
         ${
           i.contrato_url
           ? `
@@ -2607,11 +2612,6 @@ async function alterarStatusMes(id,status){
 
 async function quitarAtrasados(contrato_id){
 
-if(window.nivelUsuario !== "admin"){
-  mostrarAlerta("Apenas administrador", "erro")
-  return
-}
-
   const { data: pagamentos } = await client
     .from("pagamentos")
     .select("*")
@@ -3290,11 +3290,6 @@ graficoFinanceiroChart = new Chart(ctx, {
 }
 
 async function receberTodosAtrasados(inquilino_id){
-
-if(window.nivelUsuario !== "admin"){
-  mostrarAlerta("Apenas administrador", "erro")
-  return
-}
 
   const { data: contrato } = await client
     .from("contratos")
@@ -4223,11 +4218,6 @@ XLSX.writeFile(wb, "relatorio_aluguel.xlsx")
 }
 async function backupSistema(){
 
-if(window.nivelUsuario !== "admin"){
-  mostrarAlerta("Apenas administrador", "erro")
-  return
-}
-
 const { data: predios } = await client.from("predios").select("*")
 const { data: unidades } = await client.from("unidades").select("*")
 const { data: inquilinos } = await client.from("inquilinos").select("*")
@@ -4450,6 +4440,73 @@ if(btn){
   }
 
 }
+
+async function trocarInquilino(inquilino_id){
+
+  if(!confirm(
+    "Deseja encerrar este contrato e cadastrar um novo inquilino nesta unidade?"
+  )){
+    return
+  }
+
+  const { data: contrato } = await client
+    .from("contratos")
+    .select("*")
+    .eq("inquilino_id", inquilino_id)
+    .single()
+
+  if(!contrato){
+    mostrarAlerta("Contrato não encontrado", "erro")
+    return
+  }
+
+  await client
+    .from("contratos")
+    .update({
+      status: "encerrado"
+    })
+    .eq("id", contrato.id)
+
+  await client
+    .from("inquilinos")
+    .update({
+      status: "inativo"
+    })
+    .eq("id", inquilino_id)
+
+  await client
+    .from("unidades")
+    .update({
+      status: "livre"
+    })
+    .eq("id", contrato.unidade_id)
+
+  abrirTela("inquilinos")
+
+  document.getElementById("nomeInquilino").value = ""
+  document.getElementById("cpfInquilino").value = ""
+  document.getElementById("rg").value = ""
+  document.getElementById("telefoneInquilino").value = ""
+  document.getElementById("emailInquilino").value = ""
+
+  document.getElementById("nomeResponsavel").value = ""
+  document.getElementById("cpfResponsavel").value = ""
+  document.getElementById("rg_responsavel").value = ""
+  document.getElementById("whatsappResponsavel").value = ""
+
+  document.getElementById("valorAluguel").value = ""
+  document.getElementById("valorAgua").value = ""
+
+  document.getElementById("unidadeSelect").value =
+    contrato.unidade_id
+
+  mostrarAlerta(
+    "Unidade liberada. Cadastre o novo inquilino."
+  )
+
+  await listarInquilinos()
+}
+
 function abrirTela(tela){
 
   console.log("Abrindo:", tela) // 👈 ajuda ver no F12 depois
