@@ -2628,26 +2628,23 @@ R$ ${calc.valorFinal.toFixed(2)}
 
 
         <button onclick="gerarReciboCompleto('${p.id}')">
- 📄 Recibo
-</button>
+         📄 Recibo
+        </button>
+        <button onclick="alterarStatusMes('${p.id}','pago')">
+          ✔ Pago
+        </button>
 
-<button onclick="alterarStatusMes('${p.id}','pago')">
- ✔ Pago
-</button>
+        <button onclick="alterarStatusMes('${p.id}','pendente')">
+          ⏳ Pendente
+        </button>
 
-${
-  window.nivelUsuario === "admin"
-  ? `
-    <button onclick="alterarStatusMes('${p.id}','pendente')">
-      ⏳ Pendente
-    </button>
+        <button onclick="alterarStatusMes('${p.id}','atrasado')">
+          ⚠ Atrasado
+        </button>
 
-    <button onclick="alterarStatusMes('${p.id}','atrasado')">
-      ⚠ Atrasado
-    </button>
-  `
-  : ""
-}
+      </div>
+    `
+  })
 
   document.getElementById("listaMesesInquilino").innerHTML = html
 }
