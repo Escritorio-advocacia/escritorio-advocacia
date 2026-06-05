@@ -1430,9 +1430,11 @@ async function salvarInquilino(event) {
 
       window.idEditando = null
 
-      await listarInquilinos()
-      await listarPagamentos()
-      await carregarDashboard()
+      await Promise.all([
+  listarInquilinos(),
+  listarPagamentos(),
+  carregarDashboard()
+])
 
       btn.disabled = false
       return
@@ -1500,30 +1502,39 @@ async function salvarInquilino(event) {
       .eq("id", unidade_id)
 
     // 🔥 gera pagamentos
-    for(let mes = 1; mes <= 12; mes++){
+    const pagamentos = []
 
-      const dataPagamento = new Date(
-        new Date().getFullYear(),
-        mes - 1,
-        dia_vencimento
-      )
+for(let mes = 1; mes <= 12; mes++){
 
-      await client.from("pagamentos").insert({
-        contrato_id: contratoCriado.id,
-        mes,
-        ano: new Date().getFullYear(),
-        valor: valor_aluguel,
-        valor_agua: valor_agua,
-        status: "pendente",
-        data_vencimento: dataPagamento.toISOString()
-      })
-    }
+  const dataPagamento = new Date(
+    new Date().getFullYear(),
+    mes - 1,
+    dia_vencimento
+  )
+
+  pagamentos.push({
+    contrato_id: contratoCriado.id,
+    mes,
+    ano: new Date().getFullYear(),
+    valor: valor_aluguel,
+    valor_agua: valor_agua,
+    status: "pendente",
+    data_vencimento: dataPagamento.toISOString()
+  })
+
+}
+
+await client
+  .from("pagamentos")
+  .insert(pagamentos)
 
     mostrarAlerta("Inquilino cadastrado com sucesso!")
 
-    await listarInquilinos()
-    await listarPagamentos()
-    await carregarDashboard()
+    await Promise.all([
+  listarInquilinos(),
+  listarPagamentos(),
+  carregarDashboard()
+])
 
     // 🔥 limpa campos
     document.getElementById("nomeInquilino").value = ""
