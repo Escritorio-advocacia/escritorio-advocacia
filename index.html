@@ -1426,6 +1426,26 @@ async function salvarInquilino(event) {
         return
       }
 
+// Atualiza contrato do inquilino
+const { data: contrato } = await client
+  .from("contratos")
+  .select("*")
+  .eq("inquilino_id", window.idEditando)
+  .single()
+
+if(contrato){
+
+  await client
+    .from("pagamentos")
+    .update({
+      valor: valor_aluguel,
+      valor_agua: valor_agua
+    })
+    .eq("contrato_id", contrato.id)
+    .neq("status", "pago")
+
+}
+
       mostrarAlerta("Inquilino atualizado com sucesso!")
 
       window.idEditando = null
