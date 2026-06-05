@@ -2086,23 +2086,7 @@ async function abrirMesesInquilino(inquilino_id){
   document.getElementById("modalMeses").style.display = "flex"
 }
 
-async function alterarStatusMes(id, status){
 
-  await client
-    .from("pagamentos")
-    .update({ status })
-    .eq("id", id)
-
-  mostrarAlerta("Status atualizado!")
-
-  const modal = document.getElementById("modalMeses")
-
-  if(modal.style.display === "flex"){
-    modal.style.display = "none"
-  }
-
-  listarPagamentos()
-}
 
 function togglePredioPagamento(id){
   const div = document.getElementById(id)
@@ -2500,7 +2484,9 @@ const calc = calcularValorAtualizado(p)
         <br>
 
         Status atual:
-<b>${p.status}</b>
+<b id="status_${p.id}">
+  ${p.status}
+</b>
 
 <br><br>
 
@@ -2541,10 +2527,21 @@ R$ ${calc.valorFinal.toFixed(2)}
 
 async function alterarStatusMes(id,status){
 
-  await client
+  const { error } = await client
     .from("pagamentos")
     .update({status})
     .eq("id",id)
+
+  if(error){
+    mostrarAlerta("Erro ao atualizar", "erro")
+    return
+  }
+
+  const statusEl = document.getElementById(`status_${id}`)
+
+  if(statusEl){
+    statusEl.innerHTML = status
+  }
 
   mostrarAlerta("Status atualizado")
 }
