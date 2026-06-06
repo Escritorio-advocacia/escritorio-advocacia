@@ -3100,16 +3100,48 @@ const [
 
 let recebido = 0
 let pendente = 0
+let recebidoSemana = 0
+
+const hoje = new Date()
+
+const segunda = new Date(hoje)
+segunda.setDate(
+  hoje.getDate() -
+  ((hoje.getDay() + 6) % 7)
+)
+segunda.setHours(0,0,0,0)
+
+const sexta = new Date(segunda)
+sexta.setDate(segunda.getDate() + 4)
+sexta.setHours(23,59,59,999)
+
 
 data.forEach(p => {
 
-if(p.status == "pago"){
-recebido += Number(p.valor)
-}
+  if(p.status == "pago"){
 
-if(p.status == "pendente"){
-pendente += Number(p.valor)
-}
+    recebido += Number(p.valor || 0)
+
+    if(p.data_pagamento){
+
+      const dataPg = new Date(p.data_pagamento)
+
+      if(
+        dataPg >= segunda &&
+        dataPg <= sexta
+      ){
+        recebidoSemana += Number(
+          p.valor_pago || p.valor || 0
+        )
+      }
+
+    }
+
+  }
+
+  if(p.status == "pendente"){
+    pendente += Number(p.valor || 0)
+  }
 
 })
 
@@ -3122,6 +3154,22 @@ document.getElementById("dashboardDados").innerHTML = `
 </div>
 
 <span>R$ ${recebido}</span>
+</div>
+
+<div class="card cardRecebido">
+
+<div style="
+font-size:15px;
+color:#16a34a;
+font-weight:700;
+">
+📅 RECEBIDO NA SEMANA
+</div>
+
+<span>
+R$ ${recebidoSemana.toFixed(2)}
+</span>
+
 </div>
 
 <div class="card cardPendente">
