@@ -506,9 +506,15 @@ margin-bottom:20px;
 <div class="ladoEsquerdo">
   
 <div id="dashboardDados"></div>
-  
+
+<div style="margin:15px 0;">
+  <button onclick="relatorioSemanal()">
+    📊 Fechamento Semanal
+  </button>
+</div>
+
 <div id="ocupacaoPredios"></div>
-  
+
 <div id="alertaInadimplentes"></div>
   
 <div class="areaGraficos">
@@ -3067,6 +3073,63 @@ Mês ${p.mes} - R$ ${p.valor}
 })
 
 document.getElementById("relatorio").innerHTML = html
+
+}
+
+async function relatorioSemanal(){
+
+  const hoje = new Date()
+
+  const segunda = new Date(hoje)
+  segunda.setDate(
+    hoje.getDate() -
+    ((hoje.getDay() + 6) % 7)
+  )
+  segunda.setHours(0,0,0,0)
+
+  const sexta = new Date(segunda)
+  sexta.setDate(segunda.getDate() + 4)
+  sexta.setHours(23,59,59,999)
+
+  const { data: pagamentos } = await client
+    .from("pagamentos")
+    .select("*")
+    .eq("status","pago")
+
+  let totalSemana = 0
+  let quantidade = 0
+
+  pagamentos.forEach(p => {
+
+    if(!p.data_pagamento) return
+
+    const dataPg = new Date(p.data_pagamento)
+
+    if(
+      dataPg >= segunda &&
+      dataPg <= sexta
+    ){
+
+      totalSemana += Number(
+        p.valor_pago || p.valor || 0
+      )
+
+      quantidade++
+    }
+
+  })
+
+  alert(
+`📊 FECHAMENTO SEMANAL
+
+Período:
+${segunda.toLocaleDateString()} até ${sexta.toLocaleDateString()}
+
+Recebimentos: ${quantidade}
+
+Total Recebido:
+R$ ${totalSemana.toFixed(2)}`
+  )
 
 }
 
