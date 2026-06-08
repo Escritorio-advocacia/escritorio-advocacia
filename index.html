@@ -4247,14 +4247,16 @@ function gerarRecibo(dados) {
 
   const html = `
   <div style="
-    width:700px;
-    margin:auto;
-    padding:30px;
-    font-family:'Inter', Arial;
-    background:#fff;
-    border-radius:12px;
-    border:1px solid #ddd;
-  ">
+  width:500px;
+  max-width:90%;
+  margin:auto;
+  padding:15px;
+  font-family:'Inter', Arial;
+  font-size:14px;
+  background:#fff;
+  border-radius:12px;
+  border:1px solid #ddd;
+">
 
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h2 style="color:#1e40af;">RECIBO</h2>
@@ -4312,13 +4314,13 @@ function gerarRecibo(dados) {
 
     <br>
 
-    <div style="display:flex; justify-content:space-between; margin-top:40px;">
+    <div style="display:flex; justify-content:space-between; margin-top:15px;">
       <span>${dados.cidade}, ${dataAtual}</span>
     </div>
 
-    <br><br>
+   <br>
 
-    <div style="text-align:center;">
+<div style="text-align:center;">
       ___________________________<br>
       <span style="font-size:12px;">Assinatura</span>
     </div>
