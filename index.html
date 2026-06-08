@@ -4502,7 +4502,7 @@ function verContrato(arquivo){
 
 }
 
- async function atualizarStatusAtrasados(){
+async function atualizarStatusAtrasados(){
 
   if(window.nivelUsuario !== "admin"){
     alert("🚫 Apenas ADMIN pode fazer isso")
@@ -4510,39 +4510,40 @@ function verContrato(arquivo){
   }
 
   const hoje = new Date()
-  
+
   const { data } = await client
     .from("pagamentos")
     .select("*")
 
   for(const p of data){
 
-  // 🔒 NÃO mexe em quem já pagou
-  if(p.status === "pago") continue
+    if(p.status === "pago") continue
 
-  const vencimento = new Date(p.data_vencimento)
+    const vencimento = new Date(
+      p.data_vencimento + "T12:00:00"
+    )
 
-  const diasAtraso = Math.floor(
-    (hoje - vencimento) /
-    (1000 * 60 * 60 * 24)
-  )
+    const diasAtraso = Math.floor(
+      (hoje - vencimento) /
+      (1000 * 60 * 60 * 24)
+    )
 
-  if(diasAtraso > 5){
+    const novoStatus =
+      diasAtraso > 5
+        ? "atrasado"
+        : "pendente"
 
-    const { error } = await client
+    await client
       .from("pagamentos")
-      .update({ status: "atrasado" })
+      .update({
+        status: novoStatus
+      })
       .eq("id", p.id)
-
-    if(error){
-      tratarErro(error, "Erro ao atualizar pagamento")
-    }
 
   }
 
-}
-
-  mostrarAlerta("Atrasos atualizados corretamente!")
+  mostrarAlerta("Status corrigidos!")
+  listarPagamentos()
 }
 function filtrarPagamentos(status) {
 
