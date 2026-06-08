@@ -1592,14 +1592,14 @@ for(let mes = 1; mes <= 12; mes++){
   )
 
   pagamentos.push({
-    contrato_id: contratoCriado.id,
-    mes,
-    ano: new Date().getFullYear(),
-    valor: valor_aluguel,
-    valor_agua: valor_agua,
-    status: "pendente",
-    data_vencimento: dataPagamento.toISOString()
-  })
+  contrato_id: contratoCriado.id,
+  mes,
+  ano: new Date().getFullYear(),
+  valor: valor_aluguel + valor_agua,
+  valor_agua: valor_agua,
+  status: "pendente",
+  data_vencimento: dataPagamento.toISOString()
+})
 
 }
 
