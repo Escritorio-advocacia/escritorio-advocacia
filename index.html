@@ -2391,7 +2391,7 @@ const mesesAtrasados = pagamentosContrato
 
     return (
       p.status === "atrasado" ||
-      (calcMes.diasAtraso > 0 && p.status !== "pago")
+      (calcMes.diasAtraso > 5 && p.status !== "pago")
     )
   })
   .map(p => nomesMeses[p.mes - 1])
@@ -2409,9 +2409,12 @@ const textoAtrasos =
       .toLowerCase()
       .trim()
 
-    if(calc.diasAtraso > 0 && status !== "pago"){
-      status = "atrasado"
-    }
+    if(
+  calc.diasAtraso > 5 &&
+  status !== "pago"
+){
+  status = "atrasado"
+}
 
     if(filtro && status !== filtro) return
 
