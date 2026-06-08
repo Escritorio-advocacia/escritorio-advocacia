@@ -1358,14 +1358,17 @@ async function corrigirValoresAgua(){
     if(!inquilino) continue
 
     await client
-      .from("pagamentos")
-      .update({
-        valor: Number(inquilino.valor_aluguel || 0),
-        valor_agua: Number(inquilino.valor_agua || 0)
-      })
-      .eq("contrato_id", contrato.id)
-      .neq("status", "pago")
+  .from("pagamentos")
+  .update({
+    valor:
+      Number(inquilino.valor_aluguel || 0) +
+      Number(inquilino.valor_agua || 0),
 
+    valor_agua:
+      Number(inquilino.valor_agua || 0)
+  })
+  .eq("contrato_id", contrato.id)
+  .neq("status", "pago")
   }
 
   mostrarAlerta("Todos os pagamentos foram corrigidos!")
@@ -1488,7 +1491,7 @@ if(contrato){
   await client
     .from("pagamentos")
     .update({
-      valor: valor_aluguel,
+      valor: valor_aluguel + valor_agua,
       valor_agua: valor_agua
     })
     .eq("contrato_id", contrato.id)
