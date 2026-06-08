@@ -2772,7 +2772,7 @@ function abrirPagamento(id, valor){
       <p>Valor original: R$ ${calc.valorOriginal.toFixed(2)}</p>
 
       ${
-        calc.diasAtraso > 0
+        calc.diasAtraso > 5
         ? `
           <p style="color:red;">
             ${calc.diasAtraso} dias em atraso
