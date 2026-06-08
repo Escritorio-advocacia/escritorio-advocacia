@@ -1585,10 +1585,20 @@ if(contrato){
 
 for(let mes = 1; mes <= 12; mes++){
 
+  const ultimoDiaMes =
+    new Date(
+      new Date().getFullYear(),
+      mes,
+      0
+    ).getDate()
+
+  const diaCorreto =
+    Math.min(dia_vencimento, ultimoDiaMes)
+
   const dataPagamento = new Date(
     new Date().getFullYear(),
     mes - 1,
-    dia_vencimento
+    diaCorreto
   )
 
   pagamentos.push({
