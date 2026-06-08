@@ -757,6 +757,10 @@ margin-bottom:20px;
   
 <button onclick="exportarExcel()">Exportar Excel</button>
   
+  <button onclick="corrigirVencimentos31()">
+🔧 Corrigir vencimentos dia 31
+</button>
+  
 <button onclick="backupSistema()">💾 Backup completo</button>
   
 <button onclick="relatorioFinanceiro()">Gerar relatório</button>
@@ -4422,6 +4426,49 @@ XLSX.utils.book_append_sheet(wb, ws, "Relatorio")
 XLSX.writeFile(wb, "relatorio_aluguel.xlsx")
 
 }
+
+async function corrigirVencimentos31(){
+
+  if(!confirm("Corrigir todos os vencimentos dos contratos dia 31?")){
+    return
+  }
+
+  const { data: contratos } = await client
+    .from("contratos")
+    .select("*")
+    .eq("dia_vencimento", 31)
+
+  for(const contrato of contratos){
+
+    const { data: pagamentos } = await client
+      .from("pagamentos")
+      .select("*")
+      .eq("contrato_id", contrato.id)
+
+    for(const p of pagamentos){
+
+      const ultimoDiaMes =
+        new Date(
+          p.ano,
+          p.mes,
+          0
+        ).getDate()
+
+      const novaData =
+        `${p.ano}-${String(p.mes).padStart(2,'0')}-${String(ultimoDiaMes).padStart(2,'0')}`
+
+      await client
+        .from("pagamentos")
+        .update({
+          data_vencimento: novaData
+        })
+        .eq("id", p.id)
+    }
+  }
+
+  mostrarAlerta("Todos os vencimentos dia 31 foram corrigidos!")
+}
+
 async function backupSistema(){
 
 const { data: predios } = await client.from("predios").select("*")
