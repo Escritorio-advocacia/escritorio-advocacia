@@ -1608,7 +1608,7 @@ for(let mes = 1; mes <= 12; mes++){
   valor: valor_aluguel + valor_agua,
   valor_agua: valor_agua,
   status: "pendente",
-  data_vencimento: dataPagamento.toISOString()
+  data_vencimento: dataPagamento.toLocaleDateString('en-CA')
 })
 
 }
