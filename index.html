@@ -4167,8 +4167,11 @@ async function montarDadosRecibo(pagamento_id){
 
   const calc = calcularValorAtualizado(pagamento)
 
-  const aluguel = pagamento.valor || 0
-const agua = pagamento.valor_agua || 0
+ const agua = Number(pagamento.valor_agua || 0)
+
+const aluguel =
+  Number(pagamento.valor || 0) - agua
+  
 const juros = calc.jurosAluguel
 const multaAgua = calc.multaAgua
 const total = calc.valorFinal
