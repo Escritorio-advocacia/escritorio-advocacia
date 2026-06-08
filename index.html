@@ -2963,7 +2963,7 @@ const juros = calc.jurosAluguel
 const multaAgua = calc.multaAgua
 const total = calc.valorFinal
 const vencimento = pagamento.data_vencimento
-  ? new Date(pagamento.data_vencimento).toLocaleDateString()
+  ? pagamento.data_vencimento.split("-").reverse().join("/")
   : "-"
 
 
@@ -4168,8 +4168,8 @@ const total = calc.valorFinal
 
   // 🔥 CORREÇÃO DO VENCIMENTO
   const vencimento = pagamento.data_vencimento
-    ? new Date(pagamento.data_vencimento).toLocaleDateString()
-    : "-"
+  ? pagamento.data_vencimento.split("-").reverse().join("/")
+  : "-"
 
   // 🔥 DIAS DE ATRASO
   const diasAtraso = calc.diasAtraso || 0
