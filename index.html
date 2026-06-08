@@ -935,7 +935,9 @@ function calcularValorAtualizado(pagamento){
   const hoje = new Date()
   hoje.setHours(0,0,0,0)
 
-  const vencimento = new Date(pagamento.data_vencimento)
+  const vencimento = new Date(
+  pagamento.data_vencimento + "T12:00:00"
+)
   vencimento.setHours(0,0,0,0)
 
   let diasAtraso = Math.floor(
