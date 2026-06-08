@@ -1343,13 +1343,11 @@ async function recalcularTodosPagamentos(){
 
   mostrarAlerta("Recalculando pagamentos...")
 
-  const { data: contratos } = await client
-    .from("contratos")
-    .select("*")
+  const { data: contratos } =
+    await client.from("contratos").select("*")
 
-  const { data: inquilinos } = await client
-    .from("inquilinos")
-    .select("*")
+  const { data: inquilinos } =
+    await client.from("inquilinos").select("*")
 
   let atualizados = 0
 
@@ -1367,29 +1365,19 @@ async function recalcularTodosPagamentos(){
     const agua =
       Number(inquilino.valor_agua || 0)
 
-    const total = aluguel + agua
-
-    const { error } = await client
+    await client
       .from("pagamentos")
       .update({
-        valor: total,
+        valor: aluguel + agua,
         valor_agua: agua
       })
       .eq("contrato_id", contrato.id)
 
-    if(!error){
-      atualizados++
-    }else{
-      console.log(
-        "Erro contrato:",
-        contrato.id,
-        error
-      )
-    }
+    atualizados++
   }
 
   mostrarAlerta(
-    `${atualizados} contratos recalculados!`
+    `${atualizados} contratos corrigidos`
   )
 
   await listarPagamentos()
