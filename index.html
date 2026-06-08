@@ -958,11 +958,9 @@ const aluguel =
 
   if(diasAtraso > 5){
 
-  const diasComJuros = diasAtraso - 5
-
   // 0,5% ao dia APÓS os 5 dias de tolerância
   jurosAluguel =
-    aluguel * (0.005 * diasComJuros)
+  aluguel * (0.005 * diasAtraso)
 
   // multa única de 10% na água
   multaAgua = agua * 0.10
