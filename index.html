@@ -4247,7 +4247,7 @@ function gerarRecibo(dados) {
     <p><b>Vencimento:</b> ${dados.vencimento}</p>
 
     ${
-      dados.diasAtraso > 0
+      dados.diasAtraso > 5
       ? `<p style="color:red;"><b>⏰ ${dados.diasAtraso} dias em atraso</b></p>`
       : ""
     }
