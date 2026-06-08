@@ -948,9 +948,11 @@ function calcularValorAtualizado(pagamento){
     diasAtraso = 0
   }
 
-  const aluguel = Number(pagamento.valor) || 0
   const agua = Number(pagamento.valor_agua) || 0
 
+const aluguel =
+  (Number(pagamento.valor) || 0) - agua
+  
   let jurosAluguel = 0
   let multaAgua = 0
 
