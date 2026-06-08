@@ -952,15 +952,17 @@ function calcularValorAtualizado(pagamento){
   let jurosAluguel = 0
   let multaAgua = 0
 
-  // passou dos 5 dias
   if(diasAtraso > 5){
 
-    // 0,5% ao dia contando desde o vencimento
-    jurosAluguel = aluguel * (0.005 * diasAtraso)
+  const diasComJuros = diasAtraso - 5
 
-    // multa única de 10% na água
-    multaAgua = agua * 0.10
-  }
+  // 0,5% ao dia APÓS os 5 dias de tolerância
+  jurosAluguel =
+    aluguel * (0.005 * diasComJuros)
+
+  // multa única de 10% na água
+  multaAgua = agua * 0.10
+}
 
   const valorOriginal = aluguel + agua
 
@@ -4513,25 +4515,30 @@ function verContrato(arquivo){
 
   for(const p of data){
 
-    // 🔒 NÃO mexe em quem já pagou
-    if(p.status === "pago") continue
+  // 🔒 NÃO mexe em quem já pagou
+  if(p.status === "pago") continue
 
-    const vencimento = new Date(p.data_vencimento)
+  const vencimento = new Date(p.data_vencimento)
 
-    if(vencimento < hoje){
+  const diasAtraso = Math.floor(
+    (hoje - vencimento) /
+    (1000 * 60 * 60 * 24)
+  )
 
-      const { error } = await client
-        .from("pagamentos")
-        .update({ status: "atrasado" })
-        .eq("id", p.id)
+  if(diasAtraso > 5){
 
-      if(error){
-        tratarErro(error, "Erro ao atualizar pagamento")
-      }
+    const { error } = await client
+      .from("pagamentos")
+      .update({ status: "atrasado" })
+      .eq("id", p.id)
 
+    if(error){
+      tratarErro(error, "Erro ao atualizar pagamento")
     }
 
   }
+
+}
 
   mostrarAlerta("Atrasos atualizados corretamente!")
 }
