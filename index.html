@@ -4246,13 +4246,13 @@ function gerarRecibo(dados) {
   const numeroRecibo = "REC-" + Date.now()
 
   const html = `
-  <div style="
-  width:380px;
-  max-width:90%;
+<div style="
+  width:95mm;
+  min-height:135mm;
   margin:auto;
-  padding:12px;
+  padding:10px;
   font-family:'Inter', Arial;
-  font-size:14px;
+  font-size:13px;
   background:#fff;
   border-radius:12px;
   border:1px solid #ddd;
@@ -4331,15 +4331,37 @@ function gerarRecibo(dados) {
   const win = window.open("", "", "width=800,height=600")
 
   win.document.write(`
-    <html>
-      <body style="background:#f1f5f9; padding:20px;">
-        ${html}
-        <script>
-          window.onload = () => window.print();
-        <\/script>
-      </body>
-    </html>
-  `)
+<html>
+<head>
+<style>
+
+@page{
+  size: 105mm 148mm; /* 1/4 de uma A4 */
+  margin: 5mm;
+}
+
+body{
+  margin:0;
+  padding:0;
+  background:white;
+}
+
+</style>
+</head>
+
+<body>
+
+${html}
+
+<script>
+window.onload = () => {
+  window.print();
+}
+<\/script>
+
+</body>
+</html>
+`)
 
   win.document.close()
 }
