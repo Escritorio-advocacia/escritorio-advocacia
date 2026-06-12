@@ -3172,10 +3172,10 @@ const [
   { count }
 ] = await Promise.all([
 
-  client
-    .from("pagamentos")
-    .select("*")
-    .limit(100),
+ client
+  .from("pagamentos")
+  .select("*"),
+    
 
   client
     .from("predios")
@@ -3213,7 +3213,9 @@ data.forEach(p => {
 
   if(p.status == "pago"){
 
-    recebido += Number(p.valor || 0)
+  recebido += Number(
+    p.valor_pago || p.valor || 0
+  )
 
     if(p.data_pagamento){
 
@@ -3232,9 +3234,11 @@ data.forEach(p => {
 
   }
 
-  if(p.status == "pendente"){
-    pendente += Number(p.valor || 0)
-  }
+  if(p.status != "pago"){
+  pendente += Number(
+    p.valor_pago || p.valor || 0
+  )
+}
 
 })
 
