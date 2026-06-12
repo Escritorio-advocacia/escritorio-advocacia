@@ -3183,10 +3183,9 @@ const [
     .from("contratos")
     .select("*", { count: "exact", head: true })
 ])
-let recebido = 0
 let pendente = 0
-let recebidoSemana = 0
 let recebidoHoje = 0
+let recebidoSemana = 0
 let recebidoMes = 0
 let recebidoAno = 0
 const hoje = new Date()
@@ -3207,10 +3206,9 @@ data.forEach(p => {
     const valorRecebido = Number(
       p.valor_pago || p.valor || 0
     )
-    recebido += valorRecebido
     if(p.data_pagamento){
       const dataPg = new Date(p.data_pagamento)
-      // Recebido hoje
+      // Hoje
       if(
         dataPg.getDate() == diaAtual &&
         dataPg.getMonth() == mesAtual &&
@@ -3218,21 +3216,21 @@ data.forEach(p => {
       ){
         recebidoHoje += valorRecebido
       }
-      // Recebido na semana
+      // Semana
       if(
         dataPg >= segunda &&
         dataPg <= sexta
       ){
         recebidoSemana += valorRecebido
       }
-      // Recebido no mês
+      // Mês
       if(
         dataPg.getMonth() == mesAtual &&
         dataPg.getFullYear() == anoAtual
       ){
         recebidoMes += valorRecebido
       }
-      // Recebido no ano
+      // Ano
       if(
         dataPg.getFullYear() == anoAtual
       ){
@@ -3248,12 +3246,6 @@ data.forEach(p => {
 })
 document.getElementById("dashboardDados").innerHTML = `
 <div class="cards">
-<div class="card cardRecebido">
-<div style="font-size:15px;color:#16a34a;font-weight:700;">
-💰 RECEBIDO
-</div>
-<span>R$ ${recebido.toFixed(2)}</span>
-</div>
 <div class="card cardRecebido">
 <div style="font-size:15px;color:#16a34a;font-weight:700;">
 📅 RECEBIDO HOJE
