@@ -3455,7 +3455,6 @@ async function graficoFinanceiro(){
 const { data } = await client
 .from("pagamentos")
 .select("status, valor")
-.limit(100)
 
 if(!data?.length) return
 
@@ -3936,11 +3935,15 @@ let pendente = 0
 data.forEach(p=>{
 
 if(p.status=="pago"){
-recebido += Number(p.valor)
+recebido += Number(
+  p.valor_pago || p.valor || 0
+)
 }
 
-if(p.status=="pendente"){
-pendente += Number(p.valor)
+if(p.status!="pago"){
+pendente += Number(
+  p.valor_pago || p.valor || 0
+)
 }
 
 })
@@ -4019,7 +4022,6 @@ async function graficoMensal(){
 const { data } = await client
 .from("pagamentos")
 .select("mes, status, valor")
-.limit(100)
 
 if(!data?.length) return
 
