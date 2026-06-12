@@ -3164,143 +3164,154 @@ R$ ${totalSemana.toFixed(2)}`
 }
 
 async function carregarDashboard(){
-
 const [
   { data },
   { count: totalPredios },
   { count: totalInquilinos },
   { count }
 ] = await Promise.all([
-
- client
-  .from("pagamentos")
-  .select("*"),
-    
-
+  client
+    .from("pagamentos")
+    .select("*"),
   client
     .from("predios")
     .select("*", { count: "exact", head: true }),
-
   client
     .from("inquilinos")
     .select("*", { count: "exact", head: true }),
-
   client
     .from("contratos")
     .select("*", { count: "exact", head: true })
-
 ])
-
 let recebido = 0
 let pendente = 0
 let recebidoSemana = 0
-
+let recebidoHoje = 0
+let recebidoMes = 0
+let recebidoAno = 0
 const hoje = new Date()
-
+const diaAtual = hoje.getDate()
+const mesAtual = hoje.getMonth()
+const anoAtual = hoje.getFullYear()
 const segunda = new Date(hoje)
 segunda.setDate(
   hoje.getDate() -
   ((hoje.getDay() + 6) % 7)
 )
 segunda.setHours(0,0,0,0)
-
 const sexta = new Date(segunda)
 sexta.setDate(segunda.getDate() + 4)
 sexta.setHours(23,59,59,999)
-
-
 data.forEach(p => {
-
   if(p.status == "pago"){
-
-  recebido += Number(
-    p.valor_pago || p.valor || 0
-  )
-
+    const valorRecebido = Number(
+      p.valor_pago || p.valor || 0
+    )
+    recebido += valorRecebido
     if(p.data_pagamento){
-
       const dataPg = new Date(p.data_pagamento)
-
+      // Recebido hoje
+      if(
+        dataPg.getDate() == diaAtual &&
+        dataPg.getMonth() == mesAtual &&
+        dataPg.getFullYear() == anoAtual
+      ){
+        recebidoHoje += valorRecebido
+      }
+      // Recebido na semana
       if(
         dataPg >= segunda &&
         dataPg <= sexta
       ){
-        recebidoSemana += Number(
-          p.valor_pago || p.valor || 0
-        )
+        recebidoSemana += valorRecebido
       }
-
+      // Recebido no mês
+      if(
+        dataPg.getMonth() == mesAtual &&
+        dataPg.getFullYear() == anoAtual
+      ){
+        recebidoMes += valorRecebido
+      }
+      // Recebido no ano
+      if(
+        dataPg.getFullYear() == anoAtual
+      ){
+        recebidoAno += valorRecebido
+      }
     }
-
   }
-
   if(p.status != "pago"){
-  pendente += Number(
-    p.valor_pago || p.valor || 0
-  )
-}
-
+    pendente += Number(
+      p.valor || 0
+    )
+  }
 })
-
 document.getElementById("dashboardDados").innerHTML = `
 <div class="cards">
-
 <div class="card cardRecebido">
 <div style="font-size:15px;color:#16a34a;font-weight:700;">
 💰 RECEBIDO
 </div>
-
-<span>R$ ${recebido}</span>
+<span>R$ ${recebido.toFixed(2)}</span>
 </div>
-
 <div class="card cardRecebido">
-
-<div style="
-font-size:15px;
-color:#16a34a;
-font-weight:700;
-">
+<div style="font-size:15px;color:#16a34a;font-weight:700;">
+📅 RECEBIDO HOJE
+</div>
+<span>
+R$ ${recebidoHoje.toFixed(2)}
+</span>
+</div>
+<div class="card cardRecebido">
+<div style="font-size:15px;color:#16a34a;font-weight:700;">
 📅 RECEBIDO NA SEMANA
 </div>
-
 <span>
 R$ ${recebidoSemana.toFixed(2)}
 </span>
-
 </div>
-
+<div class="card cardRecebido">
+<div style="font-size:15px;color:#16a34a;font-weight:700;">
+📆 RECEBIDO NO MÊS
+</div>
+<span>
+R$ ${recebidoMes.toFixed(2)}
+</span>
+</div>
+<div class="card cardRecebido">
+<div style="font-size:15px;color:#16a34a;font-weight:700;">
+🗓 RECEBIDO NO ANO
+</div>
+<span>
+R$ ${recebidoAno.toFixed(2)}
+</span>
+</div>
 <div class="card cardPendente">
 <div style="font-size:15px;color:#f59e0b;font-weight:700;">
 📅 A RECEBER
 </div>
-
-<span>R$ ${pendente}</span>
+<span>
+R$ ${pendente.toFixed(2)}
+</span>
 </div>
-
 <div class="card cardContrato">
 <div style="font-size:15px;color:#2563eb;font-weight:700;">
 📄 CONTRATOS
 </div>
-
 <span>${count}</span>
 </div>
-
 <div class="card cardPredio">
 <div style="font-size:15px;color:#7c3aed;font-weight:700;">
 🏢 PRÉDIOS
 </div>
-
 <span>${totalPredios}</span>
 </div>
-
 <div class="card cardInquilino">
 <div style="font-size:15px;color:#ec4899;font-weight:700;">
 👤 INQUILINOS
 </div>
-
 <span>${totalInquilinos}</span>
 </div>
-
 </div>
 `
 }
