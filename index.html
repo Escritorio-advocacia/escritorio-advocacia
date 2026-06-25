@@ -2408,6 +2408,26 @@ todosPagamentos.forEach(p => {
 
 })
 
+const atrasosPorContrato = {}
+
+Object.keys(pagamentosPorContrato).forEach(idContrato => {
+
+  atrasosPorContrato[idContrato] =
+    pagamentosPorContrato[idContrato]
+      .filter(p => {
+
+        const calc = calcularValorAtualizado(p)
+
+        return (
+          p.status === "atrasado" ||
+          (calc.diasAtraso > 5 && p.status !== "pago")
+        )
+
+      })
+      .map(p => nomesMeses[p.mes - 1])
+
+})
+
     const nome = inquilino?.nome || "Inquilino"
     const telefone = inquilino?.whatsapp || ""
 
@@ -2415,19 +2435,8 @@ todosPagamentos.forEach(p => {
 
 
 
-   const pagamentosContrato =
-  pagamentosPorContrato[contrato.id] || []
-
-const mesesAtrasados = pagamentosContrato
-  .filter(p => {
-    const calcMes = calcularValorAtualizado(p)
-
-    return (
-      p.status === "atrasado" ||
-      (calcMes.diasAtraso > 5 && p.status !== "pago")
-    )
-  })
-  .map(p => nomesMeses[p.mes - 1])
+  const mesesAtrasados =
+  atrasosPorContrato[contrato.id] || []
 
 const textoAtrasos =
   mesesAtrasados.length > 0
