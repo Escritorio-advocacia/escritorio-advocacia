@@ -3141,11 +3141,16 @@ async function relatorioSemanal(){
 
     if(!p.data_pagamento) return
 
-    const dataPg = new Date(p.data_pagamento)
+    // Corrige o fuso horário
+    const dataPg = new Date(
+      p.data_pagamento.substring(0,10) + "T12:00:00"
+    )
 
     if(
       dataPg >= segunda &&
-      dataPg <= sexta
+      dataPg <= sexta &&
+      dataPg.getDay() >= 1 &&
+      dataPg.getDay() <= 5
     ){
 
       totalSemana += Number(
@@ -3153,6 +3158,7 @@ async function relatorioSemanal(){
       )
 
       quantidade++
+
     }
 
   })
