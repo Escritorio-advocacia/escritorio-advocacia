@@ -2511,29 +2511,8 @@ const textoAtrasos =
   🚪 Unidade ${numeroUnidade}<br><br>
 
 📅 ${nomeMes}/${pagamento.ano}<br>
-📆 Vencimento:
-${pagamento.data_vencimento.split("-").reverse().join("/")}<br><br>
+<br>
 
-
-${
-  textoAtrasos
-  ? `
-    <div style="
-      margin-top:8px;
-      margin-bottom:8px;
-      padding:8px;
-      background:#fef2f2;
-      border-left:4px solid #dc2626;
-      border-radius:8px;
-      color:#991b1b;
-      font-weight:600;
-    ">
-      ⚠️ Meses em atraso:<br>
-      ${textoAtrasos}
-    </div>
-  `
-  : ""
-}
 
 
   <div style="
@@ -2551,19 +2530,6 @@ ${
   line-height:1.7;
 ">
 
-${calc.diasAtraso > 5 ? `
-<div style="
-background:#fee2e2;
-color:#b91c1c;
-padding:8px;
-border-radius:8px;
-font-weight:700;
-margin-bottom:10px;
-text-align:center;
-">
-⏰ ${calc.diasAtraso} dias de atraso
-</div>
-` : ""}
 
 ${calc.diasAtraso > 5 ? `
 <div style="
