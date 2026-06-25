@@ -2731,6 +2731,11 @@ async function alterarStatusMes(id,status){
   }
 
   mostrarAlerta("Status atualizado")
+
+  await listarPagamentos()
+  await carregarDashboard()
+  await graficoFinanceiro()
+  await graficoMensal()
 }
 
 async function quitarAtrasados(contrato_id){
