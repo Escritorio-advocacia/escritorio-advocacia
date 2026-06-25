@@ -2894,6 +2894,12 @@ async function marcarPendente(id){
 }
 async function confirmarPagamento(id, forma){
 
+if(window.pagamentoProcessando){
+  return
+}
+
+window.pagamentoProcessando = true
+
   // 🔒 CONTROLE DE ACESSO
   if(window.nivelUsuario !== "admin" && window.nivelUsuario !== "funcionario"){
     mostrarAlerta("Sem permissão", "erro")
@@ -2909,10 +2915,11 @@ async function confirmarPagamento(id, forma){
   const calc = calcularValorAtualizado(pagamento)
 
   if(pagamento.status === "pago"){
-    alert("Esse pagamento já foi realizado!")
-    fecharModal()
-    return
-  }
+  alert("Esse pagamento já foi realizado!")
+  fecharModal()
+  window.pagamentoProcessando = false
+  return
+}
 
 
 
@@ -2931,9 +2938,10 @@ async function confirmarPagamento(id, forma){
     .eq("id", id)
 
   if(error){
-    tratarErro(error, "Erro ao atualizar pagamento")
-    return
-  }
+  tratarErro(error, "Erro ao atualizar pagamento")
+  window.pagamentoProcessando = false
+  return
+}
 
   fecharModal()
 
@@ -2944,6 +2952,7 @@ await graficoMensal()
 
 mostrarAlerta("Pagamento registrado com sucesso!")
 
+window.pagamentoProcessando = false
   const { data: contrato } = await client
     .from("contratos")
     .select("*")
