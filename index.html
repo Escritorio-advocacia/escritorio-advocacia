@@ -2555,13 +2555,30 @@ R$ ${calc.valorOriginal.toFixed(2)}<br>
   margin-bottom:10px;
   line-height:1.7;
 ">
-  🏠 Aluguel: R$ ${((pagamento.valor || 0) - (pagamento.valor_agua || 0)).toFixed(2)}<br>
 
-  💧 Água: R$ ${(pagamento.valor_agua || 0).toFixed(2)}<br>
+${calc.diasAtraso > 5 ? `
+<div style="
+background:#fee2e2;
+color:#b91c1c;
+padding:8px;
+border-radius:8px;
+font-weight:700;
+margin-bottom:10px;
+text-align:center;
+">
+⏰ ${calc.diasAtraso} dias de atraso
+</div>
+` : ""}
 
-  📄 Subtotal: R$ ${calc.valorOriginal.toFixed(2)}<br>
+🏠 Aluguel: R$ ${calc.aluguel.toFixed(2)}<br>
 
-  ⚠️ Juros/Multa: R$ ${(calc.valorFinal - calc.valorOriginal).toFixed(2)}
+💧 Água: R$ ${calc.agua.toFixed(2)}<br>
+
+📄 Subtotal: R$ ${calc.valorOriginal.toFixed(2)}<br>
+
+📈 Juros aluguel: R$ ${calc.jurosAluguel.toFixed(2)}<br>
+
+🚰 Multa água: R$ ${calc.multaAgua.toFixed(2)}
 </div>
 
 <div style="
