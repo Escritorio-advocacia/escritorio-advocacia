@@ -2565,17 +2565,41 @@ text-align:center;
 </div>
 ` : ""}
 
+${calc.diasAtraso > 5 ? `
+<div style="
+background:#fee2e2;
+color:#b91c1c;
+padding:8px;
+border-radius:8px;
+font-weight:700;
+margin-bottom:10px;
+text-align:center;
+">
+⏰ ${calc.diasAtraso} dias em atraso
+</div>
+` : `
+<div style="
+background:#dcfce7;
+color:#15803d;
+padding:8px;
+border-radius:8px;
+font-weight:700;
+margin-bottom:10px;
+text-align:center;
+">
+✅ Em dia
+</div>
+`}
+
 🏠 Aluguel: R$ ${calc.aluguel.toFixed(2)}<br>
 
 💧 Água: R$ ${calc.agua.toFixed(2)}<br>
 
 📄 Subtotal: R$ ${calc.valorOriginal.toFixed(2)}<br>
 
-📈 Juros aluguel: R$ ${calc.jurosAluguel.toFixed(2)}<br>
+📈 Juros do aluguel: R$ ${calc.jurosAluguel.toFixed(2)}<br>
 
-🚰 Multa da água: R$ ${calc.multaAgua.toFixed(2)}<br>
-
-💰 Acréscimos: R$ ${(calc.jurosAluguel + calc.multaAgua).toFixed(2)}
+🚰 Multa da água (10%): R$ ${calc.multaAgua.toFixed(2)}<br>
 
 <div style="
   border-top:1px solid #e2e8f0;
