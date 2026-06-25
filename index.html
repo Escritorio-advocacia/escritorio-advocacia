@@ -2223,18 +2223,21 @@ async function abrirMesesInquilino(inquilino_id){
 
 function togglePredioPagamento(id){
 
-    document.querySelectorAll("[id^='predioPag_']").forEach(div=>{
+    const atual = document.getElementById(id);
+
+    // Fecha todos os outros prédios
+    document.querySelectorAll("[id^='predioPag_']").forEach(div => {
         if(div.id !== id){
             div.style.display = "none";
         }
     });
 
-    const atual = document.getElementById(id);
-
-    atual.style.display =
-        atual.style.display === "none"
-            ? "block"
-            : "none";
+    // Se o prédio clicado já estiver aberto, fecha
+    if(atual.style.display === "block"){
+        atual.style.display = "none";
+    }else{
+        atual.style.display = "block";
+    }
 }
   
 async function listarPagamentos(filtro = null, busca = "") {
