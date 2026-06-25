@@ -4088,13 +4088,16 @@ document.getElementById("historicoPagamentos").innerHTML = html
 }
   
 let graficoMensalChart
+
 async function graficoMensal(){
 
 const { data } = await client
 .from("pagamentos")
-.select("mes, status, valor")
+.select("mes, ano, status, valor, valor_pago")
 
 if(!data?.length) return
+
+const anoAtual = new Date().getFullYear()
 
 let meses = []
 let valores = []
@@ -4102,8 +4105,15 @@ let valores = []
 for(let i=1;i<=12;i++){
 
 const totalMes = data
-.filter(p => p.mes == i && p.status == "pago")
-.reduce((sum,p)=> sum + Number(p.valor),0)
+.filter(p =>
+  p.mes == i &&
+  p.ano == anoAtual &&
+  p.status == "pago"
+)
+.reduce((sum,p)=>
+  sum + Number(
+    p.valor_pago || p.valor || 0
+  ),0)
 
 meses.push("Mês " + i)
 valores.push(totalMes)
@@ -4118,12 +4128,12 @@ graficoMensalChart.destroy()
 
 graficoMensalChart = new Chart(ctx,{
 
-  type: "bar",
+  type:"bar",
 
-  data: {
+  data:{
     labels: meses,
-    datasets: [{
-      label: "Recebimentos",
+    datasets:[{
+      label:"Recebimentos",
       data: valores
     }]
   },
