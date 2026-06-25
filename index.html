@@ -2900,11 +2900,12 @@ if(window.pagamentoProcessando){
 
 window.pagamentoProcessando = true
 
-  // 🔒 CONTROLE DE ACESSO
-  if(window.nivelUsuario !== "admin" && window.nivelUsuario !== "funcionario"){
-    mostrarAlerta("Sem permissão", "erro")
-    return
-  }
+// 🔒 CONTROLE DE ACESSO
+if(window.nivelUsuario !== "admin" && window.nivelUsuario !== "funcionario"){
+  window.pagamentoProcessando = false
+  mostrarAlerta("Sem permissão", "erro")
+  return
+}
 
   const { data: pagamento } = await client
     .from("pagamentos")
