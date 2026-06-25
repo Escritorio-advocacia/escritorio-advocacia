@@ -2312,6 +2312,17 @@ unidades.forEach(u => {
   unidadesMap[u.id] = u
 })
   
+const unidadesPorPredio = {}
+
+unidades.forEach(u => {
+
+  if(!unidadesPorPredio[u.predio_id]){
+    unidadesPorPredio[u.predio_id] = []
+  }
+
+  unidadesPorPredio[u.predio_id].push(u)
+
+})
 
 if(!pagamentos.length){
   lista.innerHTML = "Nenhum pagamento encontrado"
@@ -2323,13 +2334,11 @@ let html = ""
 
 predios.forEach(predio => {
 
-  const unidadesPredio = unidades.filter(
-    u => u.predio_id == predio.id
-  )
+  const unidadesPredio =
+  unidadesPorPredio[predio.id] || []
 
-  const idsUnidades = unidadesPredio.map(
-    u => String(u.id)
-  )
+const idsUnidades =
+  unidadesPredio.map(u => String(u.id))
 
   const pagamentosPredio = pagamentos.filter(p => {
 
