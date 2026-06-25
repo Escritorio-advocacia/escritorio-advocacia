@@ -2546,7 +2546,13 @@ R$ ${calc.valorOriginal.toFixed(2)}<br>
 
   📄 Subtotal: R$ ${calc.valorOriginal.toFixed(2)}<br>
 
-  ⚠️ Juros/Multa: R$ ${(calc.valorFinal - calc.valorOriginal).toFixed(2)}
+  🕒 Dias em atraso: ${calc.diasAtraso > 5 ? calc.diasAtraso : 0} dias<br>
+
+📈 Juros do aluguel:
+R$ ${(calc.jurosAluguel || 0).toFixed(2)}<br>
+
+⚠️ Multa da água:
+R$ ${(calc.multaAgua || 0).toFixed(2)}
 </div>
 
 <div style="
