@@ -3164,85 +3164,122 @@ R$ ${totalSemana.toFixed(2)}`
 }
 
 async function carregarDashboard(){
+
 const [
   { data },
   { count: totalPredios },
   { count: totalInquilinos },
   { count }
 ] = await Promise.all([
+
   client
     .from("pagamentos")
     .select("*"),
+
   client
     .from("predios")
-    .select("*", { count: "exact", head: true }),
+    .select("*", { count:"exact", head:true }),
+
   client
     .from("inquilinos")
-    .select("*", { count: "exact", head: true }),
+    .select("*", { count:"exact", head:true }),
+
   client
     .from("contratos")
-    .select("*", { count: "exact", head: true })
+    .select("*", { count:"exact", head:true })
+
 ])
+
 let pendente = 0
 let recebidoHoje = 0
 let recebidoSemana = 0
 let recebidoMes = 0
 let recebidoAno = 0
+
 const hoje = new Date()
+
+hoje.setHours(0,0,0,0)
+
 const diaAtual = hoje.getDate()
 const mesAtual = hoje.getMonth()
 const anoAtual = hoje.getFullYear()
+
+// Segunda-feira da semana
 const segunda = new Date(hoje)
+
 segunda.setDate(
   hoje.getDate() -
   ((hoje.getDay() + 6) % 7)
 )
+
 segunda.setHours(0,0,0,0)
+
+// Sexta-feira da mesma semana
 const sexta = new Date(segunda)
-sexta.setDate(segunda.getDate() + 4)
+
+sexta.setDate(
+  segunda.getDate() + 4
+)
+
 sexta.setHours(23,59,59,999)
-data.forEach(p => {
+
+data.forEach(p=>{
+
   if(p.status == "pago"){
-    const valorRecebido = Number(
-      p.valor_pago || p.valor || 0
-    )
+
+    const valorRecebido =
+      Number(p.valor_pago || p.valor || 0)
+
     if(p.data_pagamento){
-      const dataPg = new Date(p.data_pagamento)
-      // Hoje
+
+      const dataPg = new Date(
+        p.data_pagamento
+      )
+
+      dataPg.setHours(0,0,0,0)
+
+      // RECEBIDO HOJE
       if(
-        dataPg.getDate() == diaAtual &&
-        dataPg.getMonth() == mesAtual &&
-        dataPg.getFullYear() == anoAtual
+        dataPg.getTime() === hoje.getTime()
       ){
         recebidoHoje += valorRecebido
       }
-      // Semana
+
+      // RECEBIDO NA SEMANA (SEGUNDA A SEXTA)
       if(
         dataPg >= segunda &&
-        dataPg <= sexta
+        dataPg <= sexta &&
+        dataPg.getDay() >= 1 &&
+        dataPg.getDay() <= 5
       ){
         recebidoSemana += valorRecebido
       }
-      // Mês
+
+      // RECEBIDO NO MÊS
       if(
         dataPg.getMonth() == mesAtual &&
         dataPg.getFullYear() == anoAtual
       ){
         recebidoMes += valorRecebido
       }
-      // Ano
+
+      // RECEBIDO NO ANO
       if(
         dataPg.getFullYear() == anoAtual
       ){
         recebidoAno += valorRecebido
       }
+
     }
+
   }
+
   if(p.status != "pago"){
     pendente += Number(
       p.valor || 0
     )
   }
+
 })
 document.getElementById("dashboardDados").innerHTML = `
 <div class="cards">
