@@ -3240,13 +3240,9 @@ data.forEach(p=>{
 
     if(p.data_pagamento){
 
-      let dataPg = new Date(p.data_pagamento)
-
-// Corrige qualquer diferença de fuso horário
-dataPg = new Date(
-  dataPg.getFullYear(),
-  dataPg.getMonth(),
-  dataPg.getDate()
+      // Corrige definitivamente o problema de fuso horário
+const dataPg = new Date(
+  p.data_pagamento.substring(0, 10) + "T12:00:00"
 )
 
       // RECEBIDO HOJE
