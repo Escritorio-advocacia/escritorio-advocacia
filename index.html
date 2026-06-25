@@ -2985,10 +2985,15 @@ window.pagamentoProcessando = false
 
   const nome = inquilino?.nome || "Inquilino"
 
-  const aluguel = pagamento.valor || 0
-  const agua = pagamento.valor_agua || 0
-  const juros = 0
-  const total = aluguel + agua + juros
+  const aluguel = calc.aluguel
+
+const agua = calc.agua
+
+const juros = calc.jurosAluguel
+
+const multaAgua = calc.multaAgua
+
+const total = calc.valorFinal
 
   const { data: unidade } = await client
     .from("unidades")
