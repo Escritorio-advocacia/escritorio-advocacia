@@ -2333,15 +2333,13 @@ predios.forEach(predio => {
 
   const pagamentosPredio = pagamentos.filter(p => {
 
-    const contrato = contratos.find(
-      c => c.id == p.contrato_id
-    )
+  const contrato = contratosMap[p.contrato_id]
 
-    return idsUnidades.includes(
-      String(contrato?.unidade_id)
-    )
+  return idsUnidades.includes(
+    String(contrato?.unidade_id)
+  )
 
-  })
+})
 
 
 
