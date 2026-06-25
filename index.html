@@ -2268,7 +2268,7 @@ const { data: pagamentos, error } = await client
   .eq("ano", anoAtual)
   .order("id", { ascending: true })
 
-window.pagamentosCache = pagamentos
+window.pagamentosCache = pagamentos || []
 
   if(error || !pagamentos){
     console.log("Erro ao carregar pagamentos", error)
