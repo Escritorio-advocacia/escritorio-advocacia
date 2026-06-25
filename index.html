@@ -2264,8 +2264,7 @@ const { data: pagamentos, error } = await client
     mes,
     ano
   `)
-  .eq("mes", mesAtual)
-  .eq("ano", anoAtual)
+
   .order("id", { ascending: true })
 
 window.pagamentosCache = pagamentos || []
