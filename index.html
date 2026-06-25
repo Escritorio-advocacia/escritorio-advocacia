@@ -3232,18 +3232,23 @@ data.forEach(p=>{
 
     if(p.data_pagamento){
 
-      const dataPg = new Date(
-        p.data_pagamento
-      )
+      let dataPg = new Date(p.data_pagamento)
 
-      dataPg.setHours(0,0,0,0)
+// Corrige qualquer diferença de fuso horário
+dataPg = new Date(
+  dataPg.getFullYear(),
+  dataPg.getMonth(),
+  dataPg.getDate()
+)
 
       // RECEBIDO HOJE
       if(
-        dataPg.getTime() === hoje.getTime()
-      ){
-        recebidoHoje += valorRecebido
-      }
+    dataPg.getDate() === hoje.getDate() &&
+    dataPg.getMonth() === hoje.getMonth() &&
+    dataPg.getFullYear() === hoje.getFullYear()
+){
+    recebidoHoje += valorRecebido
+}
 
       // RECEBIDO NA SEMANA (SEGUNDA A SEXTA)
       if(
