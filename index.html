@@ -2390,6 +2390,8 @@ const idsUnidades =
     const contrato =
   contratosMap[pagamento.contrato_id]
 
+if (!contrato) return
+
 const inquilino =
   inquilinosMap[contrato?.inquilino_id]
 
