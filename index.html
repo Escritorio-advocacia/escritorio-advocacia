@@ -2895,8 +2895,12 @@ async function confirmarPagamento(id, forma){
    .update({
     status: "pago",
     forma_pagamento: forma,
-    data_pagamento: new Date(),
-    valor_pago: Number(calc.valorFinal)
+
+    // grava sempre em formato ISO
+    data_pagamento: new Date().toISOString(),
+
+    // grava exatamente o valor recebido
+    valor_pago: Number(calc.valorFinal.toFixed(2))
 })
     .eq("id", id)
 
