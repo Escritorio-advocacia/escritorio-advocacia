@@ -2498,7 +2498,7 @@ const textoAtrasos =
   </div>
 
 🚪 Unidade ${numeroUnidade}<br>
-🏢 TESTE ${predio?.rua}<br><br>
+🏢 ${predio ? `${predio.rua} Nº ${predio.numero}` : ""}<br><br>
 
 📅 ${nomeMes}/${pagamento.ano}<br>
 
