@@ -3482,8 +3482,18 @@ async function atualizarSistema(){
     listarPagamentos(),
     listarInquilinos(),
     listarPredios(),
-    carregarDashboard()
+    carregarDashboard(),
+    graficoFinanceiro(),
+    graficoMensal(),
+    listarDevedores(),
+    alertaInadimplentes(),
+    vencimentosHoje(),
+    ocupacaoPorPredio()
   ])
+
+  if(pegarPredioId()){
+    await mapaOcupacao()
+  }
 
   mostrarAlerta("Sistema atualizado!")
 }
