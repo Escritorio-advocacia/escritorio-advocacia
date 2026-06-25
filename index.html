@@ -2888,7 +2888,7 @@ async function confirmarPagamento(id, forma){
     return
   }
 
-  const hoje = new Date()
+
 
   const { error } = await client
     .from("pagamentos")
@@ -2910,9 +2910,13 @@ async function confirmarPagamento(id, forma){
   }
 
   fecharModal()
-  listarPagamentos()
 
-  mostrarAlerta("Pagamento registrado com sucesso!")
+await listarPagamentos()
+await carregarDashboard()
+await graficoFinanceiro()
+await graficoMensal()
+
+mostrarAlerta("Pagamento registrado com sucesso!")
 
   const { data: contrato } = await client
     .from("contratos")
