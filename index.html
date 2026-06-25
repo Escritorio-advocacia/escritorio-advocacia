@@ -2222,13 +2222,19 @@ async function abrirMesesInquilino(inquilino_id){
 
 
 function togglePredioPagamento(id){
-  const div = document.getElementById(id)
 
-  if(div.style.display === "none"){
-    div.style.display = "block"
-  }else{
-    div.style.display = "none"
-  }
+    document.querySelectorAll("[id^='predioPag_']").forEach(div=>{
+        if(div.id !== id){
+            div.style.display = "none";
+        }
+    });
+
+    const atual = document.getElementById(id);
+
+    atual.style.display =
+        atual.style.display === "none"
+            ? "block"
+            : "none";
 }
   
 async function listarPagamentos(filtro = null, busca = "") {
