@@ -2893,11 +2893,11 @@ async function confirmarPagamento(id, forma){
   const { error } = await client
     .from("pagamentos")
     .update({
-      status: "pago",
-      forma_pagamento: forma,
-      data_pagamento: new Date(),
-      valor_pago: calc.valorFinal
-    })
+    status: "pago",
+    forma_pagamento: forma,
+    data_pagamento: new Date().toISOString(),
+    valor_pago: Number(calc.valorFinal)
+})
     .eq("id", id)
 
   if(error){
