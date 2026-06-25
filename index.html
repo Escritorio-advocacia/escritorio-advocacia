@@ -4538,6 +4538,12 @@ async function logout(){
 
   await client.auth.signOut()
 
+  window.pagamentosCache = []
+  window.idEditando = null
+  window.predioEditando = null
+  window.unidadeEditando = null
+  window.nivelUsuario = null
+
   document.querySelector(".layout").style.display = "none"
   document.querySelector(".loginContainer").style.display = "flex"
 
