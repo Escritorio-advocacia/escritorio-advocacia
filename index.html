@@ -2688,11 +2688,15 @@ const calc = calcularValorAtualizado(p)
 
 💧 Água: R$ ${calc.agua.toFixed(2)}<br>
 
-⚠️ Juros/Multa:
-R$ ${(calc.valorFinal - calc.valorOriginal).toFixed(2)}<br>
+📄 Subtotal: R$ ${calc.valorOriginal.toFixed(2)}<br>
 
-💰 Total Atualizado:
-R$ ${calc.valorFinal.toFixed(2)}
+📈 Juros aluguel: R$ ${calc.jurosAluguel.toFixed(2)}<br>
+
+🚰 Multa da água: R$ ${calc.multaAgua.toFixed(2)}<br>
+
+💰 Acréscimos: R$ ${(calc.jurosAluguel + calc.multaAgua).toFixed(2)}<br>
+
+💵 Total Atualizado: R$ ${calc.valorFinal.toFixed(2)}
 
 <br><br>
 
