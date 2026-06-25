@@ -4186,8 +4186,7 @@ let multaAgua = 0
 // tolerância de 5 dias
 if(atraso > 5){
 
-const diasJuros = atraso - 5
-jurosAluguel = aluguel * (0.005 * diasJuros)
+jurosAluguel = aluguel * (0.005 * atraso)
 
 multaAgua = agua * 0.10
 
@@ -4229,8 +4228,7 @@ let multaAgua = 0
 
 if(atraso > 5){
 
-const diasJuros = atraso - 5
-jurosAluguel = aluguel * (0.005 * diasJuros)
+jurosAluguel = aluguel * (0.005 * atraso)
 
 multaAgua = agua * 0.10
 
