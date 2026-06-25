@@ -3509,7 +3509,7 @@ async function graficoFinanceiro(){
 
 const { data } = await client
 .from("pagamentos")
-.select("status, valor")
+.select("status, valor, valor_pago")
 
 if(!data?.length) return
 
@@ -3518,38 +3518,54 @@ let pendente = 0
 
 data.forEach(p => {
 
-if(p.status == "pago"){
-pago += Number(p.valor)
-}
+  if(p.status == "pago"){
+    pago += Number(
+      p.valor_pago || p.valor || 0
+    )
+  }
 
-if(p.status == "pendente"){
-pendente += Number(p.valor)
-}
+  if(
+    p.status == "pendente" ||
+    p.status == "atrasado"
+  ){
+    pendente += Number(
+      p.valor || 0
+    )
+  }
 
 })
 
 const ctx = document.getElementById("graficoFinanceiro")
 
-// 🔥 destruir gráfico antigo
 if(graficoFinanceiroChart){
-graficoFinanceiroChart.destroy()
+  graficoFinanceiroChart.destroy()
 }
 
-graficoFinanceiroChart = new Chart(ctx, {
-  type: 'doughnut',
+graficoFinanceiroChart = new Chart(ctx,{
+  type:"doughnut",
 
-  data: {
-    labels: ['Recebido', 'Pendente'],
-    datasets: [{
-      data: [pago, pendente],
-      backgroundColor: ['green','orange']
+  data:{
+    labels:[
+      "Recebido",
+      "A Receber"
+    ],
+    datasets:[{
+      data:[
+        pago,
+        pendente
+      ],
+      backgroundColor:[
+        "green",
+        "orange"
+      ]
     }]
   },
 
-  options: {
-    responsive: true,
-    maintainAspectRatio: false
+  options:{
+    responsive:true,
+    maintainAspectRatio:false
   }
+
 })
 
 }
