@@ -2396,6 +2396,9 @@ const inquilino =
 const unidade =
   unidadesMap[contrato?.unidade_id]
   
+  const predio =
+  predios.find(p => p.id == unidade?.predio_id)
+  
   const pagamentosPorContrato = {}
 
 todosPagamentos.forEach(p => {
@@ -2493,6 +2496,7 @@ const textoAtrasos =
     ${nome}
   </div>
 
+  🏢 ${predio?.rua || ""} Nº ${predio?.numero || ""}<br><br>
   🚪 Unidade ${numeroUnidade}<br><br>
 
 📅 ${nomeMes}/${pagamento.ano}<br>
