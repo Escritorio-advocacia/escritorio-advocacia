@@ -2795,13 +2795,24 @@ async function quitarAtrasados(contrato_id){
   listarPagamentos()
 }
   
-function abrirPagamento(id, valor){
+async function abrirPagamento(id, valor){
 
-  const pagamento = window.pagamentosCache?.find(p => p.id == id)
+  let pagamento = window.pagamentosCache?.find(p => p.id == id)
 
   if(!pagamento){
-    alert("Erro ao carregar pagamento")
-    return
+
+    const { data, error } = await client
+      .from("pagamentos")
+      .select("*")
+      .eq("id", id)
+      .single()
+
+    if(error || !data){
+      alert("Erro ao carregar pagamento")
+      return
+    }
+
+    pagamento = data
   }
 
   const calc = calcularValorAtualizado(pagamento)
