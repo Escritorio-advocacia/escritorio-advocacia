@@ -2420,6 +2420,25 @@ todosPagamentos.forEach(p => {
    const pagamentosContrato =
   pagamentosPorContrato[contrato.id] || []
 
+// Pagamento mais antigo ainda em atraso
+const pagamentoMaisAntigoAtrasado = pagamentosContrato
+  .filter(p => {
+    const calcMes = calcularValorAtualizado(p);
+
+    return (
+      p.status === "atrasado" ||
+      (calcMes.diasAtraso > 5 && p.status !== "pago")
+    );
+  })
+  .sort((a, b) =>
+    new Date(a.data_vencimento) - new Date(b.data_vencimento)
+  )[0];
+
+// Dias do atraso mais antigo
+const diasAtrasoMaisAntigo = pagamentoMaisAntigoAtrasado
+  ? calcularValorAtualizado(pagamentoMaisAntigoAtrasado).diasAtraso
+  : 0;
+
 const mesesAtrasados = pagamentosContrato
   .filter(p => {
     const calcMes = calcularValorAtualizado(p)
@@ -2556,12 +2575,20 @@ ${
 
   📄 Subtotal: R$ ${calc.valorOriginal.toFixed(2)}<br>
 
-  🕒 Dias em atraso:
+  🕒 Atraso do mês atual:
 <span style="
 color:${calc.diasAtraso > 5 ? "#dc2626" : "#475569"};
 font-weight:700;
 ">
 ${calc.diasAtraso > 5 ? calc.diasAtraso : 0} dias
+</span><br>
+
+⚠️ Atraso acumulado:
+<span style="
+color:${diasAtrasoMaisAntigo > 5 ? "#dc2626" : "#475569"};
+font-weight:700;
+">
+${diasAtrasoMaisAntigo > 5 ? diasAtrasoMaisAntigo : 0} dias
 </span><br>
 📈 Juros do aluguel:
 R$ ${(calc.jurosAluguel || 0).toFixed(2)}<br>
