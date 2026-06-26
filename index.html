@@ -2489,13 +2489,27 @@ const textoAtrasos =
 ">
 
   <div style="
-    font-size:20px;
-    font-weight:700;
-    color:#0f172a;
-    margin-bottom:8px;
-  ">
-    ${nome}
-  </div>
+  font-size:20px;
+  font-weight:700;
+  color:#0f172a;
+  margin-bottom:8px;
+">
+  👤 ${nome}
+</div>
+
+${
+window.nivelUsuario === "admin"
+? `
+<div style="
+  color:#64748b;
+  font-size:13px;
+  margin-bottom:10px;
+">
+🆔 Inquilino: ${inquilino?.id} | Pagamento: ${pagamento.id}
+</div>
+`
+: ""
+}
 
 🚪 Unidade ${numeroUnidade}<br><br>
 🏢 ${predio?.rua || ""} Nº ${predio?.numero || ""}<br><br>
