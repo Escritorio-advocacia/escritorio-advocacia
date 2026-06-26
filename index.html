@@ -2704,9 +2704,9 @@ ${window.nivelUsuario === "admin" ? `
 async function alterarStatusMes(id,status){
 
   if(status === "pago"){
-    abrirModalPagamento(id)
+    abrirPagamento(id)
     return
-  }
+}
 
   if(
     window.nivelUsuario !== "admin" &&
