@@ -2556,8 +2556,13 @@ ${
 
   📄 Subtotal: R$ ${calc.valorOriginal.toFixed(2)}<br>
 
-  🕒 Dias em atraso: ${calc.diasAtraso > 5 ? calc.diasAtraso : 0} dias<br>
-
+  🕒 Dias em atraso:
+<span style="
+color:${calc.diasAtraso > 5 ? "#dc2626" : "#475569"};
+font-weight:700;
+">
+${calc.diasAtraso > 5 ? calc.diasAtraso : 0} dias
+</span><br>
 📈 Juros do aluguel:
 R$ ${(calc.jurosAluguel || 0).toFixed(2)}<br>
 
