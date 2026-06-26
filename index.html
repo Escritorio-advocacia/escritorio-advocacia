@@ -2703,6 +2703,11 @@ ${window.nivelUsuario === "admin" ? `
 
 async function alterarStatusMes(id,status){
 
+  if(status === "pago"){
+    abrirModalPagamento(id)
+    return
+  }
+
   if(
     window.nivelUsuario !== "admin" &&
     status !== "pago"
@@ -2713,8 +2718,8 @@ async function alterarStatusMes(id,status){
 
   const { error } = await client
     .from("pagamentos")
-    .update({status})
-    .eq("id",id)
+    .update({ status })
+    .eq("id", id)
 
   if(error){
     mostrarAlerta("Erro ao atualizar", "erro")
