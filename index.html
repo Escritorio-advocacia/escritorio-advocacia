@@ -5255,6 +5255,8 @@ let pagamentosSemContrato = 0
 let contratosSemInquilino = 0
 let contratosSemUnidade = 0
 let inquilinosSemContrato = 0
+let unidadesSemContrato = []
+
 
 const inconsistencias = []
 
@@ -5272,11 +5274,32 @@ contratosSemUnidade++
 }
 
 // Inquilinos
-for(const i of inquilinos){
+for (const i of inquilinos){
 
-if(!contratos.find(c=>c.inquilino_id==i.id)){
-inquilinosSemContrato++
+  if(!contratos.find(c => c.inquilino_id == i.id)){
+    inquilinosSemContrato++
+  }
+
 }
+
+for (const u of unidades){
+
+  const possuiContrato = contratos.find(
+    c => c.unidade_id == u.id
+  )
+
+  if(!possuiContrato){
+
+    const predio = predios.find(
+      p => p.id == u.predio_id
+    )
+
+    unidadesSemContrato.push({
+      unidade: u.numero,
+      predio: `${predio?.rua || ""} Nº ${predio?.numero || ""}`
+    })
+
+  }
 
 }
 
@@ -5437,6 +5460,21 @@ inconsistencias.length>20
 `<br><b>... e mais ${inconsistencias.length-20} pagamentos.</b>`
 :
 ""
+}
+
+<hr>
+
+<h3>🏠 Unidades sem contrato</h3>
+
+${
+unidadesSemContrato.length
+?
+unidadesSemContrato.map(u=>`
+• ${u.predio}<br>
+&nbsp;&nbsp;&nbsp;🚪 Unidade ${u.unidade}<br><br>
+`).join("")
+:
+"✅ Nenhuma unidade sem contrato."
 }
 
 <div style="color:#16a34a;font-weight:bold">
