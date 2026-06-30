@@ -5215,36 +5215,8 @@ async function gerarRelatorioSistema(){
 const resultado =
 document.getElementById("resultadoAnalise")
 
-let listaProblemas = ""
-
-inconsistencias
-.slice(0,20)
-.forEach(p=>{
-
-listaProblemas += `
-<div style="
-padding:8px;
-margin-top:8px;
-background:#fff7ed;
-border-left:4px solid orange;
-border-radius:8px;
-">
-
-<b>Pagamento ${p.id}</b><br>
-
-Contrato: ${p.contrato}<br>
-
-${p.mes}/${p.ano}<br>
-
-❌ ${p.erros.join(", ")}
-
-</div>
-`
-
-})
-
 resultado.innerHTML =
-"⏳ Lendo pagamentos..."
+"⏳ Analisando banco de dados..."
 
 const [
 {data:pagamentos},
@@ -5274,86 +5246,123 @@ let atrasados=0
 let semValorPago=0
 let semDataPagamento=0
 let semFormaPagamento=0
-const inconsistencias = []
-
 
 let pagamentosSemContrato = 0
 let contratosSemInquilino = 0
 let contratosSemUnidade = 0
 let inquilinosSemContrato = 0
 
+const inconsistencias = []
+
+// Contratos
+for(const c of contratos){
+
+if(!inquilinos.find(i=>i.id==c.inquilino_id)){
+contratosSemInquilino++
+}
+
+if(!unidades.find(u=>u.id==c.unidade_id)){
+contratosSemUnidade++
+}
+
+}
+
+// Inquilinos
+for(const i of inquilinos){
+
+if(!contratos.find(c=>c.inquilino_id==i.id)){
+inquilinosSemContrato++
+}
+
+}
+
+// Pagamentos sem contrato
 for(const p of pagamentos){
 
-for (const c of contratos){
-
-  if(!inquilinos.find(i => i.id == c.inquilino_id)){
-    contratosSemInquilino++
-  }
-
-  if(!unidades.find(u => u.id == c.unidade_id)){
-    contratosSemUnidade++
-  }
+if(!contratos.find(c=>c.id==p.contrato_id)){
+pagamentosSemContrato++
+}
 
 }
 
-for (const i of inquilinos){
-
-  if(!contratos.find(c => c.inquilino_id == i.id)){
-    inquilinosSemContrato++
-  }
-
-}
-
-for (const p of pagamentos){
-
-  if(!contratos.find(c => c.id == p.contrato_id)){
-    pagamentosSemContrato++
-  }
-
-}
+// Analisa pagamentos
+for(const p of pagamentos){
 
 if(p.status==="pago"){
 
-    pagos++
+pagos++
 
-    let erros = []
+let erros=[]
 
-    if(p.valor_pago == null){
-      semValorPago++
-      erros.push("valor_pago")
-    }
+if(p.valor_pago==null){
+semValorPago++
+erros.push("valor_pago")
+}
 
-    if(!p.data_pagamento){
-      semDataPagamento++
-      erros.push("data_pagamento")
-    }
+if(!p.data_pagamento){
+semDataPagamento++
+erros.push("data_pagamento")
+}
 
-    if(!p.forma_pagamento){
-      semFormaPagamento++
-      erros.push("forma_pagamento")
-    }
+if(!p.forma_pagamento){
+semFormaPagamento++
+erros.push("forma_pagamento")
+}
 
-    if(erros.length){
+if(erros.length){
 
-      inconsistencias.push({
-        id: p.id,
-        contrato: p.contrato_id,
-        mes: p.mes,
-        ano: p.ano,
-        erros
-      })
-
-    }
+inconsistencias.push({
+id:p.id,
+contrato:p.contrato_id,
+mes:p.mes,
+ano:p.ano,
+erros
+})
 
 }
 
-if(p.status==="pendente")
+}
+
+if(p.status==="pendente"){
 pendentes++
+}
 
-if(p.status==="atrasado")
+if(p.status==="atrasado"){
 atrasados++
+}
 
 }
+
+// Monta lista de problemas
+let listaProblemas=""
+
+inconsistencias
+.slice(0,20)
+.forEach(p=>{
+
+listaProblemas+=`
+
+<div style="
+padding:8px;
+margin-top:8px;
+background:#fff7ed;
+border-left:4px solid orange;
+border-radius:8px;
+">
+
+<b>Pagamento ${p.id}</b><br>
+
+Contrato: ${p.contrato}<br>
+
+${p.mes}/${p.ano}<br>
+
+❌ ${p.erros.join(", ")}
+
+</div>
+
+`
+
+})
 
 resultado.innerHTML=`
 
@@ -5400,7 +5409,6 @@ resultado.innerHTML=`
 
 <hr>
 
-
 🏢 Prédios:
 <b>${predios.length}</b><br>
 
@@ -5415,18 +5423,14 @@ resultado.innerHTML=`
 
 <hr>
 
-<hr>
-
 <h3>Primeiras inconsistências encontradas</h3>
 
 ${listaProblemas}
 
 ${
-inconsistencias.length > 20
+inconsistencias.length>20
 ?
-`<br><b>... e mais ${
-inconsistencias.length-20
-} pagamentos.</b>`
+`<br><b>... e mais ${inconsistencias.length-20} pagamentos.</b>`
 :
 ""
 }
