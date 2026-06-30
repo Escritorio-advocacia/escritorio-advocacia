@@ -939,6 +939,28 @@ function calcularValorAtualizado(pagamento){
   const hoje = new Date()
   hoje.setHours(0,0,0,0)
 
+// Se já foi pago, não calcula atraso nem juros
+if (pagamento.status === "pago") {
+
+  const agua = Number(pagamento.valor_agua) || 0
+
+  const aluguel =
+    (Number(pagamento.valor) || 0) - agua
+
+  const valorOriginal = aluguel + agua
+
+  return {
+    aluguel,
+    agua,
+    diasAtraso: 0,
+    jurosAluguel: 0,
+    multaAgua: 0,
+    valorOriginal,
+    valorFinal: Number(pagamento.valor_pago || valorOriginal),
+    total: Number(pagamento.valor_pago || valorOriginal)
+  }
+}
+
   const vencimento = new Date(
   pagamento.data_vencimento + "T12:00:00"
 )
