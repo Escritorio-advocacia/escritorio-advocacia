@@ -763,6 +763,10 @@ margin-bottom:20px;
   
 <button onclick="backupSistema()">💾 Backup completo</button>
   
+  <button onclick="analisarSistema()">
+🛠 Verificar Sistema
+</button>
+  
 <button onclick="relatorioFinanceiro()">Gerar relatório</button>
 
 <button onclick="exportarPDF()">📄 Exportar relatório PDF</button>
@@ -5166,6 +5170,162 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
 })
+
+async function analisarSistema(){
+
+mostrarAlerta("Analisando sistema...")
+
+const modal = document.createElement("div")
+
+modal.className = "modalPagamento"
+
+modal.innerHTML = `
+<div class="modalBox" style="max-width:650px">
+
+<h2>🛠 Verificação do Sistema</h2>
+
+<div id="resultadoAnalise" style="
+text-align:left;
+margin-top:20px;
+line-height:1.9;
+font-size:15px;
+">
+
+⏳ Analisando banco de dados...
+
+</div>
+
+<br>
+
+<button onclick="fecharModal()">
+Fechar
+</button>
+
+</div>
+`
+
+document.body.appendChild(modal)
+
+await gerarRelatorioSistema()
+
+}
+
+async function gerarRelatorioSistema(){
+
+const resultado =
+document.getElementById("resultadoAnalise")
+
+resultado.innerHTML =
+"⏳ Lendo pagamentos..."
+
+const [
+{data:pagamentos},
+{data:contratos},
+{data:inquilinos},
+{data:unidades},
+{data:predios}
+
+]=await Promise.all([
+
+client.from("pagamentos").select("*"),
+
+client.from("contratos").select("*"),
+
+client.from("inquilinos").select("*"),
+
+client.from("unidades").select("*"),
+
+client.from("predios").select("*")
+
+])
+
+let pagos=0
+let pendentes=0
+let atrasados=0
+
+let semValorPago=0
+let semDataPagamento=0
+let semFormaPagamento=0
+
+for(const p of pagamentos){
+
+if(p.status==="pago"){
+
+pagos++
+
+if(p.valor_pago==null)
+semValorPago++
+
+if(!p.data_pagamento)
+semDataPagamento++
+
+if(!p.forma_pagamento)
+semFormaPagamento++
+
+}
+
+if(p.status==="pendente")
+pendentes++
+
+if(p.status==="atrasado")
+atrasados++
+
+}
+
+resultado.innerHTML=`
+
+<h3>📊 Resultado da Verificação</h3>
+
+<hr>
+
+✅ Pagamentos:
+<b>${pagamentos.length}</b><br>
+
+✅ Pagos:
+<b>${pagos}</b><br>
+
+🟡 Pendentes:
+<b>${pendentes}</b><br>
+
+🔴 Atrasados:
+<b>${atrasados}</b><br>
+
+<hr>
+
+⚠ valor_pago vazio:
+<b>${semValorPago}</b><br>
+
+⚠ data_pagamento vazia:
+<b>${semDataPagamento}</b><br>
+
+⚠ forma_pagamento vazia:
+<b>${semFormaPagamento}</b><br>
+
+<hr>
+
+🏢 Prédios:
+<b>${predios.length}</b><br>
+
+🚪 Unidades:
+<b>${unidades.length}</b><br>
+
+📄 Contratos:
+<b>${contratos.length}</b><br>
+
+👤 Inquilinos:
+<b>${inquilinos.length}</b><br>
+
+<hr>
+
+<div style="color:#16a34a;font-weight:bold">
+
+Nenhuma alteração foi feita.
+
+</div>
+
+`
+
+}
 
 </script>
 <div id="modalMeses" style="
