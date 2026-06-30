@@ -5544,11 +5544,13 @@ const { error:updateError } = await client
 
 if(updateError){
 
-console.error(
-"Erro no pagamento:",
-pagamento.id,
-updateError
+alert(
+`Pagamento ${pagamento.id}
+
+${updateError.message}`
 )
+
+console.error(updateError)
 
 erros++
 
