@@ -3349,6 +3349,14 @@ data.forEach(p=>{
 
     if(p.data_pagamento){
 
+console.log(
+    "Pagamento:",
+    p.id,
+    p.data_pagamento,
+    valorRecebido,
+    p.status
+);
+
       // Corrige definitivamente o problema de fuso horário
 const dataPg = new Date(
   p.data_pagamento.substring(0, 10) + "T12:00:00"
@@ -3360,7 +3368,13 @@ const dataPg = new Date(
     dataPg.getMonth() === hoje.getMonth() &&
     dataPg.getFullYear() === hoje.getFullYear()
 ){
-    recebidoHoje += valorRecebido
+    console.log(
+    "SOMOU",
+    p.id,
+    valorRecebido
+);
+
+recebidoHoje += valorRecebido;
 }
 
       // RECEBIDO NA SEMANA (SEGUNDA A SEXTA)
