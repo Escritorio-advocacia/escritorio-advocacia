@@ -3290,8 +3290,9 @@ const [
 ] = await Promise.all([
 
   client
-    .from("pagamentos")
-    .select("*"),
+  .from("pagamentos")
+  .select("*")
+  .order("id")
 
   client
     .from("predios")
@@ -3339,6 +3340,19 @@ sexta.setDate(
 )
 
 sexta.setHours(23,59,59,999)
+
+console.log("TOTAL REGISTROS:", data.length);
+
+console.table(
+  data
+    .filter(p => p.status === "pago")
+    .map(p => ({
+      id: p.id,
+      status: p.status,
+      data: p.data_pagamento,
+      valor: p.valor_pago
+    }))
+);
 
 data.forEach(p=>{
 
