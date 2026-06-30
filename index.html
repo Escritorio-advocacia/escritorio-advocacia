@@ -5247,7 +5247,40 @@ let semValorPago=0
 let semDataPagamento=0
 let semFormaPagamento=0
 
+let pagamentosSemContrato = 0
+let contratosSemInquilino = 0
+let contratosSemUnidade = 0
+let inquilinosSemContrato = 0
+
 for(const p of pagamentos){
+
+for (const c of contratos){
+
+  if(!inquilinos.find(i => i.id == c.inquilino_id)){
+    contratosSemInquilino++
+  }
+
+  if(!unidades.find(u => u.id == c.unidade_id)){
+    contratosSemUnidade++
+  }
+
+}
+
+for (const i of inquilinos){
+
+  if(!contratos.find(c => c.inquilino_id == i.id)){
+    inquilinosSemContrato++
+  }
+
+}
+
+for (const p of pagamentos){
+
+  if(!contratos.find(c => c.id == p.contrato_id)){
+    pagamentosSemContrato++
+  }
+
+}
 
 if(p.status==="pago"){
 
@@ -5302,6 +5335,21 @@ resultado.innerHTML=`
 <b>${semFormaPagamento}</b><br>
 
 <hr>
+
+⚠ Pagamentos sem contrato:
+<b>${pagamentosSemContrato}</b><br>
+
+⚠ Contratos sem inquilino:
+<b>${contratosSemInquilino}</b><br>
+
+⚠ Contratos sem unidade:
+<b>${contratosSemUnidade}</b><br>
+
+⚠ Inquilinos sem contrato:
+<b>${inquilinosSemContrato}</b><br>
+
+<hr>
+
 
 🏢 Prédios:
 <b>${predios.length}</b><br>
