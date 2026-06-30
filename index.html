@@ -5215,6 +5215,34 @@ async function gerarRelatorioSistema(){
 const resultado =
 document.getElementById("resultadoAnalise")
 
+let listaProblemas = ""
+
+inconsistencias
+.slice(0,20)
+.forEach(p=>{
+
+listaProblemas += `
+<div style="
+padding:8px;
+margin-top:8px;
+background:#fff7ed;
+border-left:4px solid orange;
+border-radius:8px;
+">
+
+<b>Pagamento ${p.id}</b><br>
+
+Contrato: ${p.contrato}<br>
+
+${p.mes}/${p.ano}<br>
+
+❌ ${p.erros.join(", ")}
+
+</div>
+`
+
+})
+
 resultado.innerHTML =
 "⏳ Lendo pagamentos..."
 
@@ -5246,6 +5274,8 @@ let atrasados=0
 let semValorPago=0
 let semDataPagamento=0
 let semFormaPagamento=0
+const inconsistencias = []
+
 
 let pagamentosSemContrato = 0
 let contratosSemInquilino = 0
@@ -5284,16 +5314,36 @@ for (const p of pagamentos){
 
 if(p.status==="pago"){
 
-pagos++
+    pagos++
 
-if(p.valor_pago==null)
-semValorPago++
+    let erros = []
 
-if(!p.data_pagamento)
-semDataPagamento++
+    if(p.valor_pago == null){
+      semValorPago++
+      erros.push("valor_pago")
+    }
 
-if(!p.forma_pagamento)
-semFormaPagamento++
+    if(!p.data_pagamento){
+      semDataPagamento++
+      erros.push("data_pagamento")
+    }
+
+    if(!p.forma_pagamento){
+      semFormaPagamento++
+      erros.push("forma_pagamento")
+    }
+
+    if(erros.length){
+
+      inconsistencias.push({
+        id: p.id,
+        contrato: p.contrato_id,
+        mes: p.mes,
+        ano: p.ano,
+        erros
+      })
+
+    }
 
 }
 
@@ -5364,6 +5414,22 @@ resultado.innerHTML=`
 <b>${inquilinos.length}</b><br>
 
 <hr>
+
+<hr>
+
+<h3>Primeiras inconsistências encontradas</h3>
+
+${listaProblemas}
+
+${
+inconsistencias.length > 20
+?
+`<br><b>... e mais ${
+inconsistencias.length-20
+} pagamentos.</b>`
+:
+""
+}
 
 <div style="color:#16a34a;font-weight:bold">
 
