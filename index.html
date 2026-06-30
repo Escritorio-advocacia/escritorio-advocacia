@@ -5487,7 +5487,7 @@ p.valor_pago==null ||
 
 if(!pagamentosSincronizar.length){
 
-mostrarAlerta("Sistema já está sincronizado.")
+mostrarAlerta("✅ Sistema já está sincronizado.")
 
 return
 
@@ -5503,47 +5503,52 @@ return
 
 mostrarAlerta("Sincronizando pagamentos...")
 
-let atualizados=0
-let erros=0
+let atualizados = 0
+let erros = 0
 
 for(const pagamento of pagamentosSincronizar){
 
-let update={}
+let update = {}
 
-if(pagamento.valor_pago==null){
+try{
 
-const calc=calcularValorAtualizado(pagamento)
+if(pagamento.valor_pago == null){
 
-update.valor_pago=
+const calc = calcularValorAtualizado(pagamento)
+
+update.valor_pago =
 Number(calc.valorFinal.toFixed(2))
 
 }
 
 if(!pagamento.forma_pagamento){
 
-update.forma_pagamento=
+update.forma_pagamento =
 "NÃO INFORMADO"
 
 }
 
 if(!pagamento.data_pagamento){
 
-update.data_pagamento=
+update.data_pagamento =
 new Date().toISOString()
 
 }
 
+if(Object.keys(update).length){
+
 const { error:updateError } = await client
-
 .from("pagamentos")
-
 .update(update)
-
-.eq("id",pagamento.id)
+.eq("id", pagamento.id)
 
 if(updateError){
 
-console.log(updateError)
+console.error(
+"Erro no pagamento:",
+pagamento.id,
+updateError
+)
 
 erros++
 
@@ -5552,6 +5557,20 @@ continue
 }
 
 atualizados++
+
+}
+
+}catch(e){
+
+console.error(
+"Erro inesperado:",
+pagamento.id,
+e
+)
+
+erros++
+
+}
 
 }
 
@@ -5567,9 +5586,11 @@ mostrarAlerta(
 
 `✅ Sincronização concluída!
 
-Pagamentos sincronizados: ${atualizados}
+Pagamentos encontrados: ${pagamentosSincronizar.length}
 
-Erros encontrados: ${erros}`
+✔ Sincronizados: ${atualizados}
+
+❌ Erros: ${erros}`
 
 )
 
