@@ -767,6 +767,10 @@ margin-bottom:20px;
 🛠 Verificar Sistema
 </button>
   
+  <button onclick="sincronizarSistema()">
+🔧 Sincronizar Sistema
+</button>
+  
 <button onclick="relatorioFinanceiro()">Gerar relatório</button>
 
 <button onclick="exportarPDF()">📄 Exportar relatório PDF</button>
@@ -5442,6 +5446,132 @@ Nenhuma alteração foi feita.
 </div>
 
 `
+
+}
+
+async function sincronizarSistema(){
+
+if(!confirm(
+"Essa operação irá sincronizar apenas pagamentos já marcados como PAGO que possuem informações incompletas.\n\nNenhum contrato, vencimento, aluguel ou status será alterado.\n\nDeseja continuar?"
+)){
+return
+}
+
+mostrarAlerta("Analisando pagamentos...")
+
+const { data: pagamentos, error } = await client
+.from("pagamentos")
+.select("*")
+
+if(error || !pagamentos){
+
+mostrarAlerta("Erro ao carregar pagamentos.","erro")
+
+return
+
+}
+
+const pagamentosSincronizar = pagamentos.filter(p=>
+
+p.status==="pago" && (
+
+p.valor_pago==null ||
+
+!p.data_pagamento ||
+
+!p.forma_pagamento
+
+)
+
+)
+
+if(!pagamentosSincronizar.length){
+
+mostrarAlerta("Sistema já está sincronizado.")
+
+return
+
+}
+
+if(!confirm(
+
+`Foram encontrados ${pagamentosSincronizar.length} pagamentos para sincronizar.\n\nDeseja continuar?`
+
+)){
+return
+}
+
+mostrarAlerta("Sincronizando pagamentos...")
+
+let atualizados=0
+let erros=0
+
+for(const pagamento of pagamentosSincronizar){
+
+let update={}
+
+if(pagamento.valor_pago==null){
+
+const calc=calcularValorAtualizado(pagamento)
+
+update.valor_pago=
+Number(calc.valorFinal.toFixed(2))
+
+}
+
+if(!pagamento.forma_pagamento){
+
+update.forma_pagamento=
+"NÃO INFORMADO"
+
+}
+
+if(!pagamento.data_pagamento){
+
+update.data_pagamento=
+new Date().toISOString()
+
+}
+
+const { error:updateError } = await client
+
+.from("pagamentos")
+
+.update(update)
+
+.eq("id",pagamento.id)
+
+if(updateError){
+
+console.log(updateError)
+
+erros++
+
+continue
+
+}
+
+atualizados++
+
+}
+
+await carregarDashboard()
+
+await listarPagamentos()
+
+await graficoFinanceiro()
+
+await graficoMensal()
+
+mostrarAlerta(
+
+`✅ Sincronização concluída!
+
+Pagamentos sincronizados: ${atualizados}
+
+Erros encontrados: ${erros}`
+
+)
 
 }
 
