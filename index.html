@@ -815,6 +815,72 @@ if (!window.supabase) {
   
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
   
+  let realtimeIniciado = false
+
+function iniciarRealtime(){
+
+  if(realtimeIniciado) return
+
+  realtimeIniciado = true
+
+  client
+    .channel("sistema-aluguel")
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "pagamentos"
+      },
+      () => atualizarSistemaSilencioso()
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "inquilinos"
+      },
+      () => atualizarSistemaSilencioso()
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "contratos"
+      },
+      () => atualizarSistemaSilencioso()
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "predios"
+      },
+      () => atualizarSistemaSilencioso()
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "unidades"
+      },
+      () => atualizarSistemaSilencioso()
+    )
+
+    .subscribe()
+
+}
+  
+  
 function tratarErro(error, mensagem = "Erro inesperado") {
   console.error("ERRO REAL:", error)
   mostrarAlerta(mensagem, "erro")
@@ -3630,6 +3696,59 @@ async function atualizarSistema(){
   mostrarAlerta("Sistema atualizado!")
 }
 
+let atualizandoRealtime = false
+
+async function atualizarSistemaSilencioso(){
+
+  if(atualizandoRealtime) return
+
+  atualizandoRealtime = true
+
+  try{
+
+    await Promise.all([
+
+      listarPagamentos(),
+
+      listarInquilinos(),
+
+      listarPredios(),
+
+      listarContratos(),
+
+      carregarDashboard(),
+
+      graficoFinanceiro(),
+
+      graficoMensal(),
+
+      listarDevedores(),
+
+      alertaInadimplentes(),
+
+      vencimentosHoje(),
+
+      ocupacaoPorPredio(),
+
+      carregarSelects()
+
+    ])
+
+    if(pegarPredioId()){
+      await listarUnidades()
+      await mapaOcupacao()
+    }
+
+  }catch(e){
+
+    console.log(e)
+
+  }
+
+  atualizandoRealtime = false
+
+}
+
 async function alertaInadimplentes(){
 
 const div = document.getElementById("alertaInadimplentes")
@@ -4647,6 +4766,8 @@ controlarPermissoes()
     await listarInquilinos()
     await listarContratos()
     await listarPagamentos()
+    
+    iniciarRealtime()
   }
 
 }
@@ -5145,6 +5266,7 @@ window.onload = async function() {
   await listarContratos()
   await listarPagamentos()
 
+iniciarRealtime()
 }
 window.onerror = function(msg, url, line){
   console.error("ERRO:", msg, "Linha:", line)
