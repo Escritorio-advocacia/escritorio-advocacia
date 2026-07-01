@@ -1429,12 +1429,7 @@ async function salvarInquilino(event) {
 
   try{
 
-    if(window.nivelUsuario === "funcionario"){
-      mostrarAlerta("Você não tem permissão!", "erro")
-      btn.disabled = false
-      return
-    }
-
+ 
     const nome = document.getElementById("nomeInquilino").value
     const cpf = document.getElementById("cpfInquilino").value
     const rg = document.getElementById("rg").value
@@ -4961,7 +4956,7 @@ function controlarPermissoes(){
       if(
         btn.innerText.includes("Excluir") ||
         btn.innerText.includes("Editar") ||
-        btn.innerText.includes("Salvar")
+       
       ){
         btn.style.display = "none"
       }
