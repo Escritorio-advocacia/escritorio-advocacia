@@ -1752,54 +1752,63 @@ async function excluirInquilino(id){
     return
   }
 
-  if(!confirm("Deseja realmente excluir este inquilino?")){
+  if(!confirm(
+    "Deseja realmente excluir este inquilino?\n\nO contrato, os pagamentos e o vínculo da unidade também serão removidos."
+  )){
     return
   }
 
-  // 🔥 pegar contrato
-  const { data: contratos } = await client
-    .from("contratos")
-    .select("*")
-    .eq("inquilino_id", id)
+  try{
 
-  if(contratos && contratos.length > 0){
-
-    const contrato = contratos[0]
-
-    // 🔥 apagar pagamentos
-    await client
-      .from("pagamentos")
-      .delete()
-      .eq("contrato_id", contrato.id)
-
-    // 🔥 liberar unidade
-    await client
-      .from("unidades")
-      .update({ status: "livre" })
-      .eq("id", contrato.unidade_id)
-
-    // 🔥 apagar contrato
-    await client
+    // Busca o contrato
+    const { data: contrato } = await client
       .from("contratos")
+      .select("*")
+      .eq("inquilino_id", id)
+      .single()
+
+    if(contrato){
+
+      // Exclui pagamentos
+      await client
+        .from("pagamentos")
+        .delete()
+        .eq("contrato_id", contrato.id)
+
+      // Exclui contrato
+      await client
+        .from("contratos")
+        .delete()
+        .eq("id", contrato.id)
+
+      // Libera unidade
+      await client
+        .from("unidades")
+        .update({ status: "livre" })
+        .eq("id", contrato.unidade_id)
+
+    }
+
+    // Exclui inquilino
+    const { error } = await client
+      .from("inquilinos")
       .delete()
-      .eq("id", contrato.id)
+      .eq("id", id)
+
+    if(error) throw error
+
+    mostrarAlerta("✅ Inquilino excluído com sucesso!")
+
+    await Promise.all([
+      listarInquilinos(),
+      listarPagamentos(),
+      carregarDashboard()
+    ])
+
+  }catch(e){
+    tratarErro(e, "Erro ao excluir inquilino")
   }
 
-  // 🔥 apagar inquilino
-  const { error } = await client
-    .from("inquilinos")
-    .delete()
-    .eq("id", id)
-
-  if(error){
-    tratarErro(error, "Erro ao excluir inquilino")
-    return
-  }
-
-  mostrarAlerta("🔥 Inquilino excluído com sucesso!")
-
-  await listarInquilinos()
-  await listarPagamentos()
 }
   
   function togglePredio(id){
