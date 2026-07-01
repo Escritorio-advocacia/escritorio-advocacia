@@ -413,14 +413,20 @@ select:focus{
 }
 
 .modalBox{
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 350px;
-  text-align: center;
+  background:white;
+  padding:20px;
+  border-radius:12px;
 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width:90%;
+  max-width:650px;
+
+  max-height:90vh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+
+  text-align:left;
+
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
 }
 
 </style>
@@ -5184,7 +5190,7 @@ const modal = document.createElement("div")
 modal.className = "modalPagamento"
 
 modal.innerHTML = `
-<div class="modalBox" style="max-width:650px">
+<div class="modalBox">
 
 <h2>🛠 Verificação do Sistema</h2>
 
