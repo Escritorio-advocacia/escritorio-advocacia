@@ -4953,13 +4953,12 @@ function controlarPermissoes(){
     // 🔒 ESCONDER BOTÕES PERIGOSOS
     document.querySelectorAll("button").forEach(btn => {
 
-      if(
-        btn.innerText.includes("Excluir") ||
-        btn.innerText.includes("Editar") ||
-       
-      ){
-        btn.style.display = "none"
-      }
+      if (
+  btn.innerText.includes("Excluir") ||
+  btn.innerText.includes("Editar")
+){
+  btn.style.display = "none"
+}
 
     })
     
