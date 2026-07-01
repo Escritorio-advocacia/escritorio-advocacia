@@ -5095,45 +5095,30 @@ if(btn){
 async function trocarInquilino(inquilino_id){
 
   if(!confirm(
-    "Deseja encerrar este contrato e cadastrar um novo inquilino nesta unidade?"
+    "Deseja substituir este inquilino pelos dados de um novo morador?"
   )){
     return
   }
 
-  const { data: contrato } = await client
-    .from("contratos")
+  // Guarda o ID do inquilino que será editado
+  window.idEditando = inquilino_id
+
+  // Busca os dados atuais
+  const { data: inquilino } = await client
+    .from("inquilinos")
     .select("*")
-    .eq("inquilino_id", inquilino_id)
+    .eq("id", inquilino_id)
     .single()
 
-  if(!contrato){
-    mostrarAlerta("Contrato não encontrado", "erro")
+  if(!inquilino){
+    mostrarAlerta("Inquilino não encontrado","erro")
     return
   }
 
-  await client
-    .from("contratos")
-    .update({
-      status: "encerrado"
-    })
-    .eq("id", contrato.id)
-
-  await client
-    .from("inquilinos")
-    .update({
-      status: "inativo"
-    })
-    .eq("id", inquilino_id)
-
-  await client
-    .from("unidades")
-    .update({
-      status: "livre"
-    })
-    .eq("id", contrato.unidade_id)
-
+  // Abre a tela de cadastro
   abrirTela("inquilinos")
 
+  // Limpa os dados pessoais
   document.getElementById("nomeInquilino").value = ""
   document.getElementById("cpfInquilino").value = ""
   document.getElementById("rg").value = ""
@@ -5145,17 +5130,18 @@ async function trocarInquilino(inquilino_id){
   document.getElementById("rg_responsavel").value = ""
   document.getElementById("whatsappResponsavel").value = ""
 
+  // Mantém a mesma unidade
+  document.getElementById("unidadeSelect").value = inquilino.unidade_id
+
+  // Limpa valores
   document.getElementById("valorAluguel").value = ""
   document.getElementById("valorAgua").value = ""
-
-  document.getElementById("unidadeSelect").value =
-    contrato.unidade_id
+  document.getElementById("diaVencimento").value = ""
 
   mostrarAlerta(
-    "Unidade liberada. Cadastre o novo inquilino."
+    "Preencha os dados do novo inquilino e clique em Salvar."
   )
 
-  await listarInquilinos()
 }
 
 function abrirTela(tela){
