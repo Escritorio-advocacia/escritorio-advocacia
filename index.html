@@ -2015,10 +2015,6 @@ onclick="excluirInquilino('${i.id}')">
 🗑 Excluir
 </button>
 
-<button
-onclick="trocarInquilino('${i.id}')">
-🔄 Trocar Inquilino
-</button>
 
         ${
           i.contrato_url
@@ -5101,57 +5097,6 @@ if(btn){
 
 }
 
-async function trocarInquilino(inquilino_id){
-
-  if(!confirm(
-    "Deseja substituir este inquilino pelos dados de um novo morador?"
-  )){
-    return
-  }
-
-  // Guarda o ID do inquilino que será editado
-  window.idEditando = inquilino_id
-
-  // Busca os dados atuais
-  const { data: inquilino } = await client
-    .from("inquilinos")
-    .select("*")
-    .eq("id", inquilino_id)
-    .single()
-
-  if(!inquilino){
-    mostrarAlerta("Inquilino não encontrado","erro")
-    return
-  }
-
-  // Abre a tela de cadastro
-  abrirTela("inquilinos")
-
-  // Limpa os dados pessoais
-  document.getElementById("nomeInquilino").value = ""
-  document.getElementById("cpfInquilino").value = ""
-  document.getElementById("rg").value = ""
-  document.getElementById("telefoneInquilino").value = ""
-  document.getElementById("emailInquilino").value = ""
-
-  document.getElementById("nomeResponsavel").value = ""
-  document.getElementById("cpfResponsavel").value = ""
-  document.getElementById("rg_responsavel").value = ""
-  document.getElementById("whatsappResponsavel").value = ""
-
-  // Mantém a mesma unidade
-  document.getElementById("unidadeSelect").value = inquilino.unidade_id
-
-  // Limpa valores
-  document.getElementById("valorAluguel").value = ""
-  document.getElementById("valorAgua").value = ""
-  document.getElementById("diaVencimento").value = ""
-
-  mostrarAlerta(
-    "Preencha os dados do novo inquilino e clique em Salvar."
-  )
-
-}
 
 function abrirTela(tela){
 
