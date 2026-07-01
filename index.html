@@ -1747,11 +1747,7 @@ await client
 
 async function excluirInquilino(id){
 
-  if(window.nivelUsuario === "funcionario"){
-    mostrarAlerta("Você não tem permissão!", "erro")
-    return
-  }
-
+  
   if(!confirm(
     "Deseja realmente excluir este inquilino?\n\nO contrato, os pagamentos e o vínculo da unidade também serão removidos."
   )){
@@ -2036,6 +2032,8 @@ onclick="verContrato('${i.contrato_url}')">
   })
 
   document.getElementById("listaInquilinos").innerHTML = html
+
+controlarPermissoes()
 }
 function cobrarWhatsApp(nome, whatsapp1, whatsapp2, valor, mes, diasAtraso, multa, juros){
 
@@ -2070,11 +2068,7 @@ Caso já tenha pago, desconsidere esta mensagem.`
 }
 async function editarInquilino(id){
 
-  if(window.nivelUsuario === "funcionario"){
-    mostrarAlerta("Você não tem permissão!", "erro")
-    return
-  }
-
+  
   const { data } = await client
     .from("inquilinos")
     .select("*")
@@ -5076,22 +5070,32 @@ function controlarPermissoes(){
 
   if(window.nivelUsuario === "funcionario"){
 
-    // 🔒 ESCONDER BOTÕES PERIGOSOS
+    // 🔒 Esconde todos os botões Editar e Excluir
     document.querySelectorAll("button").forEach(btn => {
 
-      if (
-  btn.innerText.includes("Excluir") ||
-  btn.innerText.includes("Editar")
-){
-  btn.style.display = "none"
-}
+      if(
+        btn.innerText.includes("Excluir") ||
+        btn.innerText.includes("Editar")
+      ){
+        btn.style.display = "none"
+      }
 
     })
-    
+
+    // ✅ Libera apenas Editar e Excluir dos inquilinos
+    document.querySelectorAll(".btnEditar").forEach(btn=>{
+      btn.style.display = "inline-block"
+    })
+
+    document.querySelectorAll(".btnExcluir").forEach(btn=>{
+      btn.style.display = "inline-block"
+    })
+
+    // 🔒 Continua escondendo funções administrativas
     const btn = document.getElementById("btnAtualizarAtrasos")
-if(btn){
-  btn.style.display = "none"
-}
+    if(btn){
+      btn.style.display = "none"
+    }
 
   }
 
