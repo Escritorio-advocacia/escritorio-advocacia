@@ -3203,10 +3203,12 @@ const inquilino = inquilinos.find(i => i.id == contrato?.inquilino_id)
 
 if(inquilino){
 
+const calc = calcularValorAtualizado(p)
+
 html += `
 <p>
 ${inquilino.nome}<br>
-Mês ${p.mes} - R$ ${p.valor}
+Mês ${p.mes} - R$ ${calc.valorFinal.toFixed(2)}
 </p>
 `
 
@@ -3349,9 +3351,13 @@ async function carregarDashboard(){
   for(const p of pagamentos){
 
     if(p.status !== "pago"){
-      pendente += Number(p.valor || 0)
-      continue
-    }
+
+    const calc = calcularValorAtualizado(p)
+
+    pendente += calc.valorFinal
+
+    continue
+}
 
     if(!p.data_pagamento){
       continue
@@ -3364,7 +3370,9 @@ async function carregarDashboard(){
         0
       )
 
-    const data = new Date(p.data_pagamento)
+    const data = new Date(
+    p.data_pagamento.substring(0,10) + "T12:00:00"
+)
 
 if(!p.data_pagamento || isNaN(data)){
   continue
@@ -3527,11 +3535,13 @@ if(!contrato) return
 const inquilino = inquilinosMap[contrato.inquilino_id]
 if(!inquilino) return
 
+const calc = calcularValorAtualizado(p)
+
 html += `
 <p style="color:red">
 ⚠ ${inquilino.nome}<br>
 Mês ${p.mes} atrasado<br>
-Divida: R$ ${p.valor}<br>
+Divida: R$ ${calc.valorFinal.toFixed(2)}<br>
 
 <button onclick="cobrarInquilinoCompleto('${inquilino.id}')">
 📲 Cobrar
@@ -3683,9 +3693,9 @@ data.forEach(p => {
     p.status == "pendente" ||
     p.status == "atrasado"
   ){
-    pendente += Number(
-      p.valor || 0
-    )
+const calc = calcularValorAtualizado(p)
+
+pendente += calc.valorFinal
   }
 
 })
@@ -3757,16 +3767,16 @@ async function receberTodosAtrasados(inquilino_id){
 
   atrasados.forEach(p => {
 
-    const calc = calcularValorAtualizado(p)
+  const calc = calcularValorAtualizado(p)
 
-    total += calc.total
+  total += calc.valorFinal
 
-    resumo += `
+  resumo += `
 Mês ${p.mes}/${p.ano}
-R$ ${calc.total.toFixed(2)}
+R$ ${calc.valorFinal.toFixed(2)}
 
 `
-  })
+})
 
   const confirmar = confirm(
 `Meses atrasados:
@@ -4167,9 +4177,11 @@ recebido += Number(
 }
 
 if(p.status!="pago"){
-pendente += Number(
-  p.valor_pago || p.valor || 0
-)
+
+const calc = calcularValorAtualizado(p)
+
+pendente += calc.valorFinal
+
 }
 
 })
@@ -4178,8 +4190,8 @@ doc.setFontSize(18)
 doc.text("RELATÓRIO DE RECEBIMENTOS",20,20)
 
 doc.setFontSize(12)
-doc.text(`Total recebido: R$ ${recebido}`,20,40)
-doc.text(`Total pendente: R$ ${pendente}`,20,50)
+doc.text(`Total recebido: R$ ${recebido.toFixed(2)}`,20,40)
+doc.text(`Total pendente: R$ ${pendente.toFixed(2)}`,20,50)
 
 doc.save("relatorio-aluguel.pdf")
 
