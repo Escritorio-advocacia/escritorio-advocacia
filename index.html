@@ -3366,9 +3366,11 @@ async function carregarDashboard(){
 
     const data = new Date(p.data_pagamento)
 
-    if(isNaN(data.getTime())){
-      continue
-    }
+if(!p.data_pagamento || isNaN(data)){
+  continue
+}
+
+data.setHours(12,0,0,0)
 
     if(data >= inicioHoje && data <= fimHoje){
       recebidoHoje += valor
