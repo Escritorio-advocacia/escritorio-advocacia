@@ -2742,9 +2742,7 @@ R$ ${(calc.multaAgua || 0).toFixed(2)}
     📅 Meses
   </button>
 
-  <button onclick="quitarAtrasados('${contrato.id}')">
-    💰 Quitar atrasados
-  </button>
+ 
 
 </div>
 `
@@ -2876,71 +2874,6 @@ async function alterarStatusMes(id,status){
   await graficoMensal()
 }
 
-async function quitarAtrasados(contrato_id){
-
-  const { data: pagamentos } = await client
-    .from("pagamentos")
-    .select("*")
-    .eq("contrato_id", contrato_id)
-
-  const atrasados = pagamentos.filter(
-    p => p.status === "atrasado"
-  )
-
-  if(atrasados.length === 0){
-    alert("Nenhum atraso encontrado")
-    return
-  }
-
-  let total = 0
-  let resumo = ""
-
-  atrasados.forEach(p=>{
-
-    const calc = calcularValorAtualizado(p)
-
-    total += calc.total
-
-    resumo +=
-      "Mês " + p.mes +
-      "/" + p.ano +
-      " = R$ " +
-      calc.total.toFixed(2) +
-      "\n"
-  })
-
-  if(!confirm(
-    resumo +
-    "\n\nTOTAL = R$ " +
-    total.toFixed(2)
-  )){
-    return
-  }
-
-  for(const p of atrasados){
-
-  const calc = calcularValorAtualizado(p);
-
-  await client
-    .from("pagamentos")
-    .update({
-      status: "pago",
-      data_pagamento: new Date().toISOString(),
-      forma_pagamento: "QUITAÇÃO",
-      valor_pago: Number(calc.valorFinal.toFixed(2))
-    })
-    .eq("id", p.id);
-
-}
-
-  mostrarAlerta(
-    "Quitado R$ " +
-    total.toFixed(2)
-  )
-
-  listarPagamentos()
-}
-  
 async function abrirPagamento(id, valor){
 
   let pagamento = window.pagamentosCache?.find(p => p.id == id)
