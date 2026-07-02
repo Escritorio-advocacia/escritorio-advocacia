@@ -2985,104 +2985,78 @@ async function marcarPendente(id){
 }
 async function confirmarPagamento(id, forma){
 
-if(window.pagamentoProcessando){
-  return
-}
+  if(window.pagamentoProcessando) return
 
-window.pagamentoProcessando = true
+  window.pagamentoProcessando = true
 
-// 🔒 CONTROLE DE ACESSO
-if(window.nivelUsuario !== "admin" && window.nivelUsuario !== "funcionario"){
-  window.pagamentoProcessando = false
-  mostrarAlerta("Sem permissão", "erro")
-  return
-}
+  try{
 
-  const { data: pagamento } = await client
-    .from("pagamentos")
-    .select("*")
-    .eq("id", id)
-    .single()
+    if(
+      window.nivelUsuario !== "admin" &&
+      window.nivelUsuario !== "funcionario"
+    ){
+      mostrarAlerta("Sem permissão","erro")
+      return
+    }
 
-  const calc = calcularValorAtualizado(pagamento)
+    const { data: pagamento, error } = await client
+      .from("pagamentos")
+      .select("*")
+      .eq("id", id)
+      .single()
 
-  if(pagamento.status === "pago"){
-  alert("Esse pagamento já foi realizado!")
-  fecharModal()
-  window.pagamentoProcessando = false
-  return
-}
+    if(error || !pagamento){
+      mostrarAlerta("Pagamento não encontrado","erro")
+      return
+    }
 
+    if(pagamento.status === "pago"){
+      mostrarAlerta("Esse pagamento já foi realizado!","erro")
+      fecharModal()
+      return
+    }
 
+    const calc = calcularValorAtualizado(pagamento)
 
-  const { error } = await client
-    .from("pagamentos")
-   .update({
-    status: "pago",
-    forma_pagamento: forma,
+    const agora = new Date().toISOString()
 
-    // grava sempre em formato ISO
-    data_pagamento: new Date().toISOString(),
+    const { error:updateError } = await client
+      .from("pagamentos")
+      .update({
+        status: "pago",
+        forma_pagamento: forma,
+        data_pagamento: agora,
+        valor_pago: Number(calc.valorFinal.toFixed(2))
+      })
+      .eq("id", id)
 
-    // grava exatamente o valor recebido
-    valor_pago: Number(calc.valorFinal.toFixed(2))
-})
-    .eq("id", id)
+    if(updateError){
+      tratarErro(updateError,"Erro ao registrar pagamento")
+      return
+    }
 
-  if(error){
-  tratarErro(error, "Erro ao atualizar pagamento")
-  window.pagamentoProcessando = false
-  return
-}
+    fecharModal()
 
-  fecharModal()
-
-await listarPagamentos()
+    await listarPagamentos()
 await carregarDashboard()
 await graficoFinanceiro()
 await graficoMensal()
 
-mostrarAlerta("Pagamento registrado com sucesso!")
+    mostrarAlerta("Pagamento registrado com sucesso!")
 
-window.pagamentoProcessando = false
-  const { data: contrato } = await client
-    .from("contratos")
-    .select("*")
-    .eq("id", pagamento.contrato_id)
-    .single()
+    const dados = await montarDadosRecibo(id)
+    gerarRecibo(dados)
 
-  const { data: inquilino } = await client
-    .from("inquilinos")
-    .select("*")
-    .eq("id", contrato.inquilino_id)
-    .single()
+  }catch(e){
 
-  const nome = inquilino?.nome || "Inquilino"
+    console.error(e)
+    tratarErro(e,"Erro ao registrar pagamento")
 
-  const aluguel = calc.aluguel
+  }finally{
 
-const agua = calc.agua
+    window.pagamentoProcessando = false
 
-const juros = calc.jurosAluguel
-
-const multaAgua = calc.multaAgua
-
-const total = calc.valorFinal
-
-  const { data: unidade } = await client
-    .from("unidades")
-    .select("*")
-    .eq("id", contrato.unidade_id)
-    .single()
-
-  const { data: predio } = await client
-    .from("predios")
-    .select("*")
-    .eq("id", unidade.predio_id)
-    .single()
-
-  const dados = await montarDadosRecibo(id)
-  gerarRecibo(dados)
+  }
 
 }
 async function gerarReciboCompleto(pagamento_id){
