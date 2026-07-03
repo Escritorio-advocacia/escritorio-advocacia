@@ -2312,6 +2312,12 @@ const contratosMap = {}
 const inquilinosMap = {}
 const unidadesMap = {}
 
+const prediosMap = {}
+
+predios.forEach(p => {
+  prediosMap[p.id] = p
+})
+
 contratos.forEach(c => {
   contratosMap[c.id] = c
 })
@@ -2398,9 +2404,7 @@ const inquilino =
 const unidade =
   unidadesMap[contrato?.unidade_id]
   
-  const predio = predios.find(
-  p => p.id == unidade?.predio_id
-)
+  const predio = prediosMap[unidade?.predio_id]
   
   const pagamentosPorContrato = {}
 
