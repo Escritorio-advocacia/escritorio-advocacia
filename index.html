@@ -690,7 +690,7 @@ margin-bottom:20px;
 
 <div class="botoes">
   <button onclick="salvarInquilino(event)">Salvar</button>
-  <button onclick="simularValor()">Simular valor</button>
+  
 </div>
 
 <div id="resultadoSimulacao"></div>
@@ -4288,94 +4288,7 @@ graficoMensalChart = new Chart(ctx,{
 })
 
 }
-  function simularValor(){
 
-const aluguel = Number(document.getElementById("valorAluguel").value)
-const agua = Number(document.getElementById("valorAgua").value)
-const vencimento = Number(document.getElementById("diaVencimento").value)
-
-const hoje = new Date()
-const diaHoje = hoje.getDate()
-
-let atraso = diaHoje - vencimento
-
-if(atraso < 0){
-atraso = 0
-}
-
-let jurosAluguel = 0
-let multaAgua = 0
-
-// tolerância de 5 dias
-if(atraso > 5){
-
-jurosAluguel = aluguel * (0.005 * atraso)
-
-multaAgua = agua * 0.10
-
-}
-
-const total = aluguel + agua + jurosAluguel + multaAgua
-
-document.getElementById("resultadoSimulacao").innerHTML = `
-
-<p>Dias em atraso: ${atraso}</p>
-
-<p>Aluguel: R$ ${aluguel}</p>
-
-<p>Água: R$ ${agua}</p>
-
-<p>Juros aluguel: R$ ${jurosAluguel.toFixed(2)}</p>
-
-<p>Multa água: R$ ${multaAgua.toFixed(2)}</p>
-
-<h3>Total atualizado: R$ ${total.toFixed(2)}</h3>
-
-`
-
-}
-  
-  function simularInquilino(aluguel,agua,vencimento){
-
-const hoje = new Date()
-const diaHoje = hoje.getDate()
-
-let atraso = diaHoje - vencimento
-
-if(atraso < 0){
-atraso = 0
-}
-
-let jurosAluguel = 0
-let multaAgua = 0
-
-if(atraso > 5){
-
-jurosAluguel = aluguel * (0.005 * atraso)
-
-multaAgua = agua * 0.10
-
-}
-
-const total = aluguel + agua + jurosAluguel + multaAgua
-
-alert(
-
-`Dias atraso: ${atraso}
-
-Aluguel: ${aluguel}
-
-Água: ${agua}
-
-Juros: ${jurosAluguel.toFixed(2)}
-
-Multa água: ${multaAgua.toFixed(2)}
-
-TOTAL: ${total.toFixed(2)}`
-
-)
-
-}
 async function montarDadosRecibo(pagamento_id){
 
   const { data: pagamento } = await client
