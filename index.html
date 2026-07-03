@@ -3306,126 +3306,166 @@ R$ ${totalSemana.toFixed(2)}`
 
 async function carregarDashboard(){
 
-const [
-  { data },
-  { count: totalPredios },
-  { count: totalInquilinos },
-  { count }
-] = await Promise.all([
+  const [
+    { data: pagamentos, error },
+    { count: totalPredios },
+    { count: totalInquilinos },
+    { count: totalContratos }
+  ] = await Promise.all([
 
-  client
-    .from("pagamentos")
-    .select("*")
-    .limit(100),
+    client
+  .from("pagamentos")
+  .select("*")
+  .range(0, 5000),
+  
+    client
+      .from("predios")
+      .select("*",{count:"exact",head:true}),
 
-  client
-    .from("predios")
-    .select("*", { count: "exact", head: true }),
+    client
+      .from("inquilinos")
+      .select("*",{count:"exact",head:true}),
 
-  client
-    .from("inquilinos")
-    .select("*", { count: "exact", head: true }),
+    client
+      .from("contratos")
+      .select("*",{count:"exact",head:true})
 
-  client
-    .from("contratos")
-    .select("*", { count: "exact", head: true })
+  ])
 
-])
+  if(error){
+    console.log(error)
+    return
+  }
 
-let recebido = 0
-let pendente = 0
-let recebidoSemana = 0
 
-const hoje = new Date()
 
-const segunda = new Date(hoje)
-segunda.setDate(
-  hoje.getDate() -
-  ((hoje.getDay() + 6) % 7)
+  const hoje = new Date()
+
+  const inicioHoje = new Date(
+    hoje.getFullYear(),
+    hoje.getMonth(),
+    hoje.getDate(),
+    0,0,0,0
+  )
+
+  const fimHoje = new Date(
+    hoje.getFullYear(),
+    hoje.getMonth(),
+    hoje.getDate(),
+    23,59,59,999
+  )
+
+  const inicioSemana = new Date(inicioHoje)
+  inicioSemana.setDate(
+    inicioSemana.getDate() -
+    ((inicioSemana.getDay()+6)%7)
+  )
+
+  const fimSemana = new Date(inicioSemana)
+  fimSemana.setDate(fimSemana.getDate()+4)
+  fimSemana.setHours(23,59,59,999)
+
+  let recebidoHoje = 0
+  let recebidoSemana = 0
+  let recebidoMes = 0
+  let pendente = 0
+
+  for(const p of pagamentos){
+
+    if(p.status !== "pago"){
+
+    const calc = calcularValorAtualizado(p)
+
+    pendente += calc.valorFinal
+
+    continue
+}
+
+    if(!p.data_pagamento){
+      continue
+    }
+
+    const valor =
+      Number(
+        p.valor_pago ??
+        p.valor ??
+        0
+      )
+
+    const data = new Date(
+    p.data_pagamento.substring(0,10) + "T12:00:00"
 )
-segunda.setHours(0,0,0,0)
 
-const sexta = new Date(segunda)
-sexta.setDate(segunda.getDate() + 4)
-sexta.setHours(23,59,59,999)
+if(!p.data_pagamento || isNaN(data)){
+  continue
+}
 
-data.forEach(p => {
+data.setHours(12,0,0,0)
 
-  if(p.status == "pago"){
+    if(data >= inicioHoje && data <= fimHoje){
+      recebidoHoje += valor
+    }
 
-    recebido += Number(p.valor || 0)
+    if(
+      data >= inicioSemana &&
+      data <= fimSemana &&
+      data.getDay() >= 1 &&
+      data.getDay() <= 5
+    ){
+      recebidoSemana += valor
+    }
 
-    if(p.data_pagamento){
-
-      const dataPg = new Date(p.data_pagamento)
-
-      if(
-        dataPg >= segunda &&
-        dataPg <= sexta
-      ){
-        recebidoSemana += Number(
-          p.valor_pago || p.valor || 0
-        )
-      }
-
+    if(
+      data.getMonth() === hoje.getMonth() &&
+      data.getFullYear() === hoje.getFullYear()
+    ){
+      recebidoMes += valor
     }
 
   }
 
-  if(p.status == "pendente"){
-    pendente += Number(p.valor || 0)
-  }
+  document.getElementById("dashboardDados").innerHTML = `
 
-})
-
-document.getElementById("dashboardDados").innerHTML = `
 <div class="cards">
 
 <div class="card cardRecebido">
 <div style="font-size:15px;color:#16a34a;font-weight:700;">
-💰 RECEBIDO
+📅 RECEBIDO HOJE
 </div>
-
-<span>R$ ${recebido}</span>
+<span>
+R$ ${recebidoHoje.toFixed(2)}
+</span>
 </div>
 
 <div class="card cardRecebido">
-
-<div style="
-font-size:15px;
-color:#16a34a;
-font-weight:700;
-">
+<div style="font-size:15px;color:#16a34a;font-weight:700;">
 📅 RECEBIDO NA SEMANA
 </div>
-
 <span>
 R$ ${recebidoSemana.toFixed(2)}
 </span>
-
 </div>
 
-<div class="card cardPendente">
-<div style="font-size:15px;color:#f59e0b;font-weight:700;">
-📅 A RECEBER
+<div class="card cardRecebido">
+<div style="font-size:15px;color:#16a34a;font-weight:700;">
+📆 RECEBIDO NO MÊS
 </div>
-
-<span>R$ ${pendente}</span>
+<span>
+R$ ${recebidoMes.toFixed(2)}
+</span>
 </div>
 
 <div class="card cardContrato">
 <div style="font-size:15px;color:#2563eb;font-weight:700;">
 📄 CONTRATOS
 </div>
-
-<span>${count}</span>
+<span>${totalContratos}</span>
 </div>
 
 <div class="card cardPredio">
 <div style="font-size:15px;color:#7c3aed;font-weight:700;">
 🏢 PRÉDIOS
 </div>
-
 <span>${totalPredios}</span>
 </div>
 
@@ -3433,12 +3473,13 @@ R$ ${recebidoSemana.toFixed(2)}
 <div style="font-size:15px;color:#ec4899;font-weight:700;">
 👤 INQUILINOS
 </div>
-
 <span>${totalInquilinos}</span>
 </div>
 
 </div>
+
 `
+
 }
 async function calcularOcupacao(){
 
