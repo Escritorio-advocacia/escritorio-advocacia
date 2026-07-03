@@ -748,9 +748,6 @@ margin-bottom:20px;
   Atualizar atrasos
 </button>
 
-<button onclick="recalcularTodosPagamentos()">
-🔧 Recalcular Pagamentos
-</button>
 
 </div>
 
@@ -1445,49 +1442,6 @@ listarUnidades()
 
 }
 
-async function recalcularTodosPagamentos(){
-
-  mostrarAlerta("Recalculando pagamentos...")
-
-  const { data: contratos } =
-    await client.from("contratos").select("*")
-
-  const { data: inquilinos } =
-    await client.from("inquilinos").select("*")
-
-  let atualizados = 0
-
-  for(const contrato of contratos){
-
-    const inquilino = inquilinos.find(
-      i => i.id == contrato.inquilino_id
-    )
-
-    if(!inquilino) continue
-
-    const aluguel =
-      Number(inquilino.valor_aluguel || 0)
-
-    const agua =
-      Number(inquilino.valor_agua || 0)
-
-    await client
-      .from("pagamentos")
-      .update({
-        valor: aluguel + agua,
-        valor_agua: agua
-      })
-      .eq("contrato_id", contrato.id)
-
-    atualizados++
-  }
-
-  mostrarAlerta(
-    `${atualizados} contratos corrigidos`
-  )
-
-  await listarPagamentos()
-}
 async function salvarInquilino(event) {
 
   const btn = event.target
