@@ -1529,16 +1529,56 @@ const { data: contrato } = await client
   .eq("inquilino_id", window.idEditando)
   .single()
 
-if(contrato){
+if (contrato) {
 
+  // Atualiza o contrato
   await client
-    .from("pagamentos")
+    .from("contratos")
     .update({
-      valor: valor_aluguel + valor_agua,
-      valor_agua: valor_agua
+      unidade_id,
+      valor_aluguel,
+      dia_vencimento,
+      ...(contrato_url && { arquivo_contrato: contrato_url })
     })
+    .eq("id", contrato.id)
+
+  // Busca pagamentos pendentes
+  const { data: pagamentos } = await client
+    .from("pagamentos")
+    .select("id, mes, ano")
     .eq("contrato_id", contrato.id)
     .neq("status", "pago")
+
+  // Atualiza cada pagamento
+  for (const pagamento of pagamentos || []) {
+
+    const ultimoDiaMes = new Date(
+      pagamento.ano,
+      pagamento.mes,
+      0
+    ).getDate()
+
+    const diaCorreto = Math.min(
+      dia_vencimento,
+      ultimoDiaMes
+    )
+
+    const dataVencimento = new Date(
+      pagamento.ano,
+      pagamento.mes - 1,
+      diaCorreto
+    )
+
+    await client
+      .from("pagamentos")
+      .update({
+        valor: valor_aluguel + valor_agua,
+        valor_agua,
+        data_vencimento: dataVencimento.toLocaleDateString("en-CA")
+      })
+      .eq("id", pagamento.id)
+
+  }
 
 }
 
