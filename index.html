@@ -3061,16 +3061,21 @@ await graficoMensal()
     const dados = await montarDadosRecibo(id)
     gerarRecibo(dados)
 
-  }catch(e){
+ }catch(e){
 
-    console.error(e)
-    tratarErro(e,"Erro ao registrar pagamento")
+  console.error("ERRO COMPLETO:", e)
 
-  }finally{
+  alert(
+    JSON.stringify(e, null, 2)
+  )
 
-    window.pagamentoProcessando = false
+  tratarErro(e,"Erro ao registrar pagamento")
 
-  }
+}finally{
+
+  window.pagamentoProcessando = false
+
+}
 
 }
 async function gerarReciboCompleto(pagamento_id){
