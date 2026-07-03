@@ -3030,6 +3030,20 @@ async function confirmarPagamento(id, forma){
       })
       .eq("id", id)
 
+const { data: teste } = await client
+  .from("pagamentos")
+  .select("status, data_pagamento, valor_pago")
+  .eq("id", id)
+  .single()
+
+alert(
+`Status: ${teste?.status}
+
+Data: ${teste?.data_pagamento}
+
+Valor Pago: ${teste?.valor_pago}`
+)
+
     if(updateError){
       tratarErro(updateError,"Erro ao registrar pagamento")
       return
