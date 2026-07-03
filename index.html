@@ -4170,63 +4170,7 @@ doc.text(`Total pendente: R$ ${pendente.toFixed(2)}`,20,50)
 doc.save("relatorio-aluguel.pdf")
 
 }
-async function verHistorico(inquilino_id){
 
-const { data: contratos } = await client
-.from("contratos")
-.select("*")
-.eq("inquilino_id", inquilino_id)
-
-if(!contratos.length){
-document.getElementById("historicoPagamentos").innerHTML = "Nenhum contrato encontrado"
-return
-}
-
-const contrato = contratos[0]
-
-const { data: pagamentos } = await client
-.from("pagamentos")
-.select("*")
-.eq("contrato_id", contrato.id)
-.order("mes")
-
-let html = "<h4>Linha do tempo de pagamentos</h4>"
-
-pagamentos.forEach(p=>{
-
-let status = p.status
-let cor = "black"
-
-const hoje = new Date()
-const mesAtual = hoje.getMonth()+1
-
-if(p.status=="pago"){
-cor="green"
-}
-
-if(p.status=="pendente"){
-cor="orange"
-}
-
-if(p.status=="pendente" && p.mes < mesAtual){
-status="ATRASADO"
-cor="red"
-}
-
-html += `
-<p style="color:${cor}">
-Mês ${p.mes} - R$ ${p.valor} - ${status}
-<br>
-💳 Forma: ${p.forma_pagamento || "-"}
-<br>
-📅 Pago em: ${p.data_pagamento ? new Date(p.data_pagamento).toLocaleDateString() : "-"}
-</p>
-`
-
-})
-
-document.getElementById("historicoPagamentos").innerHTML = html
-}
   
 let graficoMensalChart
 
