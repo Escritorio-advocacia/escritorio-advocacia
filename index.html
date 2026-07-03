@@ -895,9 +895,7 @@ function pegarPredioId(){
   return val
 }
   
-console.log("SUPABASE:", window.supabase)
-console.log("CLIENT:", client)
-  
+
 async function salvarPredio(){
 if(window.nivelUsuario === "funcionario"){
   mostrarAlerta("Você não tem permissão!", "erro")
@@ -998,8 +996,7 @@ const { error } = await client
   .eq("id", id)
 
 if(error){
-  console.log("ERRO REAL:", error)
-  alert("Erro ao excluir prédio")
+  tratarErro(error, "Erro ao excluir prédio")
   return
 }
 
@@ -1245,7 +1242,7 @@ async function listarPredios(){
   })
 }
 async function editarPredio(id){
-  console.log("Editando prédio:", id)
+  
 if(window.nivelUsuario === "funcionario"){
   mostrarAlerta("Você não tem permissão!", "erro")
   return
@@ -1280,7 +1277,7 @@ if(window.nivelUsuario === "funcionario"){
 
 
 const predio_id = document.getElementById("predioSelect").value
-console.log("Predio ID:", predio_id)
+
 const numero = document.getElementById("numeroUnidade").value
 const { data: existente } = await client
 .from("unidades")
@@ -4773,8 +4770,7 @@ function controlarPermissoes(){
 
 function abrirTela(tela){
 
-  console.log("Abrindo:", tela) // 👈 ajuda ver no F12 depois
-
+  
   document.querySelectorAll(".tela").forEach(div => {
     div.style.display = "none"
   })
