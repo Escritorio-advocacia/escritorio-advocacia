@@ -3386,35 +3386,7 @@ R$ ${recebidoMes.toFixed(2)}
 `
 
 }
-async function calcularOcupacao(){
 
-const predio_id = pegarPredioId()
-if(!predio_id) return
-
-const { data: unidades, error } = await client
-.from("unidades")
-.select("*")
-.eq("predio_id", predio_id)
-
-if(error || !unidades){
-  console.log("Erro mapa ocupação", error)
-  return
-}
-
-let total = unidades.length
-let ocupadas = unidades.filter(u => u.status === "ocupada").length
-let vazias = total - ocupadas
-
-let porcentagem = total > 0 ? Math.round((ocupadas / total) * 100) : 0
-
-document.getElementById("ocupacaoPredios").innerHTML = `
-🏢 Total: ${total}<br>
-🏠 Ocupados: ${ocupadas}<br>
-⬜ Vazios: ${vazias}<br>
-📊 Ocupação: ${porcentagem}%
-`
-
-}
 async function listarDevedores(){
 
 const div = document.getElementById("listaDevedores")
@@ -4857,12 +4829,7 @@ window.onload = async function() {
 
   abrirTela("dashboard")
 
-  try{
-    await calcularOcupacao()
-  }catch(e){
-    console.log("Erro ocupação ignorado")
-  }
-
+  
   await listarPredios()
 
   // 🔥 SÓ RODA SE TIVER PREDIO
