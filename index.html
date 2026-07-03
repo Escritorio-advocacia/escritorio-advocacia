@@ -2402,9 +2402,23 @@ predios.forEach(predio => {
 
   
 
-  if(!pagamentosPredio.length){
-    return
+  const pagamentosFiltrados = pagamentosPredio.filter(p => {
+
+  const calc = calcularValorAtualizado(p)
+
+  let status = (p.status || "").toLowerCase().trim()
+
+  if(calc.diasAtraso > 5 && status !== "pago"){
+    status = "atrasado"
   }
+
+  return !filtro || status === filtro
+
+})
+
+if(!pagamentosFiltrados.length){
+  return
+}
 
   html += `
     <div
@@ -2425,13 +2439,13 @@ predios.forEach(predio => {
 "
     >
      🏢 ${predio.rua} Nº ${predio.numero}
-(${pagamentosPredio.length} pagamentos)
+(${pagamentosFiltrados.length} pagamentos)
     </div>
 
     <div id="predioPag_${predio.id}" style="display:none;">
   `
 
-  pagamentosPredio.forEach(pagamento => {
+  pagamentosFiltrados.forEach(pagamento => {
 
     const calc = calcularValorAtualizado(pagamento)
 
