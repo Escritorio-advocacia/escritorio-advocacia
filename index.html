@@ -1985,36 +1985,6 @@ onclick="verContrato('${i.contrato_url}')">
   document.getElementById("listaInquilinos").innerHTML = html
 
 controlarPermissoes()
-}
-function cobrarWhatsApp(nome, whatsapp1, whatsapp2, valor, mes, diasAtraso, multa, juros){
-
-  let mensagem = `Olá, ${nome}! 👋
-
-Identificamos um pagamento em aberto.
-
-📅 Referente ao mês: ${mes}
-⏰ Dias em atraso: ${diasAtraso}
-
-📈 Juros aluguel: R$ ${dados.jurosAluguel.toFixed(2)}
-🚿 Multa água: R$ ${dados.multaAgua.toFixed(2)}
-
-💰 Valor atualizado: R$ ${Number(valor).toFixed(2)}
-
-Pedimos por gentileza que realize o pagamento o quanto antes.
-
-Caso já tenha pago, desconsidere esta mensagem.`
-
-  let numeros = [whatsapp1, whatsapp2].filter(n => n && n.trim() !== "")
-
-  numeros.forEach(numero => {
-
-    numero = numero.replace(/\D/g, "")
-
-    let link = `https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`
-
-    window.open(link, "_blank")
-
-  })
 
 }
 async function editarInquilino(id){
@@ -4025,15 +3995,6 @@ if(i.nome.toLowerCase().includes(texto)){
 html += `
 <p>
 ${i.nome} - ${i.telefone}
-
-<button onclick="cobrarWhatsApp(
-  '${i.nome}',
-  '${i.whatsapp}',
-  '${i.whatsapp_responsavel}',
-  ${i.valor_aluguel || 0}
-)">
-📲 Cobrar
-</button>
 
 </p>
 `
