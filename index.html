@@ -3309,8 +3309,9 @@ async function carregarDashboard(){
   ] = await Promise.all([
 
     client
-      .from("pagamentos")
-      .select("*"),
+  .from("pagamentos")
+  .select("*")
+  .order("id", { ascending: false }),
 
     client
       .from("predios")
@@ -3330,6 +3331,8 @@ async function carregarDashboard(){
     console.log(error)
     return
   }
+
+alert("Total de pagamentos carregados: " + pagamentos.length)
 
   const hoje = new Date()
 
